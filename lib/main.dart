@@ -4,119 +4,398 @@ void main() {
   runApp(const MyApp());
 }
 
+class AppColors {
+  // Paleta basada en tus imágenes
+  static const Color bg = Color(0xFFF2F8F4);
+  static const Color bg2 = Color(0xFFDEE4E9);
+
+  static const Color greenDark = Color(0xFF12603B);
+  static const Color greenDarker = Color(0xFF0D452B);
+  static const Color greenAccent = Color(0xFF088F00);
+  static const Color greenSoft = Color(0xFF517D64);
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Raíces Digitales',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: AppColors.bg,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.greenDark,
+          brightness: Brightness.light,
+        ),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'mi primera pagina'),
+      home: const SplashScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scale;
+  late final Animation<double> _opacity;
+  late final Animation<double> _glow;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2200),
+    );
+
+    // Zoom desde el fondo hacia adelante
+    _scale = Tween<double>(begin: 0.20, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+
+    // Aparición suave
+    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    // Brillo suave
+    _glow = Tween<double>(begin: 0.0, end: 16.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+
+    _controller.forward();
+
+    // Ahora sí: splash visible por ~7 segundos
+    Future.delayed(const Duration(seconds: 7), () {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 500),
+          pageBuilder: (_, __, ___) => const HomePage(),
+          transitionsBuilder: (_, animation, __, child) {
+            final fade = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOut,
+            );
+            return FadeTransition(opacity: fade, child: child);
+          },
+        ),
+      );
     });
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: Stack(
+        children: [
+          // Fondo principal
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.bg, AppColors.bg2],
+              ),
             ),
-          ],
+          ),
+
+          // Decoraciones más vistosas y ordenadas
+          const _BackgroundDecorations(),
+
+          // Contenido principal sin cuadro
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    return Opacity(
+                      opacity: _opacity.value,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Logo con zoom
+                          Transform.scale(
+                            scale: _scale.value,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.greenAccent.withOpacity(0.12),
+                                    blurRadius: _glow.value,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: Image.asset(
+                                'assets/images/logosp.png',
+                                width: 180,
+                                height: 180,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 18),
+
+                          // Subtítulo
+                          const Text(
+                            'Bienvenido a Raíces Digitales',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.greenDark,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          // Frase motivadora
+                          const Text(
+                            '“Crece con cada idea, construye con cada paso.”',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.greenDarker,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              height: 1.4,
+                            ),
+                          ),
+
+                          const SizedBox(height: 22),
+
+                          // Versión
+                          Text(
+                            'Versión 1.0',
+                            style: TextStyle(
+                              color: AppColors.greenSoft.withOpacity(0.95),
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+
+                          const SizedBox(height: 14),
+
+                          // Loader
+                          const SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.8,
+                              valueColor: AlwaysStoppedAnimation(
+                                AppColors.greenDark,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BackgroundDecorations extends StatelessWidget {
+  const _BackgroundDecorations();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Arriba izquierda
+        Positioned(
+          top: 22,
+          left: 16,
+          child: _CircleDecor(
+            size: 56,
+            color: AppColors.greenDark.withOpacity(0.12),
+            strokeWidth: 3,
+          ),
+        ),
+        Positioned(
+          top: 66,
+          left: 70,
+          child: _CircleDecor(
+            size: 12,
+            color: AppColors.greenAccent.withOpacity(0.18),
+            strokeWidth: 2,
+          ),
+        ),
+
+        // Arriba derecha
+        Positioned(
+          top: 38,
+          right: 26,
+          child: _CircleDecor(
+            size: 34,
+            color: AppColors.greenSoft.withOpacity(0.13),
+            strokeWidth: 3,
+          ),
+        ),
+        Positioned(
+          top: 18,
+          right: 72,
+          child: _CircleDecor(
+            size: 10,
+            color: AppColors.greenAccent.withOpacity(0.18),
+            strokeWidth: 2,
+          ),
+        ),
+
+        // Centro izquierda
+        Positioned(
+          top: 230,
+          left: 24,
+          child: _CircleDecor(
+            size: 18,
+            color: AppColors.greenDark.withOpacity(0.10),
+            strokeWidth: 2,
+          ),
+        ),
+
+        // Centro derecha
+        Positioned(
+          top: 290,
+          right: 28,
+          child: _CircleDecor(
+            size: 22,
+            color: AppColors.greenAccent.withOpacity(0.10),
+            strokeWidth: 2,
+          ),
+        ),
+
+        // Abajo izquierda
+        Positioned(
+          bottom: 90,
+          left: 30,
+          child: _CircleDecor(
+            size: 28,
+            color: AppColors.greenSoft.withOpacity(0.10),
+            strokeWidth: 3,
+          ),
+        ),
+        Positioned(
+          bottom: 58,
+          left: 72,
+          child: _CircleDecor(
+            size: 10,
+            color: AppColors.greenAccent.withOpacity(0.16),
+            strokeWidth: 2,
+          ),
+        ),
+
+        // Abajo derecha
+        Positioned(
+          bottom: 34,
+          right: 20,
+          child: _CircleDecor(
+            size: 62,
+            color: AppColors.greenDark.withOpacity(0.12),
+            strokeWidth: 3,
+          ),
+        ),
+        Positioned(
+          bottom: 24,
+          right: 80,
+          child: _CircleDecor(
+            size: 14,
+            color: AppColors.greenAccent.withOpacity(0.18),
+            strokeWidth: 2,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CircleDecor extends StatelessWidget {
+  final double size;
+  final Color color;
+  final double strokeWidth;
+
+  const _CircleDecor({
+    required this.size,
+    required this.color,
+    required this.strokeWidth,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: color,
+            width: strokeWidth,
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Raíces Digitales'),
+        backgroundColor: AppColors.bg,
+        foregroundColor: AppColors.greenDarker,
+      ),
+      body: Center(
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: AppColors.greenDark.withOpacity(0.15),
+            ),
+          ),
+          child: const Text(
+            'Home (aquí seguirá tu app)',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.greenDarker,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
