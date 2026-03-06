@@ -186,12 +186,12 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
 
                   Image.asset(
                     'assets/images/logosp.png',
-                    width: 110,
-                    height: 110,
+                    width: 150,
+                    height: 150,
                     fit: BoxFit.contain,
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
 
                   const Text(
                     'Crea tu cuenta para guardar y dar seguimiento a tus cultivos.',
@@ -215,7 +215,7 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
                           enabled: !_saving,
                           decoration: _inputDecoration(
                             label: 'Nombre completo',
-                            hint: 'Ej: Hilda Jazmín Alvarado Hernández',
+                            hint: 'Al menos un nombre y un apellido ',
                           ),
                           validator: (v) {
                             final value = (v ?? '').trim();
@@ -234,7 +234,7 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
                           enabled: !_saving,
                           decoration: _inputDecoration(
                             label: 'Usuario',
-                            hint: 'Ej: hilda.alvarado',
+                            hint: 'Ej:ah002',
                             suffixIcon: (_suggestion.isEmpty)
                                 ? null
                                 : IconButton(

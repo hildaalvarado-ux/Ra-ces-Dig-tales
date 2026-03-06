@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen>
   late final AnimationController _controller;
   late final Animation<double> _scale;
   late final Animation<double> _opacity;
-  late final Animation<double> _glow;
+  
 
   @override
   void initState() {
@@ -78,9 +78,6 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
 
-    _glow = Tween<double>(begin: 0.0, end: 16.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
 
     _controller.forward();
 
@@ -188,8 +185,8 @@ class BienvenidaPage extends StatelessWidget {
                   const SizedBox(height: 8),
                   Image.asset(
                     'assets/images/logosp.png',
-                    width: 150,
-                    height: 150,
+                    width: 250,
+                    height: 250,
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 18),
@@ -219,17 +216,17 @@ class BienvenidaPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.65),
+                      color: Colors.white.withValues(alpha: 0.65),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: AppColors.greenDark.withOpacity(0.12),
+                        color: AppColors.greenDark.withValues(alpha: 0.12),
                       ),
                     ),
                     child: const Text(
                       'Para darle seguimiento a tus cultivos necesitamos una cuenta.\n\n'
-                      '• Guardamos tu historial (siembra, riego, notas y avances)\n'
-                      '• Puedes ver el progreso de cada cultivo con el tiempo\n'
-                      '• No pierdes información si cambias de dispositivo\n\n'
+                      'Guardamos tu historial (siembra, riego, notas y avances)\n'
+                      'Puedes ver el progreso de cada cultivo con el tiempo\n'
+                      'No pierdes información si cambias de dispositivo\n\n'
                       'Inicia sesión o crea tu cuenta para comenzar.',
                       textAlign: TextAlign.left,
                       style: TextStyle(
@@ -309,10 +306,10 @@ class _OutlineButton extends StatelessWidget {
       height: 52,
       child: OutlinedButton(
         onPressed: onTap,
-        style: OutlinedButton.styleFrom(
+style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.greenDarker,
           side: BorderSide(
-            color: AppColors.greenDarker.withOpacity(0.55),
+            color: AppColors.greenDarker.withValues(alpha: 0.55),
             width: 1.6,
           ),
           shape: RoundedRectangleBorder(
@@ -375,10 +372,19 @@ class _BackgroundDecorations extends StatelessWidget {
         ),
         Positioned(
           top: 62,
+           left: 14,
+          child: _CircleDecor(
+            size: 54,
+            color: AppColors.greenDark.withValues(alpha: 0.12),
+            strokeWidth: 3,
+          ),
+        ),
+        Positioned(
+          top: 62,
           left: 68,
           child: _CircleDecor(
             size: 12,
-            color: AppColors.greenAccent.withOpacity(0.18),
+            color: AppColors.greenAccent.withValues(alpha: 0.18),
             strokeWidth: 2,
           ),
         ),
@@ -387,8 +393,17 @@ class _BackgroundDecorations extends StatelessWidget {
           right: 18,
           child: _CircleDecor(
             size: 38,
-            color: AppColors.greenSoft.withOpacity(0.13),
+            color: AppColors.greenSoft.withValues(alpha: 0.13),
             strokeWidth: 3,
+          ),
+        ),
+        Positioned(
+          top: 14,
+          right: 70,
+          child: _CircleDecor(
+            size: 10,
+            color: AppColors.greenAccent.withValues(alpha: 0.18),
+            strokeWidth: 2,
           ),
         ),
         Positioned(
@@ -416,7 +431,7 @@ class _BackgroundDecorations extends StatelessWidget {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: AppColors.greenDark.withOpacity(0.18),
+                          color: AppColors.greenDark.withValues(alpha: 0.18),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -428,10 +443,10 @@ class _BackgroundDecorations extends StatelessWidget {
         ),
         Positioned(
           bottom: 26,
-          right: 16,
+right: 16,
           child: _CircleDecor(
             size: 62,
-            color: AppColors.greenDark.withOpacity(0.12),
+            color: AppColors.greenDark.withValues(alpha: 0.12),
             strokeWidth: 3,
           ),
         ),
@@ -440,7 +455,7 @@ class _BackgroundDecorations extends StatelessWidget {
           right: 78,
           child: _CircleDecor(
             size: 14,
-            color: AppColors.greenAccent.withOpacity(0.18),
+            color: AppColors.greenAccent.withValues(alpha: 0.18),
             strokeWidth: 2,
           ),
         ),

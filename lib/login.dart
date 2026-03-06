@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (existing == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('❌ El usuario o correo no existe.')),
+          const SnackBar(content: Text('El usuario o correo no existe.')),
         );
         return;
       }
@@ -85,14 +85,14 @@ class _LoginPageState extends State<LoginPage> {
 
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('❌ Contraseña incorrecta.')),
+          const SnackBar(content: Text('Contraseña incorrecta.')),
         );
         return;
       }
 
       // 3) Login correcto
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('✅ Bienvenido, ${user.fullName}!')),
+        SnackBar(content: Text('Bienvenido, ${user.fullName}!')),
       );
 
       // Aquí luego redirigimos a la pantalla principal (cuando la hagamos).
@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Error al iniciar sesión: $e')),
+        SnackBar(content: Text('Error al iniciar sesión: $e')),
       );
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -137,11 +137,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   Image.asset(
                     'assets/images/logosp.png',
-                    width: 110,
-                    height: 110,
+                    width: 200,
+                    height: 200,
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 10),
