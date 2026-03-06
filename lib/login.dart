@@ -34,19 +34,19 @@ class _LoginPageState extends State<LoginPage> {
       labelText: label,
       hintText: hint,
       filled: true,
-      fillColor: Colors.white.withOpacity(0.82),
+      fillColor: Colors.white.withValues(alpha: 0.82),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: AppColors.greenDark.withOpacity(0.14)),
+        borderSide: BorderSide(color: AppColors.greenDark.withValues(alpha: 0.14)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: AppColors.greenDark.withOpacity(0.14)),
+        borderSide: BorderSide(color: AppColors.greenDark.withValues(alpha: 0.14)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide(
-          color: AppColors.greenDark.withOpacity(0.55),
+          color: AppColors.greenDark.withValues(alpha: 0.55),
           width: 1.6,
         ),
       ),
@@ -63,6 +63,9 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
 
     try {
+      // Forzar apertura de la BD
+      await appDb.executor.ensureOpen(appDb);
+
       // 1) Verificar si el usuario/correo existe
       final existing = await appDb.findUserByUsernameOrEmail(userOrEmail);
 
@@ -252,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Text(
                             '¿No tienes cuenta? → Crear cuenta',
                             style: TextStyle(
-                              color: AppColors.greenDark.withOpacity(0.95),
+                              color: AppColors.greenDark.withValues(alpha: 0.95),
                               fontWeight: FontWeight.w800,
                             ),
                           ),
