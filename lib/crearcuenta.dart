@@ -85,19 +85,19 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
       labelText: label,
       hintText: hint,
       filled: true,
-      fillColor: Colors.white.withOpacity(0.82),
+      fillColor: Colors.white.withValues(alpha: 0.82),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: AppColors.greenDark.withOpacity(0.14)),
+        borderSide: BorderSide(color: AppColors.greenDark.withValues(alpha: 0.14)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: AppColors.greenDark.withOpacity(0.14)),
+        borderSide: BorderSide(color: AppColors.greenDark.withValues(alpha: 0.14)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide(
-          color: AppColors.greenDark.withOpacity(0.55),
+          color: AppColors.greenDark.withValues(alpha: 0.55),
           width: 1.6,
         ),
       ),
@@ -116,7 +116,10 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
     if (msg.contains('constraint')) {
       return 'No se pudo guardar por una restricción. Revisa tus datos.';
     }
-    return 'No se pudo crear la cuenta. Intenta nuevamente.';
+    if (msg.contains('unsupportederror') || msg.contains('sqlite3') || msg.contains('wasm')) {
+      return 'Error de base de datos. Si estás en web, asegúrate de que los archivos WASM carguen.';
+    }
+    return 'No se pudo crear la cuenta. Intenta nuevamente. (Error: $e)';
   }
 
   Future<void> _createAccount() async {
@@ -129,6 +132,9 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
 
     setState(() => _saving = true);
     try {
+      // Verificar si la base de datos está disponible (esto forzará la inicialización si falla)
+      await appDb.executor.ensureOpen(appDb);
+
       await appDb.createUser(
         fullName: fullName,
         username: username,
@@ -261,7 +267,7 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
                               child: Text(
                                 'Sugerencia: $_suggestion  (toca para usarla)',
                                 style: TextStyle(
-                                  color: AppColors.greenDark.withOpacity(0.90),
+                                  color: AppColors.greenDark.withValues(alpha: 0.90),
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -391,7 +397,7 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
                           child: Text(
                             'Ya tengo cuenta → Iniciar sesión',
                             style: TextStyle(
-                              color: AppColors.greenDark.withOpacity(0.95),
+                              color: AppColors.greenDark.withValues(alpha: 0.95),
                               fontWeight: FontWeight.w800,
                             ),
                           ),

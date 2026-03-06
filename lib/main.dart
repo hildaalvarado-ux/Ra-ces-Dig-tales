@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen>
   late final AnimationController _controller;
   late final Animation<double> _scale;
   late final Animation<double> _opacity;
-  
+  late final Animation<double> _glow;
 
   @override
   void initState() {
@@ -78,6 +78,9 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
 
+    _glow = Tween<double>(begin: 0.0, end: 16.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
 
     _controller.forward();
 
@@ -366,7 +369,7 @@ class _BackgroundDecorations extends StatelessWidget {
           left: 14,
           child: _CircleDecor(
             size: 54,
-            color: AppColors.greenDark.withOpacity(0.12),
+            color: AppColors.greenDark.withValues(alpha: 0.12),
             strokeWidth: 3,
           ),
         ),
@@ -411,7 +414,7 @@ class _BackgroundDecorations extends StatelessWidget {
           right: 70,
           child: _CircleDecor(
             size: 10,
-            color: AppColors.greenAccent.withOpacity(0.18),
+            color: AppColors.greenAccent.withValues(alpha: 0.18),
             strokeWidth: 2,
           ),
         ),
@@ -431,7 +434,7 @@ class _BackgroundDecorations extends StatelessWidget {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                          color: AppColors.greenDark.withValues(alpha: 0.18),
+                        color: AppColors.greenDark.withOpacity(0.18),
                         shape: BoxShape.circle,
                       ),
                     ),
