@@ -48,7 +48,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/images/logosp.png
+    - assets/images/
     # Si quieres agregar toda la carpeta:
     # - assets/images/
 
