@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'crearcuenta.dart';
+import 'login.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class AppColors {
-  // Paleta basada en tus imágenes
   static const Color bg = Color(0xFFF2F8F4);
   static const Color bg2 = Color(0xFFDEE4E9);
 
@@ -31,7 +32,17 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+
+      // ✅ Rutas correctas
+      routes: {
+        '/': (_) => const SplashScreen(),
+        '/bienvenida': (_) => const BienvenidaPage(),
+        '/crear-cuenta': (_) => const CrearCuentaPage(),
+        '/login': (_) => const LoginPage(),
+      },
+
+      // ✅ Inicia SIEMPRE en splash
+      initialRoute: '/',
     );
   }
 }
@@ -59,39 +70,24 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 2200),
     );
 
-    // Zoom desde el fondo hacia adelante
     _scale = Tween<double>(begin: 0.20, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
 
-    // Aparición suave
     _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
 
-    // Brillo suave
     _glow = Tween<double>(begin: 0.0, end: 16.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
 
     _controller.forward();
 
-    // Ahora sí: splash visible por ~7 segundos
-    Future.delayed(const Duration(seconds: 7), () {
+    // ✅ Después del splash, IR A BIENVENIDA (NO a home)
+    Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (_, __, ___) => const HomePage(),
-          transitionsBuilder: (_, animation, __, child) {
-            final fade = CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOut,
-            );
-            return FadeTransition(opacity: fade, child: child);
-          },
-        ),
-      );
+      Navigator.pushReplacementNamed(context, '/bienvenida');
     });
   }
 
@@ -103,10 +99,247 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    return AppBackground(
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                return Opacity(
+                  opacity: _opacity.value,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Transform.scale(
+                        scale: _scale.value,
+                        child: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                           ),
+                             child: Image.asset(
+                              'assets/images/logosp.png',
+                                  width: 220,
+                                  height: 220,
+                                  fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      const Text(
+                        'Raíces Digitales',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.greenDark,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        '“Crece con cada idea, construye con cada paso.”',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.greenDarker,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      const SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.8,
+                          valueColor:
+                              AlwaysStoppedAnimation(AppColors.greenDark),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// ✅ BIENVENIDA (aquí van los botones Iniciar sesión / Crear cuenta)
+class BienvenidaPage extends StatelessWidget {
+  const BienvenidaPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBackground(
+      child: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  Image.asset(
+                    'assets/images/logosp.png',
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    'BIENVENIDO',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.greenDarker,
+                      fontSize: 38,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.6,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'A RAÍCES DIGITALES',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.greenDark,
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 3.0,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.65),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: AppColors.greenDark.withOpacity(0.12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Para darle seguimiento a tus cultivos necesitamos una cuenta.\n\n'
+                      '• Guardamos tu historial (siembra, riego, notas y avances)\n'
+                      '• Puedes ver el progreso de cada cultivo con el tiempo\n'
+                      '• No pierdes información si cambias de dispositivo\n\n'
+                      'Inicia sesión o crea tu cuenta para comenzar.',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: AppColors.greenDarker,
+                        fontSize: 15,
+                        height: 1.45,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 22),
+
+                  _PrimaryButton(
+                    text: 'INICIAR SESIÓN',
+                    onTap: () => Navigator.pushNamed(context, '/login'),
+                  ),
+                  const SizedBox(height: 12),
+                  _OutlineButton(
+                    text: 'CREAR CUENTA',
+                    onTap: () => Navigator.pushNamed(context, '/crear-cuenta'),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PrimaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+
+  const _PrimaryButton({required this.text, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.greenDarker,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          elevation: 0,
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OutlineButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+
+  const _OutlineButton({required this.text, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.greenDarker,
+          side: BorderSide(
+            color: AppColors.greenDarker.withOpacity(0.55),
+            width: 1.6,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AppBackground extends StatelessWidget {
+  final Widget child;
+  const AppBackground({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo principal
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -116,107 +349,8 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
           ),
-
-          // Decoraciones más vistosas y ordenadas
           const _BackgroundDecorations(),
-
-          // Contenido principal sin cuadro
-          SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, _) {
-                    return Opacity(
-                      opacity: _opacity.value,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Logo con zoom
-                          Transform.scale(
-                            scale: _scale.value,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.greenAccent.withOpacity(0.12),
-                                    blurRadius: _glow.value,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                              ),
-                              child: Image.asset(
-                                'assets/images/logosp.png',
-                                width: 180,
-                                height: 180,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 18),
-
-                          // Subtítulo
-                          const Text(
-                            'Bienvenido a Raíces Digitales',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.greenDark,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          // Frase motivadora
-                          const Text(
-                            '“Crece con cada idea, construye con cada paso.”',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.greenDarker,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              height: 1.4,
-                            ),
-                          ),
-
-                          const SizedBox(height: 22),
-
-                          // Versión
-                          Text(
-                            'Versión 1.0',
-                            style: TextStyle(
-                              color: AppColors.greenSoft.withOpacity(0.95),
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-
-                          const SizedBox(height: 14),
-
-                          // Loader
-                          const SizedBox(
-                            width: 28,
-                            height: 28,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.8,
-                              valueColor: AlwaysStoppedAnimation(
-                                AppColors.greenDark,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
+          child,
         ],
       ),
     );
@@ -230,92 +364,71 @@ class _BackgroundDecorations extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Arriba izquierda
         Positioned(
-          top: 22,
-          left: 16,
+          top: 18,
+          left: 14,
           child: _CircleDecor(
-            size: 56,
+            size: 54,
             color: AppColors.greenDark.withOpacity(0.12),
             strokeWidth: 3,
           ),
         ),
         Positioned(
-          top: 66,
-          left: 70,
+          top: 62,
+          left: 68,
           child: _CircleDecor(
             size: 12,
             color: AppColors.greenAccent.withOpacity(0.18),
             strokeWidth: 2,
           ),
         ),
-
-        // Arriba derecha
         Positioned(
-          top: 38,
-          right: 26,
+          top: 26,
+          right: 18,
           child: _CircleDecor(
-            size: 34,
+            size: 38,
             color: AppColors.greenSoft.withOpacity(0.13),
             strokeWidth: 3,
           ),
         ),
         Positioned(
-          top: 18,
-          right: 72,
+          top: 14,
+          right: 70,
           child: _CircleDecor(
             size: 10,
             color: AppColors.greenAccent.withOpacity(0.18),
             strokeWidth: 2,
           ),
         ),
-
-        // Centro izquierda
         Positioned(
-          top: 230,
-          left: 24,
-          child: _CircleDecor(
-            size: 18,
-            color: AppColors.greenDark.withOpacity(0.10),
-            strokeWidth: 2,
-          ),
-        ),
-
-        // Centro derecha
-        Positioned(
-          top: 290,
-          right: 28,
-          child: _CircleDecor(
-            size: 22,
-            color: AppColors.greenAccent.withOpacity(0.10),
-            strokeWidth: 2,
-          ),
-        ),
-
-        // Abajo izquierda
-        Positioned(
-          bottom: 90,
-          left: 30,
-          child: _CircleDecor(
-            size: 28,
-            color: AppColors.greenSoft.withOpacity(0.10),
-            strokeWidth: 3,
+          bottom: 70,
+          left: 18,
+          child: Column(
+            children: List.generate(
+              4,
+              (_) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: List.generate(
+                    4,
+                    (_) => Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: AppColors.greenDark.withOpacity(0.18),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
         Positioned(
-          bottom: 58,
-          left: 72,
-          child: _CircleDecor(
-            size: 10,
-            color: AppColors.greenAccent.withOpacity(0.16),
-            strokeWidth: 2,
-          ),
-        ),
-
-        // Abajo derecha
-        Positioned(
-          bottom: 34,
-          right: 20,
+          bottom: 26,
+          right: 16,
           child: _CircleDecor(
             size: 62,
             color: AppColors.greenDark.withOpacity(0.12),
@@ -323,8 +436,8 @@ class _BackgroundDecorations extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 24,
-          right: 80,
+          bottom: 18,
+          right: 78,
           child: _CircleDecor(
             size: 14,
             color: AppColors.greenAccent.withOpacity(0.18),
@@ -355,45 +468,7 @@ class _CircleDecor extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(
-            color: color,
-            width: strokeWidth,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Raíces Digitales'),
-        backgroundColor: AppColors.bg,
-        foregroundColor: AppColors.greenDarker,
-      ),
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: AppColors.greenDark.withOpacity(0.15),
-            ),
-          ),
-          child: const Text(
-            'Home (aquí seguirá tu app)',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.greenDarker,
-            ),
-          ),
+          border: Border.all(color: color, width: strokeWidth),
         ),
       ),
     );
