@@ -59,7 +59,6 @@ class _SplashScreenState extends State<SplashScreen>
   late final AnimationController _controller;
   late final Animation<double> _scale;
   late final Animation<double> _opacity;
-  late final Animation<double> _glow;
 
   @override
   void initState() {
@@ -75,10 +74,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
-
-    _glow = Tween<double>(begin: 0.0, end: 16.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
 
@@ -219,10 +214,10 @@ class BienvenidaPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.65),
+                      color: Colors.white.withValues(alpha: 0.65),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: AppColors.greenDark.withOpacity(0.12),
+                        color: AppColors.greenDark.withValues(alpha: 0.12),
                       ),
                     ),
                     child: const Text(
@@ -312,7 +307,7 @@ class _OutlineButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.greenDarker,
           side: BorderSide(
-            color: AppColors.greenDarker.withOpacity(0.55),
+            color: AppColors.greenDarker.withValues(alpha: 0.55),
             width: 1.6,
           ),
           shape: RoundedRectangleBorder(
@@ -369,7 +364,7 @@ class _BackgroundDecorations extends StatelessWidget {
           left: 14,
           child: _CircleDecor(
             size: 54,
-            color: AppColors.greenDark.withOpacity(0.12),
+            color: AppColors.greenDark.withValues(alpha: 0.12),
             strokeWidth: 3,
           ),
         ),
@@ -378,7 +373,7 @@ class _BackgroundDecorations extends StatelessWidget {
           left: 68,
           child: _CircleDecor(
             size: 12,
-            color: AppColors.greenAccent.withOpacity(0.18),
+            color: AppColors.greenAccent.withValues(alpha: 0.18),
             strokeWidth: 2,
           ),
         ),
@@ -387,7 +382,7 @@ class _BackgroundDecorations extends StatelessWidget {
           right: 18,
           child: _CircleDecor(
             size: 38,
-            color: AppColors.greenSoft.withOpacity(0.13),
+            color: AppColors.greenSoft.withValues(alpha: 0.13),
             strokeWidth: 3,
           ),
         ),
@@ -396,7 +391,7 @@ class _BackgroundDecorations extends StatelessWidget {
           right: 70,
           child: _CircleDecor(
             size: 10,
-            color: AppColors.greenAccent.withOpacity(0.18),
+            color: AppColors.greenAccent.withValues(alpha: 0.18),
             strokeWidth: 2,
           ),
         ),
@@ -416,7 +411,7 @@ class _BackgroundDecorations extends StatelessWidget {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: AppColors.greenDark.withOpacity(0.18),
+                        color: AppColors.greenDark.withValues(alpha: 0.18),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -431,7 +426,7 @@ class _BackgroundDecorations extends StatelessWidget {
           right: 16,
           child: _CircleDecor(
             size: 62,
-            color: AppColors.greenDark.withOpacity(0.12),
+            color: AppColors.greenDark.withValues(alpha: 0.12),
             strokeWidth: 3,
           ),
         ),
@@ -440,7 +435,7 @@ class _BackgroundDecorations extends StatelessWidget {
           right: 78,
           child: _CircleDecor(
             size: 14,
-            color: AppColors.greenAccent.withOpacity(0.18),
+            color: AppColors.greenAccent.withValues(alpha: 0.18),
             strokeWidth: 2,
           ),
         ),
