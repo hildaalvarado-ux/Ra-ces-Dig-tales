@@ -5,13 +5,14 @@ DatabaseConnection createConnection() {
   return DatabaseConnection.delayed(Future(() async {
     final result = await WasmDatabase.open(
       databaseName: 'raices',
-      sqlite3Uri: Uri.parse('sql-wasm.wasm'),
-      driftWorkerUri: Uri.parse('sql-wasm.js'), // Usamos el JS de sql-wasm como worker si es necesario, o drift_dev debería proveer uno
+      sqlite3Uri: Uri.parse('sqlite3.wasm'),
+      driftWorkerUri: Uri.parse('drift_worker.js'),
     );
 
+    // opcional: avisos del navegador
     if (result.missingFeatures.isNotEmpty) {
       // ignore: avoid_print
-      print('Advertencia: Faltan características en el navegador: \${result.missingFeatures}');
+      print('Advertencia: faltan features: ${result.missingFeatures}');
     }
 
     return result.resolvedExecutor;

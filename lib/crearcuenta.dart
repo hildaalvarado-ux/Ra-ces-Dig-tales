@@ -85,19 +85,19 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
       labelText: label,
       hintText: hint,
       filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.82),
+      fillColor: Colors.white.withOpacity(0.82),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: AppColors.greenDark.withValues(alpha: 0.14)),
+        borderSide: BorderSide(color: AppColors.greenDark.withOpacity(0.14)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(color: AppColors.greenDark.withValues(alpha: 0.14)),
+        borderSide: BorderSide(color: AppColors.greenDark.withOpacity(0.14)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide(
-          color: AppColors.greenDark.withValues(alpha: 0.55),
+          color: AppColors.greenDark.withOpacity(0.55),
           width: 1.6,
         ),
       ),
@@ -267,7 +267,7 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
                               child: Text(
                                 'Sugerencia: $_suggestion  (toca para usarla)',
                                 style: TextStyle(
-                                  color: AppColors.greenDark.withValues(alpha: 0.90),
+                                  color: AppColors.greenDark.withOpacity(0.90),
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -397,7 +397,7 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
                           child: Text(
                             'Ya tengo cuenta → Iniciar sesión',
                             style: TextStyle(
-                              color: AppColors.greenDark.withValues(alpha: 0.95),
+                              color: AppColors.greenDark.withOpacity(0.95),
                               fontWeight: FontWeight.w800,
                             ),
                           ),
