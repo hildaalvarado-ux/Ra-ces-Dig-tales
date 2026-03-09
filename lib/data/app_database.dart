@@ -20,12 +20,23 @@ class Users extends Table {
       ];
 }
 
-@DriftDatabase(tables: [Users])
+/// ✅ Sesión local (1 usuario activo)
+class Sessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+@DriftDatabase(tables: [Users, Sessions])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  // ---------------------------
+  // USERS
+  // ---------------------------
 
   // Crear usuario (registrarse)
   Future<int> createUser({
@@ -61,5 +72,26 @@ class AppDatabase extends _$AppDatabase {
           (u.username.equals(userOrEmail) | u.email.equals(userOrEmail)) &
           u.password.equals(password));
     return q.getSingleOrNull();
+  }
+
+  // ---------------------------
+  // SESSION
+  // ---------------------------
+
+  /// Guardar sesión (solo 1 activa)
+  Future<void> saveSession(int userId) async {
+    await delete(sessions).go();
+    await into(sessions).insert(SessionsCompanion.insert(userId: userId));
+  }
+
+  /// Obtener usuario activo (si existe)
+  Future<int?> getActiveUserId() async {
+    final s = await select(sessions).getSingleOrNull();
+    return s?.userId;
+  }
+
+  /// Cerrar sesión
+  Future<void> clearSession() async {
+    await delete(sessions).go();
   }
 }

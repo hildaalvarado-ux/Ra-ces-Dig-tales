@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'data/db_instance.dart';
+import 'dashboard.dart'; // ✅ NUEVO
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -98,8 +99,13 @@ class _LoginPageState extends State<LoginPage> {
         SnackBar(content: Text('Bienvenido, ${user.fullName}!')),
       );
 
-      // Aquí luego redirigimos a la pantalla principal (cuando la hagamos).
-      // Navigator.pushReplacementNamed(context, '/dashboard');
+      // ✅ (opcional) si ya tienes sesiones en la BD, descomenta:
+      // await appDb.saveSession(user.id);
+
+      // ✅ IR AL DASHBOARD (cambio mínimo)
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => DashboardPage(userId: user.id)),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
