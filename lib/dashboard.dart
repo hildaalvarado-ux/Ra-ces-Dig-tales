@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'data/db_instance.dart';
-import 'main.dart';
+
+import 'data/db_instance.dart'; // conexión a tu BD (Drift)
+import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
+import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -12,26 +14,31 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  // Datos del usuario logueado (solo para mostrar en el perfil/drawer)
   String _fullName = '...';
   String _email = '...';
 
   @override
   void initState() {
     super.initState();
-    _loadUser();
+    _loadUser(); // cargar el nombre y correo desde Drift
   }
 
+  /// Lee el usuario desde la BD usando el userId recibido desde Login
   Future<void> _loadUser() async {
     final user = await (appDb.select(appDb.users)
           ..where((u) => u.id.equals(widget.userId)))
         .getSingle();
+
     if (!mounted) return;
+
     setState(() {
       _fullName = user.fullName;
       _email = user.email;
     });
   }
 
+  /// Iniciales para el avatar (ej: "Josefina Valdez" -> "JV")
   String _initials(String name) {
     final parts =
         name.trim().split(RegExp(r'\s+')).where((e) => e.isNotEmpty).toList();
@@ -41,6 +48,7 @@ class _DashboardPageState extends State<DashboardPage> {
         .toUpperCase();
   }
 
+  // Ajustes responsive para el grid del dashboard
   int _gridCountForWidth(double w) {
     if (w >= 1100) return 4;
     if (w >= 700) return 3;
@@ -53,14 +61,56 @@ class _DashboardPageState extends State<DashboardPage> {
     return 1.05;
   }
 
-  Future<void> _openFeature(String title) async {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => FeaturePlaceholderPage(title: title),
-      ),
-    );
+  // ==========================================================
+  // ✅ NAVEGACIÓN CENTRAL
+  // Aquí es donde vas a ir conectando tus archivos reales.
+  // EJEMPLO:
+  // - Cultivos ya navega a CultivosPage()
+  // - lo demás por ahora está en placeholder
+  // ==========================================================
+  Future<void> _openFeature(String feature) async {
+    switch (feature) {
+      // ✅ YA IMPLEMENTADO (archivo real):
+      case 'Cultivos':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const CultivosPage()),
+        );
+        return;
+
+      // -------------------------------
+      // ⬇️ AQUI irás conectando pantallas reales después
+      // cuando crees archivos nuevos.
+      //
+      // Ejemplo cuando hagas fertilizantes.dart:
+      // case 'Fertilizantes':
+      //   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FertilizantesPage()));
+      //   return;
+      // -------------------------------
+
+      case 'Fertilizantes':
+      case 'Pesticidas':
+      case 'Plagas':
+      case 'Favoritos':
+      case 'Calendario':
+      case 'Notificaciones':
+      case 'Diario':
+      case 'Opciones':
+      case 'Contacto':
+      case 'Créditos':
+      default:
+        // ✅ placeholder temporal para que no se rompa la navegación
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => FeaturePlaceholderPage(title: feature),
+          ),
+        );
+        return;
+    }
   }
 
+  // ==========================================================
+  // ✅ CERRAR SESIÓN
+  // ==========================================================
   Future<bool> _confirmLogout() async {
     return (await showDialog<bool>(
           context: context,
@@ -90,8 +140,10 @@ class _DashboardPageState extends State<DashboardPage> {
     final ok = await _confirmLogout();
     if (!ok) return;
 
-    await appDb.clearSession();
+    await appDb.clearSession(); // ✅ borra la sesión local
     if (!mounted) return;
+
+    // Regresa al home/bienvenida (donde están login/crear cuenta)
     Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
   }
 
@@ -106,7 +158,7 @@ class _DashboardPageState extends State<DashboardPage> {
           return Scaffold(
             backgroundColor: Colors.transparent,
 
-            // ✅ Drawer solo en móvil/tablet
+            // ✅ Drawer solo en móvil/tablet (en escritorio se usa menú web arriba)
             drawer: isDesktop ? null : _buildDrawer(context),
 
             appBar: AppBar(
@@ -114,10 +166,10 @@ class _DashboardPageState extends State<DashboardPage> {
               foregroundColor: Colors.white,
               elevation: 0,
 
-              // ✅ Nunca flecha back en Inicio
+              // ✅ Importante: NO mostrar flecha back en el inicio
               automaticallyImplyLeading: false,
 
-              // ✅ En móvil: botón hamburguesa para abrir Drawer
+              // ✅ En móvil aparece hamburguesa para abrir Drawer
               leading: isDesktop
                   ? null
                   : Builder(
@@ -132,36 +184,44 @@ class _DashboardPageState extends State<DashboardPage> {
                 style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.3),
               ),
 
+              // ==========================================================
+              // ✅ MENÚ DE ESCRITORIO (tipo web) + PERFIL
+              // ==========================================================
               actions: isDesktop
                   ? [
                       const SizedBox(width: 6),
+
+                      // Inicio (no hace nada porque ya estamos aquí)
                       _TopLink(text: 'Inicio', onTap: () {}),
+
+                      // Menú Cultivos (hover)
                       _HoverMenu(
                         text: 'Cultivos',
                         items: [
                           _HoverItem('Cultivos', () => _openFeature('Cultivos')),
-                          _HoverItem(
-                              'Fertilizantes', () => _openFeature('Fertilizantes')),
+                          _HoverItem('Fertilizantes', () => _openFeature('Fertilizantes')),
                           _HoverItem('Pesticidas', () => _openFeature('Pesticidas')),
                           _HoverItem('Plagas', () => _openFeature('Plagas')),
                         ],
                       ),
-                      _TopLink(
-                          text: 'Favoritos',
-                          onTap: () => _openFeature('Favoritos')),
+
+                      _TopLink(text: 'Favoritos', onTap: () => _openFeature('Favoritos')),
+
+                      // Calendario marcado como principal
                       _TopLink(
                         text: 'Calendario',
                         onTap: () => _openFeature('Calendario'),
                         primary: true,
                       ),
+
                       _HoverMenu(
                         text: 'Mi huerta',
                         items: [
-                          _HoverItem('Notificaciones',
-                              () => _openFeature('Notificaciones')),
+                          _HoverItem('Notificaciones', () => _openFeature('Notificaciones')),
                           _HoverItem('Diario', () => _openFeature('Diario')),
                         ],
                       ),
+
                       _HoverMenu(
                         text: 'Otros',
                         items: [
@@ -170,17 +230,18 @@ class _DashboardPageState extends State<DashboardPage> {
                           _HoverItem('Créditos', () => _openFeature('Créditos')),
                         ],
                       ),
+
                       const SizedBox(width: 10),
+
+                      // Perfil desplegable (con cámara y logout rojo)
                       _ProfileMenuV2(
                         initials: _initials(_fullName),
                         fullName: _fullName,
                         email: _email,
                         onChangePhoto: () {
+                          // ✅ aquí después conectas selección de imagen
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content:
-                                  Text('Próximamente: cambiar foto de perfil'),
-                            ),
+                            const SnackBar(content: Text('Próximamente: cambiar foto de perfil')),
                           );
                         },
                         onLogout: _logout,
@@ -188,6 +249,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       const SizedBox(width: 12),
                     ]
                   : [
+                      // En móvil, solo dejamos el botón ayuda (opcional)
                       IconButton(
                         tooltip: 'Ayuda',
                         onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
@@ -199,6 +261,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     ],
             ),
 
+            // ==========================================================
+            // ✅ CONTENIDO PRINCIPAL DEL DASHBOARD
+            // ==========================================================
             body: SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -211,6 +276,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  // Mini-vistas / tarjetas del inicio (botones grandes)
   Widget _buildBodyContent(double w) {
     final gridCount = _gridCountForWidth(w);
     final aspect = _gridChildAspectForWidth(w);
@@ -228,11 +294,14 @@ class _DashboardPageState extends State<DashboardPage> {
             childAspectRatio: aspect,
           ),
           children: [
+            // ✅ Cultivos: navega a la pantalla real
             _DashboardTile(
               label: 'Cultivos',
               icon: Icons.local_florist_rounded,
               onTap: () => _openFeature('Cultivos'),
             ),
+
+            // ⬇️ Estos por ahora son placeholders
             _DashboardTile(
               label: 'Fertilizantes',
               icon: Icons.science_rounded,
@@ -260,8 +329,10 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ],
         ),
+
         const SizedBox(height: 18),
 
+        // Contenedor reservado para resumen/gráfica futura
         Text(
           'Cultivos sembrados en tu huerta',
           style: TextStyle(
@@ -291,6 +362,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
         const SizedBox(height: 18),
 
+        // Notificación de ejemplo
         Text(
           'Notificaciones',
           style: TextStyle(
@@ -309,9 +381,10 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // =======================
-  // DRAWER MÓVIL COMPLETO
-  // =======================
+  // ==========================================================
+  // ✅ DRAWER MÓVIL (MENÚ LATERAL)
+  // Aquí también usamos _openFeature para navegar.
+  // ==========================================================
   Drawer _buildDrawer(BuildContext context) {
     return Drawer(
       child: Column(
@@ -372,68 +445,110 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
+
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(vertical: 10),
               children: [
                 const _DrawerSectionTitle('Información'),
                 _DrawerItem(
-                    icon: Icons.home_rounded,
-                    label: 'Inicio',
-                    onTap: () => Navigator.pop(context)),
+                  icon: Icons.home_rounded,
+                  label: 'Inicio',
+                  onTap: () => Navigator.pop(context),
+                ),
                 _DrawerItem(
                   icon: Icons.calendar_month_rounded,
                   label: 'Calendario',
                   primary: true,
-                  onTap: () => _openFromDrawer(context, 'Calendario'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Calendario');
+                  },
                 ),
 
                 const SizedBox(height: 6),
                 const _DrawerSectionTitle('Cultivos'),
                 _DrawerItem(
-                    icon: Icons.local_florist_rounded,
-                    label: 'Cultivos',
-                    onTap: () => _openFromDrawer(context, 'Cultivos')),
+                  icon: Icons.local_florist_rounded,
+                  label: 'Cultivos',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Cultivos');
+                  },
+                ),
                 _DrawerItem(
-                    icon: Icons.science_rounded,
-                    label: 'Fertilizantes',
-                    onTap: () => _openFromDrawer(context, 'Fertilizantes')),
+                  icon: Icons.science_rounded,
+                  label: 'Fertilizantes',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Fertilizantes');
+                  },
+                ),
                 _DrawerItem(
-                    icon: Icons.sanitizer_rounded,
-                    label: 'Pesticidas',
-                    onTap: () => _openFromDrawer(context, 'Pesticidas')),
+                  icon: Icons.sanitizer_rounded,
+                  label: 'Pesticidas',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Pesticidas');
+                  },
+                ),
                 _DrawerItem(
-                    icon: Icons.bug_report_rounded,
-                    label: 'Plagas',
-                    onTap: () => _openFromDrawer(context, 'Plagas')),
+                  icon: Icons.bug_report_rounded,
+                  label: 'Plagas',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Plagas');
+                  },
+                ),
 
                 const SizedBox(height: 6),
                 const _DrawerSectionTitle('Mi huerta'),
                 _DrawerItem(
-                    icon: Icons.notifications_active_rounded,
-                    label: 'Notificaciones',
-                    onTap: () => _openFromDrawer(context, 'Notificaciones')),
+                  icon: Icons.notifications_active_rounded,
+                  label: 'Notificaciones',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Notificaciones');
+                  },
+                ),
                 _DrawerItem(
-                    icon: Icons.menu_book_rounded,
-                    label: 'Diario',
-                    onTap: () => _openFromDrawer(context, 'Diario')),
+                  icon: Icons.menu_book_rounded,
+                  label: 'Diario',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Diario');
+                  },
+                ),
 
                 const SizedBox(height: 6),
                 const _DrawerSectionTitle('Otros'),
                 _DrawerItem(
-                    icon: Icons.settings_rounded,
-                    label: 'Opciones',
-                    onTap: () => _openFromDrawer(context, 'Opciones')),
+                  icon: Icons.settings_rounded,
+                  label: 'Opciones',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Opciones');
+                  },
+                ),
                 _DrawerItem(
-                    icon: Icons.contact_mail_rounded,
-                    label: 'Contacto',
-                    onTap: () => _openFromDrawer(context, 'Contacto')),
+                  icon: Icons.contact_mail_rounded,
+                  label: 'Contacto',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Contacto');
+                  },
+                ),
                 _DrawerItem(
-                    icon: Icons.info_outline_rounded,
-                    label: 'Créditos',
-                    onTap: () => _openFromDrawer(context, 'Créditos')),
+                  icon: Icons.info_outline_rounded,
+                  label: 'Créditos',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Créditos');
+                  },
+                ),
 
                 const Divider(height: 22),
+
                 _DrawerItem(
                   icon: Icons.logout_rounded,
                   label: 'Cerrar sesión',
@@ -446,6 +561,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 14),
             child: Text(
@@ -455,21 +571,16 @@ class _DashboardPageState extends State<DashboardPage> {
                 fontWeight: FontWeight.w700,
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
-
-  void _openFromDrawer(BuildContext context, String title) {
-    Navigator.pop(context);
-    _openFeature(title);
-  }
 }
 
-// =======================
-// COMPONENTES UI
-// =======================
+// ==========================================================
+// ✅ COMPONENTES REUTILIZABLES (UI)
+// ==========================================================
 
 class _TopLink extends StatelessWidget {
   final String text;
@@ -543,8 +654,8 @@ class _HoverMenuState extends State<_HoverMenu> {
                     borderRadius: BorderRadius.circular(12),
                     color: const Color(0xFFF2F8F4),
                     child: ConstrainedBox(
-                      // ✅ compacto y consistente
-                      constraints: const BoxConstraints(minWidth: 190, maxWidth: 220),
+                      constraints:
+                          const BoxConstraints(minWidth: 190, maxWidth: 220),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: widget.items
@@ -556,7 +667,8 @@ class _HoverMenuState extends State<_HoverMenu> {
                                 },
                                 child: Container(
                                   width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 14, vertical: 11),
                                   child: Text(
                                     it.label,
                                     style: const TextStyle(
@@ -614,7 +726,10 @@ class _HoverMenuState extends State<_HoverMenu> {
             children: [
               Text(
                 widget.text,
-                style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(width: 2),
               const Icon(Icons.arrow_drop_down_rounded, color: Colors.white),
@@ -763,7 +878,11 @@ class _DashboardTile extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _DashboardTile({required this.label, required this.icon, required this.onTap});
+  const _DashboardTile({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -813,7 +932,11 @@ class _NotificationCard extends StatelessWidget {
   final String subtitle;
   final VoidCallback onOpen;
 
-  const _NotificationCard({required this.title, required this.subtitle, required this.onOpen});
+  const _NotificationCard({
+    required this.title,
+    required this.subtitle,
+    required this.onOpen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -833,10 +956,19 @@ class _NotificationCard extends StatelessWidget {
           ),
           child: const Icon(Icons.notifications_rounded, color: AppColors.greenDarker),
         ),
-        title: Text(title, style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900)),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: AppColors.greenDarker,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
         subtitle: Text(
           subtitle,
-          style: TextStyle(color: AppColors.greenDarker.withOpacity(0.75), fontWeight: FontWeight.w700),
+          style: TextStyle(
+            color: AppColors.greenDarker.withOpacity(0.75),
+            fontWeight: FontWeight.w700,
+          ),
         ),
         trailing: IconButton(
           onPressed: onOpen,
@@ -889,13 +1021,17 @@ class _DrawerItem extends StatelessWidget {
       leading: Icon(icon, color: color),
       title: Text(
         label,
-        style: TextStyle(color: color, fontWeight: primary ? FontWeight.w900 : FontWeight.w800),
+        style: TextStyle(
+          color: color,
+          fontWeight: primary ? FontWeight.w900 : FontWeight.w800,
+        ),
       ),
       onTap: onTap,
     );
   }
 }
 
+// ✅ Placeholder temporal para pantallas NO hechas todavía
 class FeaturePlaceholderPage extends StatelessWidget {
   final String title;
   const FeaturePlaceholderPage({super.key, required this.title});
@@ -910,7 +1046,23 @@ class FeaturePlaceholderPage extends StatelessWidget {
           foregroundColor: Colors.white,
           title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
         ),
-        body: Center(child: Text('Pantalla "$title" (próximamente)')),
+        body: Center(
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.75),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
+            ),
+            child: Text(
+              'Pantalla "$title" (próximamente)',
+              style: const TextStyle(
+                color: AppColors.greenDarker,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

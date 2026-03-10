@@ -1,0 +1,30 @@
+[
+  {
+    "imagen": "assets/cultivos/ajo.png",
+    "nombre": "Ajo",
+    "cientifico": "Allium sativum",
+    "cosechaMeses": 7,
+    "tipo": "Raíz",
+    "estacion": "Otoño",
+    "identificacion": "El ajo es una planta bulbosa con hojas largas y planas que crecen desde el bulbo subterráneo.",
+    "siembra": "Se debe sembrar en otoño. Coloca los dientes de ajo a 3-4 cm de profundidad y separados por 10-15 cm.",
+    "ficha": {
+      "Temporada de siembra": "Otoño",
+      "Época de siembra": "Tardía",
+      "Tipo de siembra": "Directa",
+      "Profundidad de semilla": "4 cm",
+      "Distancia entre plantas": "10 cm",
+      "Fase lunar": "Menguante",
+      "Clima ideal": "Frío",
+      "Resistencia al frío": "Muy resistente",
+      "Temperatura mínima": "7°C",
+      "Temperatura máxima": "25°C",
+      "Riego": "Cada 3 días",
+      "Luz solar": "Plena luz",
+      "Cosecha en": "7 meses",
+      "Temporada de cosecha": "Verano",
+      "Época de cosecha": "Temprana"
+    },
+    "plagas": ["Pulgón", "Hormiga"]
+  }
+]
