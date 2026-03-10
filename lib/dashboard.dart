@@ -144,7 +144,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!mounted) return;
 
     // Regresa al home/bienvenida (donde están login/crear cuenta)
-    Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
+    Navigator.pushNamedAndRemoveUntil(context, '/appgate', (_) => false);
   }
 
   @override

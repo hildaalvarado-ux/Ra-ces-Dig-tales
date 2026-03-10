@@ -103,10 +103,8 @@ class _LoginPageState extends State<LoginPage> {
         SnackBar(content: Text('Bienvenido, ${user.fullName}!')),
       );
 
-      // ✅ Ir al Dashboard
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => DashboardPage(userId: user.id)),
-      );
+      // ✅ Ir al Dashboard y limpiar historial (evita retroceder al login)
+      Navigator.pushNamedAndRemoveUntil(context, '/appgate', (_) => false);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

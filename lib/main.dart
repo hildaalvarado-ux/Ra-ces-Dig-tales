@@ -64,7 +64,11 @@ class AppGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<int?>(
-      future: appDb.getActiveUserId(),
+      future: Future(() async {
+        // ✅ Asegura que la BD esté abierta antes de pedir la sesión
+        await appDb.executor.ensureOpen(appDb);
+        return appDb.getActiveUserId();
+      }),
       builder: (context, snapshot) {
         // Mientras carga
         if (snapshot.connectionState != ConnectionState.done) {
@@ -418,7 +422,7 @@ class _BackgroundDecorations extends StatelessWidget {
           left: 14,
           child: _CircleDecor(
             size: 54,
-            color: AppColors.greenDark.withValues(alpha: 0.12),
+            color: AppColors.greenDark.withOpacity(0.12),
             strokeWidth: 3,
           ),
         ),
