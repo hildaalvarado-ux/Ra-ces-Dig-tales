@@ -7,10 +7,10 @@ class Users extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   TextColumn get fullName => text()();
-  TextColumn get username => text()(); // único
-  TextColumn get email => text()(); // único
+  TextColumn get username => text()();
+  TextColumn get email => text()();
 
-  TextColumn get password => text()(); // por ahora texto (luego lo hash)
+  TextColumn get password => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -20,7 +20,6 @@ class Users extends Table {
       ];
 }
 
-/// ✅ Sesión local (1 usuario activo)
 class Sessions extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get userId => integer()();
@@ -34,11 +33,30 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 2;
 
+  // ✅ ESTO ES LO QUE TE FALTA:
+  // Le dice a Drift qué hacer cuando cambias schemaVersion
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) async {
+          // Si es instalación nueva
+          await m.createAll();
+        },
+        onUpgrade: (m, from, to) async {
+          // Si ya existía la BD y cambió la versión
+          // Ejemplo: de 1 -> 2 agregamos Sessions
+          if (from < 2) {
+            await m.createTable(sessions);
+          }
+        },
+        beforeOpen: (details) async {
+          // Opcional: puedes activar foreign_keys si luego lo ocupas
+          await customStatement('PRAGMA foreign_keys = ON');
+        },
+      );
+
   // ---------------------------
   // USERS
   // ---------------------------
-
-  // Crear usuario (registrarse)
   Future<int> createUser({
     required String fullName,
     required String username,
@@ -55,14 +73,12 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  // Buscar por username o email
   Future<User?> findUserByUsernameOrEmail(String input) async {
     final q = select(users)
       ..where((u) => u.username.equals(input) | u.email.equals(input));
     return q.getSingleOrNull();
   }
 
-  // Login: valida usuario/correo + contraseña
   Future<User?> authenticate({
     required String userOrEmail,
     required String password,
@@ -77,20 +93,16 @@ class AppDatabase extends _$AppDatabase {
   // ---------------------------
   // SESSION
   // ---------------------------
-
-  /// Guardar sesión (solo 1 activa)
   Future<void> saveSession(int userId) async {
     await delete(sessions).go();
     await into(sessions).insert(SessionsCompanion.insert(userId: userId));
   }
 
-  /// Obtener usuario activo (si existe)
   Future<int?> getActiveUserId() async {
     final s = await select(sessions).getSingleOrNull();
     return s?.userId;
   }
 
-  /// Cerrar sesión
   Future<void> clearSession() async {
     await delete(sessions).go();
   }

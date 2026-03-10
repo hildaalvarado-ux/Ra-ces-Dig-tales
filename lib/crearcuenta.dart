@@ -192,8 +192,8 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
 
                   Image.asset(
                     'assets/images/logosp.png',
-                    width: 150,
-                    height: 150,
+                    width: 200,
+                    height: 200,
                     fit: BoxFit.contain,
                   ),
 
