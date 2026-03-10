@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'data/db_instance.dart';
-import 'dashboard.dart'; // ✅ NUEVO
+import 'dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
 
     try {
-      // Forzar apertura de la BD
+      // ✅ Asegurar que la BD está abierta (web/Android)
       await appDb.executor.ensureOpen(appDb);
 
       // 1) Verificar si el usuario/correo existe
@@ -94,15 +94,16 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      // 3) Login correcto
+      // ✅ 3) Login correcto -> guardar sesión
+      await appDb.saveSession(user.id);
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Bienvenido, ${user.fullName}!')),
       );
 
-      // ✅ (opcional) si ya tienes sesiones en la BD, descomenta:
-      // await appDb.saveSession(user.id);
-
-      // ✅ IR AL DASHBOARD (cambio mínimo)
+      // ✅ Ir al Dashboard
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => DashboardPage(userId: user.id)),
       );
@@ -200,7 +201,9 @@ class _LoginPageState extends State<LoginPage> {
                                   ? null
                                   : () => setState(() => _hidePass = !_hidePass),
                               icon: Icon(
-                                _hidePass ? Icons.visibility_off : Icons.visibility,
+                                _hidePass
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                               ),
                             ),
                           ),
@@ -234,7 +237,8 @@ class _LoginPageState extends State<LoginPage> {
                                     height: 22,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.6,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                      valueColor:
+                                          AlwaysStoppedAnimation<Color>(
                                         Colors.white,
                                       ),
                                     ),

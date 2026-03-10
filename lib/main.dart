@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'crearcuenta.dart';
 import 'login.dart';
 
+// ✅ NUEVO: para leer sesión
+import 'data/db_instance.dart';
+import 'dashboard.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -33,9 +37,13 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      // ✅ Rutas correctas
+      // ✅ Rutas correctas (se mantiene tu estructura)
       routes: {
         '/': (_) => const SplashScreen(),
+
+        // ✅ NUEVO: ruta del AppGate (decide si va al dashboard o bienvenida)
+        '/appgate': (_) => const AppGate(),
+
         '/bienvenida': (_) => const BienvenidaPage(),
         '/crear-cuenta': (_) => const CrearCuentaPage(),
         '/login': (_) => const LoginPage(),
@@ -43,6 +51,38 @@ class MyApp extends StatelessWidget {
 
       // ✅ Inicia SIEMPRE en splash
       initialRoute: '/',
+    );
+  }
+}
+
+/// ✅ AppGate: decide a dónde ir según si hay sesión guardada.
+/// - Si hay sesión -> Dashboard
+/// - Si no hay sesión -> Bienvenida
+class AppGate extends StatelessWidget {
+  const AppGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<int?>(
+      future: appDb.getActiveUserId(),
+      builder: (context, snapshot) {
+        // Mientras carga
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final userId = snapshot.data;
+
+        // ✅ Si hay sesión guardada, entra directo al dashboard
+        if (userId != null) {
+          return DashboardPage(userId: userId);
+        }
+
+        // ❌ Si no hay sesión, muestra bienvenida
+        return const BienvenidaPage();
+      },
     );
   }
 }
@@ -84,10 +124,10 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // ✅ Después del splash, IR A BIENVENIDA (NO a home)
+    // ✅ Después del splash -> ir al AppGate (NO directo a bienvenida)
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/bienvenida');
+      Navigator.pushReplacementNamed(context, '/appgate');
     });
   }
 
@@ -115,14 +155,14 @@ class _SplashScreenState extends State<SplashScreen>
                       Transform.scale(
                         scale: _scale.value,
                         child: Container(
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                           ),
-                             child: Image.asset(
-                              'assets/images/logosp.png',
-                                  width: 220,
-                                  height: 220,
-                                  fit: BoxFit.contain,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                          ),
+                          child: Image.asset(
+                            'assets/images/logosp.png',
+                            width: 220,
+                            height: 220,
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
@@ -309,7 +349,7 @@ class _OutlineButton extends StatelessWidget {
       height: 52,
       child: OutlinedButton(
         onPressed: onTap,
-style: OutlinedButton.styleFrom(
+        style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.greenDarker,
           side: BorderSide(
             color: AppColors.greenDarker.withOpacity(0.55),
@@ -375,7 +415,7 @@ class _BackgroundDecorations extends StatelessWidget {
         ),
         Positioned(
           top: 62,
-           left: 14,
+          left: 14,
           child: _CircleDecor(
             size: 54,
             color: AppColors.greenDark.withValues(alpha: 0.12),
@@ -410,15 +450,6 @@ class _BackgroundDecorations extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: 14,
-          right: 70,
-          child: _CircleDecor(
-            size: 10,
-            color: AppColors.greenAccent.withValues(alpha: 0.18),
-            strokeWidth: 2,
-          ),
-        ),
-        Positioned(
           bottom: 70,
           left: 18,
           child: Column(
@@ -446,7 +477,7 @@ class _BackgroundDecorations extends StatelessWidget {
         ),
         Positioned(
           bottom: 26,
-right: 16,
+          right: 16,
           child: _CircleDecor(
             size: 62,
             color: AppColors.greenDark.withOpacity(0.12),
