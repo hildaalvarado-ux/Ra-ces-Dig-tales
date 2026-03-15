@@ -5,6 +5,7 @@ import '../main.dart';
 import 'help_dialogs.dart';
 
 class Cultivo {
+  final int? id; // null si es del catálogo
   final String nombre;
   final String imagen; // ruta del asset
   final String cientifico;
@@ -17,6 +18,7 @@ class Cultivo {
   final List<String> plagas;
 
   const Cultivo({
+    this.id,
     required this.nombre,
     required this.imagen,
     required this.cientifico,
@@ -30,6 +32,7 @@ class Cultivo {
   });
 
   Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
         'nombre': nombre,
         'imagen': imagen,
         'cientifico': cientifico,
@@ -51,6 +54,7 @@ class Cultivo {
     final plagas = (j['plagas'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
 
     return Cultivo(
+      id: j['id'] as int?,
       nombre: (j['nombre'] ?? '').toString(),
       imagen: (j['imagen'] ?? '').toString(),
       cientifico: (j['cientifico'] ?? '').toString(),

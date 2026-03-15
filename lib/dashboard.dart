@@ -73,7 +73,9 @@ class _DashboardPageState extends State<DashboardPage> {
       // ✅ YA IMPLEMENTADO (archivo real):
       case 'Cultivos':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const CultivosPage()),
+          MaterialPageRoute(
+            builder: (_) => CultivosPage(userId: widget.userId),
+          ),
         );
         return;
 

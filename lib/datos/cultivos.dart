@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../data/db_instance.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
+import 'cultivo_form.dart';
 
 class CultivosPage extends StatefulWidget {
-  const CultivosPage({super.key});
+  final int userId;
+  const CultivosPage({super.key, required this.userId});
 
   @override
   State<CultivosPage> createState() => _CultivosPageState();
@@ -33,7 +36,32 @@ class _CultivosPageState extends State<CultivosPage> {
   @override
   void initState() {
     super.initState();
-    _loadCatalogFromAssets();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await _loadCatalogFromAssets();
+    await _loadUserCultivos();
+  }
+
+  Future<void> _loadUserCultivos() async {
+    try {
+      final list = await appDb.getUserCultivos(widget.userId);
+      setState(() {
+        _agregados.clear();
+        for (var row in list) {
+          final data = jsonDecode(row.data) as Map<String, dynamic>;
+          // Inyectamos el ID de la base de datos en el objeto Cultivo
+          data['id'] = row.id;
+          _agregados.add(Cultivo.fromJson(data));
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error cargando cultivos de usuario: $e')),
+      );
+    }
   }
 
   @override
@@ -143,17 +171,16 @@ class _CultivosPageState extends State<CultivosPage> {
       final obj = jsonDecode(ctrl.text.trim());
       final cultivo = Cultivo.fromJson(obj as Map<String, dynamic>);
 
-      setState(() {
-        _agregados.add(cultivo);
-      });
+      await appDb.insertUserCultivo(
+        widget.userId,
+        jsonEncode(cultivo.toJson()),
+      );
+      await _loadUserCultivos();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Importado: ${cultivo.nombre}')),
       );
-
-      // 🔜 Cuando lo conectemos a Drift:
-      // await cultivosRepo.insertUserCultivo(cultivo);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -162,59 +189,55 @@ class _CultivosPageState extends State<CultivosPage> {
     }
   }
 
-  /// ✅ Crear un cultivo nuevo (por ahora simple)
-  /// 🔜 Luego lo cambiamos a un formulario completo como “Ajo”.
-  Future<void> _nuevoCultivo() async {
-    final nameCtrl = TextEditingController();
+  Future<void> _abrirFormulario({Cultivo? cultivo}) async {
+    final res = await Navigator.of(context).push<Cultivo>(
+      MaterialPageRoute(builder: (_) => CultivoFormPage(cultivo: cultivo)),
+    );
+
+    if (res == null) return;
+
+    if (cultivo == null) {
+      // Nuevo
+      await appDb.insertUserCultivo(
+        widget.userId,
+        jsonEncode(res.toJson()),
+      );
+    } else {
+      // Editar
+      await appDb.updateUserCultivo(
+        cultivo.id!,
+        jsonEncode(res.toJson()),
+      );
+    }
+
+    await _loadUserCultivos();
+  }
+
+  Future<void> _eliminarCultivo(Cultivo c) async {
     final ok = await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            title: const Text('Nuevo cultivo'),
-            content: TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(hintText: 'Nombre del cultivo'),
-            ),
+            title: const Text('Eliminar cultivo'),
+            content: Text('¿Quieres eliminar "${c.nombre}"?'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
+                child: const Text('No'),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.greenDarker,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text('Crear'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                child: const Text('Eliminar'),
               ),
             ],
           ),
         ) ??
         false;
 
-    if (!ok) return;
-
-    final nombre = nameCtrl.text.trim();
-    if (nombre.isEmpty) return;
-
-    // ✅ cultivo mínimo (para probar)
-    final nuevo = Cultivo(
-      nombre: nombre,
-      cientifico: '',
-      imagen: '', // si luego quieres, eliges imagen
-      cosechaMeses: 0,
-      tipo: 'Vegetal',
-      estacion: 'Todas',
-      identificacion: '',
-      siembra: '',
-      ficha: const {},
-      plagas: const [],
-    );
-
-    setState(() => _agregados.add(nuevo));
-
-    // 🔜 Cuando lo conectemos a Drift:
-    // await cultivosRepo.insertUserCultivo(nuevo);
+    if (ok) {
+      await appDb.deleteUserCultivo(c.id!);
+      await _loadUserCultivos();
+    }
   }
 
   @override
@@ -231,7 +254,7 @@ class _CultivosPageState extends State<CultivosPage> {
             // ✅ Nuevo cultivo
             IconButton(
               tooltip: 'Nuevo cultivo',
-              onPressed: _nuevoCultivo,
+              onPressed: () => _abrirFormulario(),
               icon: const Icon(Icons.add_rounded),
             ),
             // ✅ Importar
@@ -329,6 +352,8 @@ class _CultivosPageState extends State<CultivosPage> {
                                   builder: (_) => CultivoDetallePage(cultivo: c),
                                 ),
                               ),
+                              onEdit: c.id != null ? () => _abrirFormulario(cultivo: c) : null,
+                              onDelete: c.id != null ? () => _eliminarCultivo(c) : null,
                             );
                           },
                         ),
@@ -374,8 +399,15 @@ class _Drop extends StatelessWidget {
 class _CultivoTile extends StatelessWidget {
   final Cultivo cultivo;
   final VoidCallback onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  const _CultivoTile({required this.cultivo, required this.onTap});
+  const _CultivoTile({
+    required this.cultivo,
+    required this.onTap,
+    this.onEdit,
+    this.onDelete,
+  });
 
   IconData _tipoIcon(String tipo) {
     switch (tipo) {
@@ -486,6 +518,21 @@ class _CultivoTile extends StatelessWidget {
               Icon(_tipoIcon(cultivo.tipo), color: AppColors.greenDarker),
               const SizedBox(width: 10),
               Icon(_estacionIcon(cultivo.estacion), color: AppColors.greenDarker),
+
+              if (onEdit != null || onDelete != null) ...[
+                const SizedBox(width: 4),
+                PopupMenuButton<String>(
+                  onSelected: (v) {
+                    if (v == 'edit') onEdit?.call();
+                    if (v == 'delete') onDelete?.call();
+                  },
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(value: 'edit', child: Text('Editar')),
+                    const PopupMenuItem(value: 'delete', child: Text('Eliminar')),
+                  ],
+                  icon: const Icon(Icons.more_vert_rounded, color: AppColors.greenDarker),
+                ),
+              ],
             ],
           ),
         ),
