@@ -648,16 +648,267 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   }
 }
 
+class $UserCultivosTable extends UserCultivos
+    with TableInfo<$UserCultivosTable, UserCultivo> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserCultivosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, userId, data];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_cultivos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserCultivo> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserCultivo map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserCultivo(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      )!,
+    );
+  }
+
+  @override
+  $UserCultivosTable createAlias(String alias) {
+    return $UserCultivosTable(attachedDatabase, alias);
+  }
+}
+
+class UserCultivo extends DataClass implements Insertable<UserCultivo> {
+  final int id;
+  final int userId;
+  final String data;
+  const UserCultivo({
+    required this.id,
+    required this.userId,
+    required this.data,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['data'] = Variable<String>(data);
+    return map;
+  }
+
+  UserCultivosCompanion toCompanion(bool nullToAbsent) {
+    return UserCultivosCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      data: Value(data),
+    );
+  }
+
+  factory UserCultivo.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserCultivo(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      data: serializer.fromJson<String>(json['data']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'data': serializer.toJson<String>(data),
+    };
+  }
+
+  UserCultivo copyWith({int? id, int? userId, String? data}) => UserCultivo(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    data: data ?? this.data,
+  );
+  UserCultivo copyWithCompanion(UserCultivosCompanion data) {
+    return UserCultivo(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      data: data.data.present ? data.data.value : this.data,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserCultivo(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, data);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserCultivo &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.data == this.data);
+}
+
+class UserCultivosCompanion extends UpdateCompanion<UserCultivo> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> data;
+  const UserCultivosCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.data = const Value.absent(),
+  });
+  UserCultivosCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    required String data,
+  }) : userId = Value(userId),
+       data = Value(data);
+  static Insertable<UserCultivo> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? data,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (data != null) 'data': data,
+    });
+  }
+
+  UserCultivosCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? data,
+  }) {
+    return UserCultivosCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      data: data ?? this.data,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserCultivosCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('data: $data')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $UsersTable users = $UsersTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
+  late final $UserCultivosTable userCultivos = $UserCultivosTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [users, sessions];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    users,
+    sessions,
+    userCultivos,
+  ];
 }
 
 typedef $$UsersTableCreateCompanionBuilder =
@@ -1016,6 +1267,158 @@ typedef $$SessionsTableProcessedTableManager =
       Session,
       PrefetchHooks Function()
     >;
+typedef $$UserCultivosTableCreateCompanionBuilder =
+    UserCultivosCompanion Function({
+      Value<int> id,
+      required int userId,
+      required String data,
+    });
+typedef $$UserCultivosTableUpdateCompanionBuilder =
+    UserCultivosCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> data,
+    });
+
+class $$UserCultivosTableFilterComposer
+    extends Composer<_$AppDatabase, $UserCultivosTable> {
+  $$UserCultivosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserCultivosTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserCultivosTable> {
+  $$UserCultivosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserCultivosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserCultivosTable> {
+  $$UserCultivosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+}
+
+class $$UserCultivosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserCultivosTable,
+          UserCultivo,
+          $$UserCultivosTableFilterComposer,
+          $$UserCultivosTableOrderingComposer,
+          $$UserCultivosTableAnnotationComposer,
+          $$UserCultivosTableCreateCompanionBuilder,
+          $$UserCultivosTableUpdateCompanionBuilder,
+          (
+            UserCultivo,
+            BaseReferences<_$AppDatabase, $UserCultivosTable, UserCultivo>,
+          ),
+          UserCultivo,
+          PrefetchHooks Function()
+        > {
+  $$UserCultivosTableTableManager(_$AppDatabase db, $UserCultivosTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserCultivosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserCultivosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserCultivosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> data = const Value.absent(),
+              }) => UserCultivosCompanion(id: id, userId: userId, data: data),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                required String data,
+              }) => UserCultivosCompanion.insert(
+                id: id,
+                userId: userId,
+                data: data,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserCultivosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserCultivosTable,
+      UserCultivo,
+      $$UserCultivosTableFilterComposer,
+      $$UserCultivosTableOrderingComposer,
+      $$UserCultivosTableAnnotationComposer,
+      $$UserCultivosTableCreateCompanionBuilder,
+      $$UserCultivosTableUpdateCompanionBuilder,
+      (
+        UserCultivo,
+        BaseReferences<_$AppDatabase, $UserCultivosTable, UserCultivo>,
+      ),
+      UserCultivo,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1024,4 +1427,6 @@ class $AppDatabaseManager {
       $$UsersTableTableManager(_db, _db.users);
   $$SessionsTableTableManager get sessions =>
       $$SessionsTableTableManager(_db, _db.sessions);
+  $$UserCultivosTableTableManager get userCultivos =>
+      $$UserCultivosTableTableManager(_db, _db.userCultivos);
 }

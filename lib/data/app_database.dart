@@ -26,12 +26,18 @@ class Sessions extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
-@DriftDatabase(tables: [Users, Sessions])
+class UserCultivos extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get data => text()(); // JSON
+}
+
+@DriftDatabase(tables: [Users, Sessions, UserCultivos])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -46,6 +52,9 @@ class AppDatabase extends _$AppDatabase {
           // Ejemplo: de 1 -> 2 agregamos Sessions
           if (from < 2) {
             await m.createTable(sessions);
+          }
+          if (from < 3) {
+            await m.createTable(userCultivos);
           }
         },
         beforeOpen: (details) async {
@@ -105,5 +114,28 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> clearSession() async {
     await delete(sessions).go();
+  }
+
+  // ---------------------------
+  // CULTIVOS DEL USUARIO
+  // ---------------------------
+  Future<List<UserCultivo>> getUserCultivos(int userId) {
+    return (select(userCultivos)..where((t) => t.userId.equals(userId))).get();
+  }
+
+  Future<int> insertUserCultivo(int userId, String jsonData) {
+    return into(userCultivos).insert(
+      UserCultivosCompanion.insert(userId: userId, data: jsonData),
+    );
+  }
+
+  Future<void> updateUserCultivo(int id, String jsonData) {
+    return (update(userCultivos)..where((t) => t.id.equals(id))).write(
+      UserCultivosCompanion(data: Value(jsonData)),
+    );
+  }
+
+  Future<void> deleteUserCultivo(int id) {
+    return (delete(userCultivos)..where((t) => t.id.equals(id))).go();
   }
 }
