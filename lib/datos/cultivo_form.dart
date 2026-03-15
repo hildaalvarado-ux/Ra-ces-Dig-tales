@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../data/image_utils.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
 
@@ -15,13 +19,13 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
 
   late TextEditingController _nombreCtrl;
   late TextEditingController _cientificoCtrl;
-  late TextEditingController _imagenCtrl;
   late TextEditingController _cosechaMesesCtrl;
   late TextEditingController _identificacionCtrl;
   late TextEditingController _siembraCtrl;
 
   String _tipo = 'Vegetal';
   String _estacion = 'Todas';
+  String? _imagePath;
 
   final Map<String, TextEditingController> _fichaCtrls = {};
   final List<TextEditingController> _plagasCtrls = [];
@@ -51,7 +55,6 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
 
     _nombreCtrl = TextEditingController(text: c?.nombre ?? '');
     _cientificoCtrl = TextEditingController(text: c?.cientifico ?? '');
-    _imagenCtrl = TextEditingController(text: c?.imagen ?? '');
     _cosechaMesesCtrl = TextEditingController(text: c?.cosechaMeses.toString() ?? '0');
     _identificacionCtrl = TextEditingController(text: c?.identificacion ?? '');
     _siembraCtrl = TextEditingController(text: c?.siembra ?? '');
@@ -59,6 +62,7 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
     if (c != null) {
       _tipo = c.tipo;
       _estacion = c.estacion;
+      _imagePath = c.imagePath;
       for (var key in _fichaKeys) {
         _fichaCtrls[key] = TextEditingController(text: c.ficha[key] ?? '');
       }
@@ -76,7 +80,6 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
   void dispose() {
     _nombreCtrl.dispose();
     _cientificoCtrl.dispose();
-    _imagenCtrl.dispose();
     _cosechaMesesCtrl.dispose();
     _identificacionCtrl.dispose();
     _siembraCtrl.dispose();
@@ -102,6 +105,13 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
     });
   }
 
+  Future<void> _pickImage() async {
+    final path = await ImageUtils.pickAndSaveImage('cultivos_images');
+    if (path != null) {
+      setState(() => _imagePath = path);
+    }
+  }
+
   void _save() {
     if (!_formKey.currentState!.validate()) return;
 
@@ -109,7 +119,8 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
       id: widget.cultivo?.id,
       nombre: _nombreCtrl.text.trim(),
       cientifico: _cientificoCtrl.text.trim(),
-      imagen: _imagenCtrl.text.trim(),
+      imagen: '',
+      imagePath: _imagePath,
       cosechaMeses: int.tryParse(_cosechaMesesCtrl.text.trim()) ?? 0,
       tipo: _tipo,
       estacion: _estacion,
@@ -146,9 +157,52 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
               padding: const EdgeInsets.all(16),
               children: [
                 _buildSectionTitle('Información Básica'),
+
+                // ✅ Imagen del cultivo
+                Center(
+                  child: GestureDetector(
+                    onTap: _pickImage,
+                    child: Container(
+                      width: 140,
+                      height: 140,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.greenDark.withOpacity(0.2)),
+                      ),
+                      child: _imagePath != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: _imagePath!.startsWith('data:image')
+                                  ? Image.memory(
+                                      base64Decode(_imagePath!.split(',').last),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.file(
+                                      File(_imagePath!),
+                                      fit: BoxFit.cover,
+                                    ),
+                            )
+                          : const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.camera_alt_rounded, size: 40, color: AppColors.greenSoft),
+                                SizedBox(height: 8),
+                                Text('Elegir imagen',
+                                    style: TextStyle(
+                                      color: AppColors.greenSoft,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                    )),
+                              ],
+                            ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
                 _buildTextField(_nombreCtrl, 'Nombre', required: true),
                 _buildTextField(_cientificoCtrl, 'Nombre Científico'),
-                _buildTextField(_imagenCtrl, 'Ruta de Imagen (Asset)'),
                 _buildTextField(_cosechaMesesCtrl, 'Meses hasta cosecha', isNumber: true),
 
                 const SizedBox(height: 10),
