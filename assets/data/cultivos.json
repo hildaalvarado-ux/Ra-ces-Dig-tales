@@ -1,4 +1,11 @@
 [
+  /*
+    INSTRUCCIONES PARA AGREGAR NUEVOS CULTIVOS AL CATÁLOGO:
+    1. Agregue un nuevo objeto JSON a esta lista.
+    2. Los campos obligatorios son: nombre, imagen, cientifico, cosechaMeses, tipo, estacion, identificacion, siembra, ficha, plagas.
+    3. 'imagen' debe ser una ruta a un asset (ej. assets/cultivos/nuevo.png).
+    4. Asegúrese de que la imagen exista en la carpeta assets/cultivos/.
+  */
   {
     "imagen": "assets/cultivos/ajo.png",
     "nombre": "Ajo",

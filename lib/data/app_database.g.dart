@@ -63,6 +63,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _avatarPathMeta = const VerificationMeta(
+    'avatarPath',
+  );
+  @override
+  late final GeneratedColumn<String> avatarPath = GeneratedColumn<String>(
+    'avatar_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -82,6 +93,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     username,
     email,
     password,
+    avatarPath,
     createdAt,
   ];
   @override
@@ -131,6 +143,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_passwordMeta);
     }
+    if (data.containsKey('avatar_path')) {
+      context.handle(
+        _avatarPathMeta,
+        avatarPath.isAcceptableOrUnknown(data['avatar_path']!, _avatarPathMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -171,6 +189,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}password'],
       )!,
+      avatarPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}avatar_path'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -190,6 +212,7 @@ class User extends DataClass implements Insertable<User> {
   final String username;
   final String email;
   final String password;
+  final String? avatarPath;
   final DateTime createdAt;
   const User({
     required this.id,
@@ -197,6 +220,7 @@ class User extends DataClass implements Insertable<User> {
     required this.username,
     required this.email,
     required this.password,
+    this.avatarPath,
     required this.createdAt,
   });
   @override
@@ -207,6 +231,9 @@ class User extends DataClass implements Insertable<User> {
     map['username'] = Variable<String>(username);
     map['email'] = Variable<String>(email);
     map['password'] = Variable<String>(password);
+    if (!nullToAbsent || avatarPath != null) {
+      map['avatar_path'] = Variable<String>(avatarPath);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -218,6 +245,9 @@ class User extends DataClass implements Insertable<User> {
       username: Value(username),
       email: Value(email),
       password: Value(password),
+      avatarPath: avatarPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarPath),
       createdAt: Value(createdAt),
     );
   }
@@ -233,6 +263,7 @@ class User extends DataClass implements Insertable<User> {
       username: serializer.fromJson<String>(json['username']),
       email: serializer.fromJson<String>(json['email']),
       password: serializer.fromJson<String>(json['password']),
+      avatarPath: serializer.fromJson<String?>(json['avatarPath']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -245,6 +276,7 @@ class User extends DataClass implements Insertable<User> {
       'username': serializer.toJson<String>(username),
       'email': serializer.toJson<String>(email),
       'password': serializer.toJson<String>(password),
+      'avatarPath': serializer.toJson<String?>(avatarPath),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -255,6 +287,7 @@ class User extends DataClass implements Insertable<User> {
     String? username,
     String? email,
     String? password,
+    Value<String?> avatarPath = const Value.absent(),
     DateTime? createdAt,
   }) => User(
     id: id ?? this.id,
@@ -262,6 +295,7 @@ class User extends DataClass implements Insertable<User> {
     username: username ?? this.username,
     email: email ?? this.email,
     password: password ?? this.password,
+    avatarPath: avatarPath.present ? avatarPath.value : this.avatarPath,
     createdAt: createdAt ?? this.createdAt,
   );
   User copyWithCompanion(UsersCompanion data) {
@@ -271,6 +305,9 @@ class User extends DataClass implements Insertable<User> {
       username: data.username.present ? data.username.value : this.username,
       email: data.email.present ? data.email.value : this.email,
       password: data.password.present ? data.password.value : this.password,
+      avatarPath: data.avatarPath.present
+          ? data.avatarPath.value
+          : this.avatarPath,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -283,14 +320,22 @@ class User extends DataClass implements Insertable<User> {
           ..write('username: $username, ')
           ..write('email: $email, ')
           ..write('password: $password, ')
+          ..write('avatarPath: $avatarPath, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, fullName, username, email, password, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    fullName,
+    username,
+    email,
+    password,
+    avatarPath,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -300,6 +345,7 @@ class User extends DataClass implements Insertable<User> {
           other.username == this.username &&
           other.email == this.email &&
           other.password == this.password &&
+          other.avatarPath == this.avatarPath &&
           other.createdAt == this.createdAt);
 }
 
@@ -309,6 +355,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> username;
   final Value<String> email;
   final Value<String> password;
+  final Value<String?> avatarPath;
   final Value<DateTime> createdAt;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -316,6 +363,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.username = const Value.absent(),
     this.email = const Value.absent(),
     this.password = const Value.absent(),
+    this.avatarPath = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -324,6 +372,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String username,
     required String email,
     required String password,
+    this.avatarPath = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : fullName = Value(fullName),
        username = Value(username),
@@ -335,6 +384,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? username,
     Expression<String>? email,
     Expression<String>? password,
+    Expression<String>? avatarPath,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -343,6 +393,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (username != null) 'username': username,
       if (email != null) 'email': email,
       if (password != null) 'password': password,
+      if (avatarPath != null) 'avatar_path': avatarPath,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -353,6 +404,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String>? username,
     Value<String>? email,
     Value<String>? password,
+    Value<String?>? avatarPath,
     Value<DateTime>? createdAt,
   }) {
     return UsersCompanion(
@@ -361,6 +413,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       username: username ?? this.username,
       email: email ?? this.email,
       password: password ?? this.password,
+      avatarPath: avatarPath ?? this.avatarPath,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -383,6 +436,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (password.present) {
       map['password'] = Variable<String>(password.value);
     }
+    if (avatarPath.present) {
+      map['avatar_path'] = Variable<String>(avatarPath.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -397,6 +453,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('username: $username, ')
           ..write('email: $email, ')
           ..write('password: $password, ')
+          ..write('avatarPath: $avatarPath, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -676,9 +733,66 @@ class $UserCultivosTable extends UserCultivos
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
   @override
-  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _tipoMeta = const VerificationMeta('tipo');
+  @override
+  late final GeneratedColumn<String> tipo = GeneratedColumn<String>(
+    'tipo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _cosechaMesesMeta = const VerificationMeta(
+    'cosechaMeses',
+  );
+  @override
+  late final GeneratedColumn<int> cosechaMeses = GeneratedColumn<int>(
+    'cosecha_meses',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _estacionMeta = const VerificationMeta(
+    'estacion',
+  );
+  @override
+  late final GeneratedColumn<String> estacion = GeneratedColumn<String>(
+    'estacion',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
     'data',
     aliasedName,
     false,
@@ -686,7 +800,16 @@ class $UserCultivosTable extends UserCultivos
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, userId, data];
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    nombre,
+    tipo,
+    cosechaMeses,
+    estacion,
+    imagePath,
+    payloadJson,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -710,13 +833,46 @@ class $UserCultivosTable extends UserCultivos
     } else if (isInserting) {
       context.missing(_userIdMeta);
     }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    }
+    if (data.containsKey('tipo')) {
+      context.handle(
+        _tipoMeta,
+        tipo.isAcceptableOrUnknown(data['tipo']!, _tipoMeta),
+      );
+    }
+    if (data.containsKey('cosecha_meses')) {
+      context.handle(
+        _cosechaMesesMeta,
+        cosechaMeses.isAcceptableOrUnknown(
+          data['cosecha_meses']!,
+          _cosechaMesesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estacion')) {
+      context.handle(
+        _estacionMeta,
+        estacion.isAcceptableOrUnknown(data['estacion']!, _estacionMeta),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
     if (data.containsKey('data')) {
       context.handle(
-        _dataMeta,
-        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(data['data']!, _payloadJsonMeta),
       );
     } else if (isInserting) {
-      context.missing(_dataMeta);
+      context.missing(_payloadJsonMeta);
     }
     return context;
   }
@@ -735,7 +891,27 @@ class $UserCultivosTable extends UserCultivos
         DriftSqlType.int,
         data['${effectivePrefix}user_id'],
       )!,
-      data: attachedDatabase.typeMapping.read(
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      tipo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tipo'],
+      )!,
+      cosechaMeses: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cosecha_meses'],
+      )!,
+      estacion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}estacion'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}data'],
       )!,
@@ -751,18 +927,35 @@ class $UserCultivosTable extends UserCultivos
 class UserCultivo extends DataClass implements Insertable<UserCultivo> {
   final int id;
   final int userId;
-  final String data;
+  final String nombre;
+  final String tipo;
+  final int cosechaMeses;
+  final String estacion;
+  final String? imagePath;
+  final String payloadJson;
   const UserCultivo({
     required this.id,
     required this.userId,
-    required this.data,
+    required this.nombre,
+    required this.tipo,
+    required this.cosechaMeses,
+    required this.estacion,
+    this.imagePath,
+    required this.payloadJson,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['user_id'] = Variable<int>(userId);
-    map['data'] = Variable<String>(data);
+    map['nombre'] = Variable<String>(nombre);
+    map['tipo'] = Variable<String>(tipo);
+    map['cosecha_meses'] = Variable<int>(cosechaMeses);
+    map['estacion'] = Variable<String>(estacion);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    map['data'] = Variable<String>(payloadJson);
     return map;
   }
 
@@ -770,7 +963,14 @@ class UserCultivo extends DataClass implements Insertable<UserCultivo> {
     return UserCultivosCompanion(
       id: Value(id),
       userId: Value(userId),
-      data: Value(data),
+      nombre: Value(nombre),
+      tipo: Value(tipo),
+      cosechaMeses: Value(cosechaMeses),
+      estacion: Value(estacion),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      payloadJson: Value(payloadJson),
     );
   }
 
@@ -782,7 +982,12 @@ class UserCultivo extends DataClass implements Insertable<UserCultivo> {
     return UserCultivo(
       id: serializer.fromJson<int>(json['id']),
       userId: serializer.fromJson<int>(json['userId']),
-      data: serializer.fromJson<String>(json['data']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      tipo: serializer.fromJson<String>(json['tipo']),
+      cosechaMeses: serializer.fromJson<int>(json['cosechaMeses']),
+      estacion: serializer.fromJson<String>(json['estacion']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
     );
   }
   @override
@@ -791,20 +996,48 @@ class UserCultivo extends DataClass implements Insertable<UserCultivo> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'userId': serializer.toJson<int>(userId),
-      'data': serializer.toJson<String>(data),
+      'nombre': serializer.toJson<String>(nombre),
+      'tipo': serializer.toJson<String>(tipo),
+      'cosechaMeses': serializer.toJson<int>(cosechaMeses),
+      'estacion': serializer.toJson<String>(estacion),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'payloadJson': serializer.toJson<String>(payloadJson),
     };
   }
 
-  UserCultivo copyWith({int? id, int? userId, String? data}) => UserCultivo(
+  UserCultivo copyWith({
+    int? id,
+    int? userId,
+    String? nombre,
+    String? tipo,
+    int? cosechaMeses,
+    String? estacion,
+    Value<String?> imagePath = const Value.absent(),
+    String? payloadJson,
+  }) => UserCultivo(
     id: id ?? this.id,
     userId: userId ?? this.userId,
-    data: data ?? this.data,
+    nombre: nombre ?? this.nombre,
+    tipo: tipo ?? this.tipo,
+    cosechaMeses: cosechaMeses ?? this.cosechaMeses,
+    estacion: estacion ?? this.estacion,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    payloadJson: payloadJson ?? this.payloadJson,
   );
   UserCultivo copyWithCompanion(UserCultivosCompanion data) {
     return UserCultivo(
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
-      data: data.data.present ? data.data.value : this.data,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      tipo: data.tipo.present ? data.tipo.value : this.tipo,
+      cosechaMeses: data.cosechaMeses.present
+          ? data.cosechaMeses.value
+          : this.cosechaMeses,
+      estacion: data.estacion.present ? data.estacion.value : this.estacion,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
     );
   }
 
@@ -813,58 +1046,112 @@ class UserCultivo extends DataClass implements Insertable<UserCultivo> {
     return (StringBuffer('UserCultivo(')
           ..write('id: $id, ')
           ..write('userId: $userId, ')
-          ..write('data: $data')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('cosechaMeses: $cosechaMeses, ')
+          ..write('estacion: $estacion, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, userId, data);
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    nombre,
+    tipo,
+    cosechaMeses,
+    estacion,
+    imagePath,
+    payloadJson,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is UserCultivo &&
           other.id == this.id &&
           other.userId == this.userId &&
-          other.data == this.data);
+          other.nombre == this.nombre &&
+          other.tipo == this.tipo &&
+          other.cosechaMeses == this.cosechaMeses &&
+          other.estacion == this.estacion &&
+          other.imagePath == this.imagePath &&
+          other.payloadJson == this.payloadJson);
 }
 
 class UserCultivosCompanion extends UpdateCompanion<UserCultivo> {
   final Value<int> id;
   final Value<int> userId;
-  final Value<String> data;
+  final Value<String> nombre;
+  final Value<String> tipo;
+  final Value<int> cosechaMeses;
+  final Value<String> estacion;
+  final Value<String?> imagePath;
+  final Value<String> payloadJson;
   const UserCultivosCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
-    this.data = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.cosechaMeses = const Value.absent(),
+    this.estacion = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.payloadJson = const Value.absent(),
   });
   UserCultivosCompanion.insert({
     this.id = const Value.absent(),
     required int userId,
-    required String data,
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.cosechaMeses = const Value.absent(),
+    this.estacion = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    required String payloadJson,
   }) : userId = Value(userId),
-       data = Value(data);
+       payloadJson = Value(payloadJson);
   static Insertable<UserCultivo> custom({
     Expression<int>? id,
     Expression<int>? userId,
-    Expression<String>? data,
+    Expression<String>? nombre,
+    Expression<String>? tipo,
+    Expression<int>? cosechaMeses,
+    Expression<String>? estacion,
+    Expression<String>? imagePath,
+    Expression<String>? payloadJson,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (userId != null) 'user_id': userId,
-      if (data != null) 'data': data,
+      if (nombre != null) 'nombre': nombre,
+      if (tipo != null) 'tipo': tipo,
+      if (cosechaMeses != null) 'cosecha_meses': cosechaMeses,
+      if (estacion != null) 'estacion': estacion,
+      if (imagePath != null) 'image_path': imagePath,
+      if (payloadJson != null) 'data': payloadJson,
     });
   }
 
   UserCultivosCompanion copyWith({
     Value<int>? id,
     Value<int>? userId,
-    Value<String>? data,
+    Value<String>? nombre,
+    Value<String>? tipo,
+    Value<int>? cosechaMeses,
+    Value<String>? estacion,
+    Value<String?>? imagePath,
+    Value<String>? payloadJson,
   }) {
     return UserCultivosCompanion(
       id: id ?? this.id,
       userId: userId ?? this.userId,
-      data: data ?? this.data,
+      nombre: nombre ?? this.nombre,
+      tipo: tipo ?? this.tipo,
+      cosechaMeses: cosechaMeses ?? this.cosechaMeses,
+      estacion: estacion ?? this.estacion,
+      imagePath: imagePath ?? this.imagePath,
+      payloadJson: payloadJson ?? this.payloadJson,
     );
   }
 
@@ -877,8 +1164,23 @@ class UserCultivosCompanion extends UpdateCompanion<UserCultivo> {
     if (userId.present) {
       map['user_id'] = Variable<int>(userId.value);
     }
-    if (data.present) {
-      map['data'] = Variable<String>(data.value);
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (tipo.present) {
+      map['tipo'] = Variable<String>(tipo.value);
+    }
+    if (cosechaMeses.present) {
+      map['cosecha_meses'] = Variable<int>(cosechaMeses.value);
+    }
+    if (estacion.present) {
+      map['estacion'] = Variable<String>(estacion.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (payloadJson.present) {
+      map['data'] = Variable<String>(payloadJson.value);
     }
     return map;
   }
@@ -888,7 +1190,511 @@ class UserCultivosCompanion extends UpdateCompanion<UserCultivo> {
     return (StringBuffer('UserCultivosCompanion(')
           ..write('id: $id, ')
           ..write('userId: $userId, ')
-          ..write('data: $data')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('cosechaMeses: $cosechaMeses, ')
+          ..write('estacion: $estacion, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SharedCultivosTable extends SharedCultivos
+    with TableInfo<$SharedCultivosTable, SharedCultivo> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SharedCultivosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  @override
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _tipoMeta = const VerificationMeta('tipo');
+  @override
+  late final GeneratedColumn<String> tipo = GeneratedColumn<String>(
+    'tipo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _cosechaMesesMeta = const VerificationMeta(
+    'cosechaMeses',
+  );
+  @override
+  late final GeneratedColumn<int> cosechaMeses = GeneratedColumn<int>(
+    'cosecha_meses',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _estacionMeta = const VerificationMeta(
+    'estacion',
+  );
+  @override
+  late final GeneratedColumn<String> estacion = GeneratedColumn<String>(
+    'estacion',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    nombre,
+    tipo,
+    cosechaMeses,
+    estacion,
+    imagePath,
+    payloadJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'shared_cultivos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SharedCultivo> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    }
+    if (data.containsKey('tipo')) {
+      context.handle(
+        _tipoMeta,
+        tipo.isAcceptableOrUnknown(data['tipo']!, _tipoMeta),
+      );
+    }
+    if (data.containsKey('cosecha_meses')) {
+      context.handle(
+        _cosechaMesesMeta,
+        cosechaMeses.isAcceptableOrUnknown(
+          data['cosecha_meses']!,
+          _cosechaMesesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estacion')) {
+      context.handle(
+        _estacionMeta,
+        estacion.isAcceptableOrUnknown(data['estacion']!, _estacionMeta),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SharedCultivo map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SharedCultivo(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      tipo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tipo'],
+      )!,
+      cosechaMeses: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cosecha_meses'],
+      )!,
+      estacion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}estacion'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+    );
+  }
+
+  @override
+  $SharedCultivosTable createAlias(String alias) {
+    return $SharedCultivosTable(attachedDatabase, alias);
+  }
+}
+
+class SharedCultivo extends DataClass implements Insertable<SharedCultivo> {
+  final int id;
+  final int userId;
+  final String nombre;
+  final String tipo;
+  final int cosechaMeses;
+  final String estacion;
+  final String? imagePath;
+  final String payloadJson;
+  const SharedCultivo({
+    required this.id,
+    required this.userId,
+    required this.nombre,
+    required this.tipo,
+    required this.cosechaMeses,
+    required this.estacion,
+    this.imagePath,
+    required this.payloadJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['nombre'] = Variable<String>(nombre);
+    map['tipo'] = Variable<String>(tipo);
+    map['cosecha_meses'] = Variable<int>(cosechaMeses);
+    map['estacion'] = Variable<String>(estacion);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    map['payload_json'] = Variable<String>(payloadJson);
+    return map;
+  }
+
+  SharedCultivosCompanion toCompanion(bool nullToAbsent) {
+    return SharedCultivosCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      nombre: Value(nombre),
+      tipo: Value(tipo),
+      cosechaMeses: Value(cosechaMeses),
+      estacion: Value(estacion),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      payloadJson: Value(payloadJson),
+    );
+  }
+
+  factory SharedCultivo.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SharedCultivo(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      tipo: serializer.fromJson<String>(json['tipo']),
+      cosechaMeses: serializer.fromJson<int>(json['cosechaMeses']),
+      estacion: serializer.fromJson<String>(json['estacion']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'nombre': serializer.toJson<String>(nombre),
+      'tipo': serializer.toJson<String>(tipo),
+      'cosechaMeses': serializer.toJson<int>(cosechaMeses),
+      'estacion': serializer.toJson<String>(estacion),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+    };
+  }
+
+  SharedCultivo copyWith({
+    int? id,
+    int? userId,
+    String? nombre,
+    String? tipo,
+    int? cosechaMeses,
+    String? estacion,
+    Value<String?> imagePath = const Value.absent(),
+    String? payloadJson,
+  }) => SharedCultivo(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    nombre: nombre ?? this.nombre,
+    tipo: tipo ?? this.tipo,
+    cosechaMeses: cosechaMeses ?? this.cosechaMeses,
+    estacion: estacion ?? this.estacion,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    payloadJson: payloadJson ?? this.payloadJson,
+  );
+  SharedCultivo copyWithCompanion(SharedCultivosCompanion data) {
+    return SharedCultivo(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      tipo: data.tipo.present ? data.tipo.value : this.tipo,
+      cosechaMeses: data.cosechaMeses.present
+          ? data.cosechaMeses.value
+          : this.cosechaMeses,
+      estacion: data.estacion.present ? data.estacion.value : this.estacion,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharedCultivo(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('cosechaMeses: $cosechaMeses, ')
+          ..write('estacion: $estacion, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    nombre,
+    tipo,
+    cosechaMeses,
+    estacion,
+    imagePath,
+    payloadJson,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SharedCultivo &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.nombre == this.nombre &&
+          other.tipo == this.tipo &&
+          other.cosechaMeses == this.cosechaMeses &&
+          other.estacion == this.estacion &&
+          other.imagePath == this.imagePath &&
+          other.payloadJson == this.payloadJson);
+}
+
+class SharedCultivosCompanion extends UpdateCompanion<SharedCultivo> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> nombre;
+  final Value<String> tipo;
+  final Value<int> cosechaMeses;
+  final Value<String> estacion;
+  final Value<String?> imagePath;
+  final Value<String> payloadJson;
+  const SharedCultivosCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.cosechaMeses = const Value.absent(),
+    this.estacion = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+  });
+  SharedCultivosCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.cosechaMeses = const Value.absent(),
+    this.estacion = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    required String payloadJson,
+  }) : userId = Value(userId),
+       payloadJson = Value(payloadJson);
+  static Insertable<SharedCultivo> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? nombre,
+    Expression<String>? tipo,
+    Expression<int>? cosechaMeses,
+    Expression<String>? estacion,
+    Expression<String>? imagePath,
+    Expression<String>? payloadJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (nombre != null) 'nombre': nombre,
+      if (tipo != null) 'tipo': tipo,
+      if (cosechaMeses != null) 'cosecha_meses': cosechaMeses,
+      if (estacion != null) 'estacion': estacion,
+      if (imagePath != null) 'image_path': imagePath,
+      if (payloadJson != null) 'payload_json': payloadJson,
+    });
+  }
+
+  SharedCultivosCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? nombre,
+    Value<String>? tipo,
+    Value<int>? cosechaMeses,
+    Value<String>? estacion,
+    Value<String?>? imagePath,
+    Value<String>? payloadJson,
+  }) {
+    return SharedCultivosCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      nombre: nombre ?? this.nombre,
+      tipo: tipo ?? this.tipo,
+      cosechaMeses: cosechaMeses ?? this.cosechaMeses,
+      estacion: estacion ?? this.estacion,
+      imagePath: imagePath ?? this.imagePath,
+      payloadJson: payloadJson ?? this.payloadJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (tipo.present) {
+      map['tipo'] = Variable<String>(tipo.value);
+    }
+    if (cosechaMeses.present) {
+      map['cosecha_meses'] = Variable<int>(cosechaMeses.value);
+    }
+    if (estacion.present) {
+      map['estacion'] = Variable<String>(estacion.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharedCultivosCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('cosechaMeses: $cosechaMeses, ')
+          ..write('estacion: $estacion, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
           ..write(')'))
         .toString();
   }
@@ -900,6 +1706,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $UsersTable users = $UsersTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $UserCultivosTable userCultivos = $UserCultivosTable(this);
+  late final $SharedCultivosTable sharedCultivos = $SharedCultivosTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -908,6 +1715,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     users,
     sessions,
     userCultivos,
+    sharedCultivos,
   ];
 }
 
@@ -918,6 +1726,7 @@ typedef $$UsersTableCreateCompanionBuilder =
       required String username,
       required String email,
       required String password,
+      Value<String?> avatarPath,
       Value<DateTime> createdAt,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -927,6 +1736,7 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String> username,
       Value<String> email,
       Value<String> password,
+      Value<String?> avatarPath,
       Value<DateTime> createdAt,
     });
 
@@ -960,6 +1770,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get password => $composableBuilder(
     column: $table.password,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get avatarPath => $composableBuilder(
+    column: $table.avatarPath,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1003,6 +1818,11 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get avatarPath => $composableBuilder(
+    column: $table.avatarPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -1032,6 +1852,11 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get password =>
       $composableBuilder(column: $table.password, builder: (column) => column);
+
+  GeneratedColumn<String> get avatarPath => $composableBuilder(
+    column: $table.avatarPath,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -1070,6 +1895,7 @@ class $$UsersTableTableManager
                 Value<String> username = const Value.absent(),
                 Value<String> email = const Value.absent(),
                 Value<String> password = const Value.absent(),
+                Value<String?> avatarPath = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
@@ -1077,6 +1903,7 @@ class $$UsersTableTableManager
                 username: username,
                 email: email,
                 password: password,
+                avatarPath: avatarPath,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -1086,6 +1913,7 @@ class $$UsersTableTableManager
                 required String username,
                 required String email,
                 required String password,
+                Value<String?> avatarPath = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
@@ -1093,6 +1921,7 @@ class $$UsersTableTableManager
                 username: username,
                 email: email,
                 password: password,
+                avatarPath: avatarPath,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0
@@ -1271,13 +2100,23 @@ typedef $$UserCultivosTableCreateCompanionBuilder =
     UserCultivosCompanion Function({
       Value<int> id,
       required int userId,
-      required String data,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<int> cosechaMeses,
+      Value<String> estacion,
+      Value<String?> imagePath,
+      required String payloadJson,
     });
 typedef $$UserCultivosTableUpdateCompanionBuilder =
     UserCultivosCompanion Function({
       Value<int> id,
       Value<int> userId,
-      Value<String> data,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<int> cosechaMeses,
+      Value<String> estacion,
+      Value<String?> imagePath,
+      Value<String> payloadJson,
     });
 
 class $$UserCultivosTableFilterComposer
@@ -1299,8 +2138,33 @@ class $$UserCultivosTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get data => $composableBuilder(
-    column: $table.data,
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get cosechaMeses => $composableBuilder(
+    column: $table.cosechaMeses,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get estacion => $composableBuilder(
+    column: $table.estacion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1324,8 +2188,33 @@ class $$UserCultivosTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get data => $composableBuilder(
-    column: $table.data,
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get cosechaMeses => $composableBuilder(
+    column: $table.cosechaMeses,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get estacion => $composableBuilder(
+    column: $table.estacion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -1345,8 +2234,27 @@ class $$UserCultivosTableAnnotationComposer
   GeneratedColumn<int> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
 
-  GeneratedColumn<String> get data =>
-      $composableBuilder(column: $table.data, builder: (column) => column);
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<String> get tipo =>
+      $composableBuilder(column: $table.tipo, builder: (column) => column);
+
+  GeneratedColumn<int> get cosechaMeses => $composableBuilder(
+    column: $table.cosechaMeses,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get estacion =>
+      $composableBuilder(column: $table.estacion, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
 }
 
 class $$UserCultivosTableTableManager
@@ -1382,17 +2290,41 @@ class $$UserCultivosTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> userId = const Value.absent(),
-                Value<String> data = const Value.absent(),
-              }) => UserCultivosCompanion(id: id, userId: userId, data: data),
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<int> cosechaMeses = const Value.absent(),
+                Value<String> estacion = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => UserCultivosCompanion(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                cosechaMeses: cosechaMeses,
+                estacion: estacion,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required int userId,
-                required String data,
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<int> cosechaMeses = const Value.absent(),
+                Value<String> estacion = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                required String payloadJson,
               }) => UserCultivosCompanion.insert(
                 id: id,
                 userId: userId,
-                data: data,
+                nombre: nombre,
+                tipo: tipo,
+                cosechaMeses: cosechaMeses,
+                estacion: estacion,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -1419,6 +2351,263 @@ typedef $$UserCultivosTableProcessedTableManager =
       UserCultivo,
       PrefetchHooks Function()
     >;
+typedef $$SharedCultivosTableCreateCompanionBuilder =
+    SharedCultivosCompanion Function({
+      Value<int> id,
+      required int userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<int> cosechaMeses,
+      Value<String> estacion,
+      Value<String?> imagePath,
+      required String payloadJson,
+    });
+typedef $$SharedCultivosTableUpdateCompanionBuilder =
+    SharedCultivosCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<int> cosechaMeses,
+      Value<String> estacion,
+      Value<String?> imagePath,
+      Value<String> payloadJson,
+    });
+
+class $$SharedCultivosTableFilterComposer
+    extends Composer<_$AppDatabase, $SharedCultivosTable> {
+  $$SharedCultivosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get cosechaMeses => $composableBuilder(
+    column: $table.cosechaMeses,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get estacion => $composableBuilder(
+    column: $table.estacion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SharedCultivosTableOrderingComposer
+    extends Composer<_$AppDatabase, $SharedCultivosTable> {
+  $$SharedCultivosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get cosechaMeses => $composableBuilder(
+    column: $table.cosechaMeses,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get estacion => $composableBuilder(
+    column: $table.estacion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SharedCultivosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SharedCultivosTable> {
+  $$SharedCultivosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<String> get tipo =>
+      $composableBuilder(column: $table.tipo, builder: (column) => column);
+
+  GeneratedColumn<int> get cosechaMeses => $composableBuilder(
+    column: $table.cosechaMeses,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get estacion =>
+      $composableBuilder(column: $table.estacion, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+}
+
+class $$SharedCultivosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SharedCultivosTable,
+          SharedCultivo,
+          $$SharedCultivosTableFilterComposer,
+          $$SharedCultivosTableOrderingComposer,
+          $$SharedCultivosTableAnnotationComposer,
+          $$SharedCultivosTableCreateCompanionBuilder,
+          $$SharedCultivosTableUpdateCompanionBuilder,
+          (
+            SharedCultivo,
+            BaseReferences<_$AppDatabase, $SharedCultivosTable, SharedCultivo>,
+          ),
+          SharedCultivo,
+          PrefetchHooks Function()
+        > {
+  $$SharedCultivosTableTableManager(
+    _$AppDatabase db,
+    $SharedCultivosTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SharedCultivosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SharedCultivosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SharedCultivosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<int> cosechaMeses = const Value.absent(),
+                Value<String> estacion = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => SharedCultivosCompanion(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                cosechaMeses: cosechaMeses,
+                estacion: estacion,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<int> cosechaMeses = const Value.absent(),
+                Value<String> estacion = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                required String payloadJson,
+              }) => SharedCultivosCompanion.insert(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                cosechaMeses: cosechaMeses,
+                estacion: estacion,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SharedCultivosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SharedCultivosTable,
+      SharedCultivo,
+      $$SharedCultivosTableFilterComposer,
+      $$SharedCultivosTableOrderingComposer,
+      $$SharedCultivosTableAnnotationComposer,
+      $$SharedCultivosTableCreateCompanionBuilder,
+      $$SharedCultivosTableUpdateCompanionBuilder,
+      (
+        SharedCultivo,
+        BaseReferences<_$AppDatabase, $SharedCultivosTable, SharedCultivo>,
+      ),
+      SharedCultivo,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1429,4 +2618,6 @@ class $AppDatabaseManager {
       $$SessionsTableTableManager(_db, _db.sessions);
   $$UserCultivosTableTableManager get userCultivos =>
       $$UserCultivosTableTableManager(_db, _db.userCultivos);
+  $$SharedCultivosTableTableManager get sharedCultivos =>
+      $$SharedCultivosTableTableManager(_db, _db.sharedCultivos);
 }

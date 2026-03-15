@@ -1,8 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:archive/archive.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data/db_instance.dart';
+import '../data/image_utils.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
 import 'cultivo_form.dart';
@@ -28,10 +33,11 @@ class _CultivosPageState extends State<CultivosPage> {
   /// Cultivos “por defecto” cargados desde assets/data/cultivos.json
   final List<Cultivo> _catalogo = [];
 
-  /// Cultivos creados/importados por el usuario (local)
-  /// ✅ Por ahora se guardan en memoria
-  /// 🔜 Luego los guardamos en Drift para que no se pierdan.
+  /// Cultivos creados por el usuario
   final List<Cultivo> _agregados = [];
+
+  /// Cultivos compartidos (importados)
+  final List<Cultivo> _compartidos = [];
 
   @override
   void initState() {
@@ -42,6 +48,7 @@ class _CultivosPageState extends State<CultivosPage> {
   Future<void> _loadData() async {
     await _loadCatalogFromAssets();
     await _loadUserCultivos();
+    await _loadSharedCultivos();
   }
 
   Future<void> _loadUserCultivos() async {
@@ -50,17 +57,31 @@ class _CultivosPageState extends State<CultivosPage> {
       setState(() {
         _agregados.clear();
         for (var row in list) {
-          final data = jsonDecode(row.data) as Map<String, dynamic>;
-          // Inyectamos el ID de la base de datos en el objeto Cultivo
+          final data = jsonDecode(row.payloadJson) as Map<String, dynamic>;
           data['id'] = row.id;
+          data['imagePath'] = row.imagePath;
           _agregados.add(Cultivo.fromJson(data));
         }
       });
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando cultivos de usuario: $e')),
-      );
+      debugPrint('Error loading user crops: $e');
+    }
+  }
+
+  Future<void> _loadSharedCultivos() async {
+    try {
+      final list = await appDb.getSharedCultivos(widget.userId);
+      setState(() {
+        _compartidos.clear();
+        for (var row in list) {
+          final data = jsonDecode(row.payloadJson) as Map<String, dynamic>;
+          data['id'] = row.id;
+          data['imagePath'] = row.imagePath;
+          _compartidos.add(Cultivo.fromJson(data));
+        }
+      });
+    } catch (e) {
+      debugPrint('Error loading shared crops: $e');
     }
   }
 
@@ -90,16 +111,10 @@ class _CultivosPageState extends State<CultivosPage> {
     }
   }
 
-  /// ✅ Aquí combinamos:
-  /// - catálogo por defecto (solo lectura)
-  /// - + cultivos agregados por el usuario (editables/eliminables)
-  List<Cultivo> get _all => [..._catalogo, ..._agregados];
-
-  /// Aplica búsqueda + filtros + orden
-  List<Cultivo> get _filtered {
+  List<Cultivo> _applyFilters(List<Cultivo> original) {
     final q = _searchCtrl.text.trim().toLowerCase();
 
-    var list = _all.where((c) {
+    var list = original.where((c) {
       final matchesText = q.isEmpty ||
           c.nombre.toLowerCase().contains(q) ||
           c.cientifico.toLowerCase().contains(q);
@@ -118,7 +133,6 @@ class _CultivosPageState extends State<CultivosPage> {
       return matchesText && matchesCosecha && matchesTipo && matchesEstacion;
     }).toList();
 
-    // Orden
     if (_orden == 'Nombre') {
       list.sort((a, b) => a.nombre.compareTo(b.nombre));
     } else if (_orden == 'Cosecha') {
@@ -132,59 +146,76 @@ class _CultivosPageState extends State<CultivosPage> {
     return list;
   }
 
-  /// Importar cultivo pegando JSON (WhatsApp)
-  Future<void> _importFromJsonPaste() async {
-    final ctrl = TextEditingController();
-    final ok = await showDialog<bool>(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text('Importar cultivo'),
-            content: TextField(
-              controller: ctrl,
-              minLines: 6,
-              maxLines: 12,
-              decoration: const InputDecoration(
-                hintText: 'Pega aquí el JSON que te enviaron por WhatsApp',
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.greenDarker,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text('Importar'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+  List<Cultivo> get _filteredCatalogo => _applyFilters(_catalogo);
+  List<Cultivo> get _filteredAgregados => _applyFilters(_agregados);
+  List<Cultivo> get _filteredCompartidos => _applyFilters(_compartidos);
 
-    if (!ok) return;
-
+  /// Importar cultivo desde archivo .rdc (ZIP)
+  Future<void> _importFromFile() async {
     try {
-      final obj = jsonDecode(ctrl.text.trim());
-      final cultivo = Cultivo.fromJson(obj as Map<String, dynamic>);
-
-      await appDb.insertUserCultivo(
-        widget.userId,
-        jsonEncode(cultivo.toJson()),
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['rdc', 'zip'],
       );
-      await _loadUserCultivos();
+
+      if (result == null || result.files.isEmpty) return;
+
+      final file = result.files.first;
+      late final Uint8List bytes;
+
+      if (kIsWeb) {
+        bytes = file.bytes!;
+      } else {
+        bytes = await File(file.path!).readAsBytes();
+      }
+
+      final archive = ZipDecoder().decodeBytes(bytes);
+
+      String? jsonContent;
+      Uint8List? imageBytes;
+      String? imageExt;
+
+      for (final file in archive) {
+        if (file.name == 'cultivo.json') {
+          jsonContent = utf8.decode(file.content);
+        } else if (file.name.startsWith('imagen.')) {
+          imageBytes = file.content as Uint8List;
+          imageExt = file.name.split('.').last;
+        }
+      }
+
+      if (jsonContent == null) {
+        throw 'No se encontró el archivo cultivo.json';
+      }
+
+      final data = jsonDecode(jsonContent) as Map<String, dynamic>;
+      final tempCultivo = Cultivo.fromJson(data);
+
+      String? savedImagePath;
+      if (imageBytes != null && imageExt != null) {
+        savedImagePath = await ImageUtils.saveImageBytes(imageBytes, 'cultivos_images', imageExt);
+      }
+
+      await appDb.insertSharedCultivo(
+        userId: widget.userId,
+        nombre: tempCultivo.nombre,
+        tipo: tempCultivo.tipo,
+        cosechaMeses: tempCultivo.cosechaMeses,
+        estacion: tempCultivo.estacion,
+        imagePath: savedImagePath,
+        payloadJson: jsonContent,
+      );
+
+      await _loadSharedCultivos();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Importado: ${cultivo.nombre}')),
+        SnackBar(content: Text('Importado correctamente: ${tempCultivo.nombre}')),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('JSON inválido: $e')),
+        SnackBar(content: Text('Error al importar: $e')),
       );
     }
   }
@@ -197,23 +228,31 @@ class _CultivosPageState extends State<CultivosPage> {
     if (res == null) return;
 
     if (cultivo == null) {
-      // Nuevo
       await appDb.insertUserCultivo(
-        widget.userId,
-        jsonEncode(res.toJson()),
+        userId: widget.userId,
+        nombre: res.nombre,
+        tipo: res.tipo,
+        cosechaMeses: res.cosechaMeses,
+        estacion: res.estacion,
+        imagePath: res.imagePath,
+        payloadJson: jsonEncode(res.toJson()),
       );
     } else {
-      // Editar
       await appDb.updateUserCultivo(
-        cultivo.id!,
-        jsonEncode(res.toJson()),
+        id: cultivo.id!,
+        nombre: res.nombre,
+        tipo: res.tipo,
+        cosechaMeses: res.cosechaMeses,
+        estacion: res.estacion,
+        imagePath: res.imagePath,
+        payloadJson: jsonEncode(res.toJson()),
       );
     }
 
     await _loadUserCultivos();
   }
 
-  Future<void> _eliminarCultivo(Cultivo c) async {
+  Future<void> _eliminarCultivo(Cultivo c, {bool shared = false}) async {
     final ok = await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
@@ -235,8 +274,13 @@ class _CultivosPageState extends State<CultivosPage> {
         false;
 
     if (ok) {
-      await appDb.deleteUserCultivo(c.id!);
-      await _loadUserCultivos();
+      if (shared) {
+        await appDb.deleteSharedCultivo(c.id!);
+        await _loadSharedCultivos();
+      } else {
+        await appDb.deleteUserCultivo(c.id!);
+        await _loadUserCultivos();
+      }
     }
   }
 
@@ -259,8 +303,8 @@ class _CultivosPageState extends State<CultivosPage> {
             ),
             // ✅ Importar
             IconButton(
-              tooltip: 'Importar (WhatsApp)',
-              onPressed: _importFromJsonPaste,
+              tooltip: 'Importar cultivo (.rdc)',
+              onPressed: _importFromFile,
               icon: const Icon(Icons.download_rounded),
             ),
           ],
@@ -340,27 +384,77 @@ class _CultivosPageState extends State<CultivosPage> {
                 Expanded(
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
-                      : ListView.separated(
-                          itemCount: _filtered.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 10),
-                          itemBuilder: (context, index) {
-                            final c = _filtered[index];
-                            return _CultivoTile(
-                              cultivo: c,
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => CultivoDetallePage(cultivo: c),
-                                ),
-                              ),
-                              onEdit: c.id != null ? () => _abrirFormulario(cultivo: c) : null,
-                              onDelete: c.id != null ? () => _eliminarCultivo(c) : null,
-                            );
-                          },
+                      : ListView(
+                          children: [
+                            if (_filteredAgregados.isNotEmpty) ...[
+                              _buildSectionHeader('Mis cultivos'),
+                              ..._filteredAgregados.map((c) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: _CultivoTile(
+                                      cultivo: c,
+                                      onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => CultivoDetallePage(cultivo: c),
+                                        ),
+                                      ),
+                                      onEdit: () => _abrirFormulario(cultivo: c),
+                                      onDelete: () => _eliminarCultivo(c),
+                                    ),
+                                  )),
+                              const SizedBox(height: 10),
+                            ],
+                            if (_filteredCompartidos.isNotEmpty) ...[
+                              _buildSectionHeader('Cultivos compartidos'),
+                              ..._filteredCompartidos.map((c) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: _CultivoTile(
+                                      cultivo: c,
+                                      onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => CultivoDetallePage(cultivo: c),
+                                        ),
+                                      ),
+                                      onEdit: () => _abrirFormulario(cultivo: c),
+                                      onDelete: () => _eliminarCultivo(c, shared: true),
+                                    ),
+                                  )),
+                              const SizedBox(height: 10),
+                            ],
+                            if (_filteredCatalogo.isNotEmpty) ...[
+                              _buildSectionHeader('Catálogo'),
+                              ..._filteredCatalogo.map((c) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: _CultivoTile(
+                                      cultivo: c,
+                                      onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => CultivoDetallePage(cultivo: c),
+                                        ),
+                                      ),
+                                    ),
+                                  )),
+                            ],
+                          ],
                         ),
                 )
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(
+        title.toUpperCase(),
+        style: TextStyle(
+          color: AppColors.greenDarker.withOpacity(0.6),
+          fontWeight: FontWeight.w900,
+          fontSize: 12,
+          letterSpacing: 1.2,
         ),
       ),
     );
@@ -470,19 +564,7 @@ class _CultivoTile extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),
-                  child: cultivo.imagen.isNotEmpty
-                      ? Image.asset(
-                          cultivo.imagen,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(
-                            Icons.local_florist_rounded,
-                            color: AppColors.greenDarker,
-                          ),
-                        )
-                      : const Icon(
-                          Icons.local_florist_rounded,
-                          color: AppColors.greenDarker,
-                        ),
+                  child: _buildImage(),
                 ),
               ),
 
@@ -537,6 +619,37 @@ class _CultivoTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildImage() {
+    if (cultivo.imagePath != null && cultivo.imagePath!.isNotEmpty) {
+      if (cultivo.imagePath!.startsWith('data:image')) {
+        return Image.memory(
+          base64Decode(cultivo.imagePath!.split(',').last),
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+        );
+      } else {
+        return Image.file(
+          File(cultivo.imagePath!),
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+        );
+      }
+    }
+
+    if (cultivo.imagen.isNotEmpty) {
+      return Image.asset(
+        cultivo.imagen,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.local_florist_rounded),
+      );
+    }
+
+    return const Icon(
+      Icons.local_florist_rounded,
+      color: AppColors.greenDarker,
     );
   }
 }

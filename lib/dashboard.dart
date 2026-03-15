@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'data/db_instance.dart'; // conexión a tu BD (Drift)
+import 'data/image_utils.dart';
 import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
 import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
 
@@ -17,6 +20,7 @@ class _DashboardPageState extends State<DashboardPage> {
   // Datos del usuario logueado (solo para mostrar en el perfil/drawer)
   String _fullName = '...';
   String _email = '...';
+  String? _avatarPath;
 
   @override
   void initState() {
@@ -35,7 +39,16 @@ class _DashboardPageState extends State<DashboardPage> {
     setState(() {
       _fullName = user.fullName;
       _email = user.email;
+      _avatarPath = user.avatarPath;
     });
+  }
+
+  Future<void> _changeAvatar() async {
+    final path = await ImageUtils.pickAndSaveImage('user_avatars');
+    if (path != null) {
+      await appDb.updateUserAvatar(widget.userId, path);
+      setState(() => _avatarPath = path);
+    }
   }
 
   /// Iniciales para el avatar (ej: "Josefina Valdez" -> "JV")
@@ -240,12 +253,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         initials: _initials(_fullName),
                         fullName: _fullName,
                         email: _email,
-                        onChangePhoto: () {
-                          // ✅ aquí después conectas selección de imagen
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Próximamente: cambiar foto de perfil')),
-                          );
-                        },
+                        avatarPath: _avatarPath,
+                        onChangePhoto: _changeAvatar,
                         onLogout: _logout,
                       ),
                       const SizedBox(width: 12),
@@ -396,18 +405,7 @@ class _DashboardPageState extends State<DashboardPage> {
             padding: const EdgeInsets.fromLTRB(16, 44, 16, 16),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    _initials(_fullName),
-                    style: const TextStyle(
-                      color: AppColors.greenDarker,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
+                _buildAvatar(radius: 28, fontSize: 18),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -438,10 +436,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Cambiar foto (próximamente)',
-                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Próximamente: cambiar foto')),
-                  ),
+                  tooltip: 'Cambiar foto',
+                  onPressed: _changeAvatar,
                   icon: const Icon(Icons.camera_alt_rounded, color: Colors.white),
                 ),
               ],
@@ -576,6 +572,37 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAvatar({required double radius, required double fontSize}) {
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: Colors.white,
+      child: _avatarPath == null
+          ? Text(
+              _initials(_fullName),
+              style: TextStyle(
+                color: AppColors.greenDarker,
+                fontWeight: FontWeight.w900,
+                fontSize: fontSize,
+              ),
+            )
+          : ClipOval(
+              child: _avatarPath!.startsWith('data:image')
+                  ? Image.memory(
+                      base64Decode(_avatarPath!.split(',').last),
+                      width: radius * 2,
+                      height: radius * 2,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.file(
+                      File(_avatarPath!),
+                      width: radius * 2,
+                      height: radius * 2,
+                      fit: BoxFit.cover,
+                    ),
+            ),
     );
   }
 }
@@ -747,6 +774,7 @@ class _ProfileMenuV2 extends StatelessWidget {
   final String initials;
   final String fullName;
   final String email;
+  final String? avatarPath;
   final VoidCallback onChangePhoto;
   final Future<void> Function() onLogout;
 
@@ -754,9 +782,41 @@ class _ProfileMenuV2 extends StatelessWidget {
     required this.initials,
     required this.fullName,
     required this.email,
+    this.avatarPath,
     required this.onChangePhoto,
     required this.onLogout,
   });
+
+  Widget _buildSmallAvatar() {
+    return CircleAvatar(
+      radius: 16,
+      backgroundColor: Colors.white,
+      child: avatarPath == null
+          ? Text(
+              initials,
+              style: const TextStyle(
+                color: AppColors.greenDarker,
+                fontWeight: FontWeight.w900,
+                fontSize: 12,
+              ),
+            )
+          : ClipOval(
+              child: avatarPath!.startsWith('data:image')
+                  ? Image.memory(
+                      base64Decode(avatarPath!.split(',').last),
+                      width: 32,
+                      height: 32,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.file(
+                      File(avatarPath!),
+                      width: 32,
+                      height: 32,
+                      fit: BoxFit.cover,
+                    ),
+            ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -769,18 +829,7 @@ class _ProfileMenuV2 extends StatelessWidget {
       },
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: Colors.white,
-            child: Text(
-              initials,
-              style: const TextStyle(
-                color: AppColors.greenDarker,
-                fontWeight: FontWeight.w900,
-                fontSize: 12,
-              ),
-            ),
-          ),
+          _buildSmallAvatar(),
           const SizedBox(width: 6),
           const Icon(Icons.arrow_drop_down_rounded, color: Colors.white),
         ],
@@ -798,14 +847,30 @@ class _ProfileMenuV2 extends StatelessWidget {
                     CircleAvatar(
                       radius: 34,
                       backgroundColor: AppColors.greenDark.withOpacity(0.12),
-                      child: Text(
-                        initials,
-                        style: const TextStyle(
-                          color: AppColors.greenDarker,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 18,
-                        ),
-                      ),
+                      child: avatarPath == null
+                          ? Text(
+                              initials,
+                              style: const TextStyle(
+                                color: AppColors.greenDarker,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 18,
+                              ),
+                            )
+                          : ClipOval(
+                              child: avatarPath!.startsWith('data:image')
+                                  ? Image.memory(
+                                      base64Decode(avatarPath!.split(',').last),
+                                      width: 68,
+                                      height: 68,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.file(
+                                      File(avatarPath!),
+                                      width: 68,
+                                      height: 68,
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
                     ),
                     Positioned(
                       right: -2,

@@ -11,6 +11,7 @@ class Users extends Table {
   TextColumn get email => text()();
 
   TextColumn get password => text()();
+  TextColumn get avatarPath => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -29,15 +30,35 @@ class Sessions extends Table {
 class UserCultivos extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get userId => integer()();
-  TextColumn get data => text()(); // JSON
+
+  TextColumn get nombre => text().withDefault(const Constant(''))();
+  TextColumn get tipo => text().withDefault(const Constant(''))();
+  IntColumn get cosechaMeses => integer().withDefault(const Constant(0))();
+  TextColumn get estacion => text().withDefault(const Constant(''))();
+  TextColumn get imagePath => text().nullable()();
+
+  TextColumn get payloadJson => text().named('data')();
 }
 
-@DriftDatabase(tables: [Users, Sessions, UserCultivos])
+class SharedCultivos extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+
+  TextColumn get nombre => text().withDefault(const Constant(''))();
+  TextColumn get tipo => text().withDefault(const Constant(''))();
+  IntColumn get cosechaMeses => integer().withDefault(const Constant(0))();
+  TextColumn get estacion => text().withDefault(const Constant(''))();
+  TextColumn get imagePath => text().nullable()();
+
+  TextColumn get payloadJson => text()();
+}
+
+@DriftDatabase(tables: [Users, Sessions, UserCultivos, SharedCultivos])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -55,6 +76,15 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 3) {
             await m.createTable(userCultivos);
+          }
+          if (from < 4) {
+            await m.addColumn(users, users.avatarPath);
+            await m.addColumn(userCultivos, userCultivos.nombre);
+            await m.addColumn(userCultivos, userCultivos.tipo);
+            await m.addColumn(userCultivos, userCultivos.cosechaMeses);
+            await m.addColumn(userCultivos, userCultivos.estacion);
+            await m.addColumn(userCultivos, userCultivos.imagePath);
+            await m.createTable(sharedCultivos);
           }
         },
         beforeOpen: (details) async {
@@ -99,6 +129,12 @@ class AppDatabase extends _$AppDatabase {
     return q.getSingleOrNull();
   }
 
+  Future<void> updateUserAvatar(int userId, String? path) {
+    return (update(users)..where((t) => t.id.equals(userId))).write(
+      UsersCompanion(avatarPath: Value(path)),
+    );
+  }
+
   // ---------------------------
   // SESSION
   // ---------------------------
@@ -123,19 +159,83 @@ class AppDatabase extends _$AppDatabase {
     return (select(userCultivos)..where((t) => t.userId.equals(userId))).get();
   }
 
-  Future<int> insertUserCultivo(int userId, String jsonData) {
+  Future<int> insertUserCultivo({
+    required int userId,
+    required String nombre,
+    required String tipo,
+    required int cosechaMeses,
+    required String estacion,
+    required String? imagePath,
+    required String payloadJson,
+  }) {
     return into(userCultivos).insert(
-      UserCultivosCompanion.insert(userId: userId, data: jsonData),
+      UserCultivosCompanion.insert(
+        userId: userId,
+        nombre: Value(nombre),
+        tipo: Value(tipo),
+        cosechaMeses: Value(cosechaMeses),
+        estacion: Value(estacion),
+        imagePath: Value(imagePath),
+        payloadJson: payloadJson,
+      ),
     );
   }
 
-  Future<void> updateUserCultivo(int id, String jsonData) {
+  Future<void> updateUserCultivo({
+    required int id,
+    required String nombre,
+    required String tipo,
+    required int cosechaMeses,
+    required String estacion,
+    required String? imagePath,
+    required String payloadJson,
+  }) {
     return (update(userCultivos)..where((t) => t.id.equals(id))).write(
-      UserCultivosCompanion(data: Value(jsonData)),
+      UserCultivosCompanion(
+        nombre: Value(nombre),
+        tipo: Value(tipo),
+        cosechaMeses: Value(cosechaMeses),
+        estacion: Value(estacion),
+        imagePath: Value(imagePath),
+        payloadJson: Value(payloadJson),
+      ),
     );
   }
 
   Future<void> deleteUserCultivo(int id) {
     return (delete(userCultivos)..where((t) => t.id.equals(id))).go();
+  }
+
+  // ---------------------------
+  // CULTIVOS COMPARTIDOS
+  // ---------------------------
+  Future<List<SharedCultivo>> getSharedCultivos(int userId) {
+    return (select(sharedCultivos)..where((t) => t.userId.equals(userId))).get();
+  }
+
+  Future<int> insertSharedCultivo({
+    required int userId,
+    required String nombre,
+    required String tipo,
+    required int cosechaMeses,
+    required String estacion,
+    required String? imagePath,
+    required String payloadJson,
+  }) {
+    return into(sharedCultivos).insert(
+      SharedCultivosCompanion.insert(
+        userId: userId,
+        nombre: Value(nombre),
+        tipo: Value(tipo),
+        cosechaMeses: Value(cosechaMeses),
+        estacion: Value(estacion),
+        imagePath: Value(imagePath),
+        payloadJson: payloadJson,
+      ),
+    );
+  }
+
+  Future<void> deleteSharedCultivo(int id) {
+    return (delete(sharedCultivos)..where((t) => t.id.equals(id))).go();
   }
 }

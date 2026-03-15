@@ -1,6 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:archive/archive.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../main.dart';
 import 'help_dialogs.dart';
 
@@ -8,6 +13,7 @@ class Cultivo {
   final int? id; // null si es del catálogo
   final String nombre;
   final String imagen; // ruta del asset
+  final String? imagePath; // ruta del archivo local o base64 (web)
   final String cientifico;
   final int cosechaMeses;
   final String tipo;
@@ -21,6 +27,7 @@ class Cultivo {
     this.id,
     required this.nombre,
     required this.imagen,
+    this.imagePath,
     required this.cientifico,
     required this.cosechaMeses,
     required this.tipo,
@@ -35,6 +42,7 @@ class Cultivo {
         if (id != null) 'id': id,
         'nombre': nombre,
         'imagen': imagen,
+        if (imagePath != null) 'imagePath': imagePath,
         'cientifico': cientifico,
         'cosechaMeses': cosechaMeses,
         'tipo': tipo,
@@ -57,8 +65,11 @@ class Cultivo {
       id: j['id'] as int?,
       nombre: (j['nombre'] ?? '').toString(),
       imagen: (j['imagen'] ?? '').toString(),
+      imagePath: (j['imagePath'] ?? j['image_path'])?.toString(),
       cientifico: (j['cientifico'] ?? '').toString(),
-      cosechaMeses: (j['cosechaMeses'] ?? 0) is int ? (j['cosechaMeses'] as int) : int.tryParse('${j['cosechaMeses']}') ?? 0,
+      cosechaMeses: (j['cosechaMeses'] ?? 0) is int
+          ? (j['cosechaMeses'] as int)
+          : int.tryParse('${j['cosechaMeses']}') ?? 0,
       tipo: (j['tipo'] ?? '').toString(),
       estacion: (j['estacion'] ?? '').toString(),
       identificacion: (j['identificacion'] ?? '').toString(),
@@ -73,14 +84,83 @@ class CultivoDetallePage extends StatelessWidget {
   final Cultivo cultivo;
   const CultivoDetallePage({super.key, required this.cultivo});
 
-  Future<void> _copyForWhatsApp(BuildContext context) async {
-    final text = const JsonEncoder.withIndent('  ').convert(cultivo.toJson());
-    await Clipboard.setData(ClipboardData(text: text));
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Copiado. Pega este texto en WhatsApp para compartirlo.'),
-      ),
+  Future<void> _shareCrop(BuildContext context) async {
+    try {
+      final encoder = ZipEncoder();
+      final archive = Archive();
+
+      // JSON del cultivo
+      final jsonStr = jsonEncode(cultivo.toJson());
+      archive.addFile(ArchiveFile('cultivo.json', jsonStr.length, utf8.encode(jsonStr)));
+
+      // Imagen si existe
+      if (cultivo.imagePath != null && cultivo.imagePath!.isNotEmpty) {
+        if (cultivo.imagePath!.startsWith('data:image')) {
+          final parts = cultivo.imagePath!.split(',');
+          final bytes = base64Decode(parts.last);
+          final ext = parts.first.split('/').last.split(';').first;
+          archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
+        } else {
+          final file = File(cultivo.imagePath!);
+          if (await file.exists()) {
+            final bytes = await file.readAsBytes();
+            final ext = file.path.split('.').last;
+            archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
+          }
+        }
+      }
+
+      final zipData = encoder.encode(archive);
+      if (zipData == null) return;
+
+      if (kIsWeb) {
+        // En Web, descargamos el archivo
+        final blob = XFile.fromData(Uint8List.fromList(zipData),
+            name: '${cultivo.nombre}.rdc', mimeType: 'application/zip');
+        await Share.shareXFiles([blob]);
+      } else {
+        final tempDir = await getTemporaryDirectory();
+        final zipFile = File('${tempDir.path}/${cultivo.nombre}.rdc');
+        await zipFile.writeAsBytes(zipData);
+
+        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira mi cultivo: ${cultivo.nombre}');
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al compartir: $e')),
+      );
+    }
+  }
+
+  Widget _buildImage() {
+    if (cultivo.imagePath != null && cultivo.imagePath!.isNotEmpty) {
+      if (cultivo.imagePath!.startsWith('data:image')) {
+        return Image.memory(
+          base64Decode(cultivo.imagePath!.split(',').last),
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+        );
+      } else {
+        return Image.file(
+          File(cultivo.imagePath!),
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+        );
+      }
+    }
+
+    if (cultivo.imagen.isNotEmpty) {
+      return Image.asset(
+        cultivo.imagen,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.local_florist_rounded),
+      );
+    }
+
+    return const Icon(
+      Icons.local_florist_rounded,
+      color: AppColors.greenDarker,
     );
   }
 
@@ -95,8 +175,8 @@ class CultivoDetallePage extends StatelessWidget {
           title: Text(cultivo.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
             IconButton(
-              tooltip: 'Compartir (WhatsApp)',
-              onPressed: () => _copyForWhatsApp(context),
+              tooltip: 'Compartir',
+              onPressed: () => _shareCrop(context),
               icon: const Icon(Icons.share_rounded),
             ),
           ],
@@ -116,18 +196,13 @@ class CultivoDetallePage extends StatelessWidget {
     borderRadius: BorderRadius.circular(14),
     child: AspectRatio(
       aspectRatio: 16 / 9,
-      child: Image.asset(
-        cultivo.imagen,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.image_not_supported_rounded, size: 42),
-        ),
-      ),
+      child: _buildImage(),
     ),
   ),
 ),
 const SizedBox(height: 12),
               _Card(
+                cultivo: cultivo,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -152,6 +227,7 @@ const SizedBox(height: 12),
               ),
               const SizedBox(height: 12),
               _Card(
+                cultivo: cultivo,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -176,6 +252,7 @@ const SizedBox(height: 12),
               ),
               const SizedBox(height: 12),
               _Card(
+                cultivo: cultivo,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -204,6 +281,7 @@ const SizedBox(height: 12),
               ),
               const SizedBox(height: 12),
               _Card(
+                cultivo: cultivo,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -251,8 +329,9 @@ const SizedBox(height: 12),
 }
 
 class _Card extends StatelessWidget {
+  final Cultivo cultivo;
   final Widget child;
-  const _Card({required this.child});
+  const _Card({required this.cultivo, required this.child});
 
   @override
   Widget build(BuildContext context) {
