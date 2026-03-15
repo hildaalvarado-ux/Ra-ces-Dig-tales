@@ -75,7 +75,7 @@ class CultivoDetallePage extends StatelessWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('✅ Copiado. Pega este texto en WhatsApp para compartirlo.'),
+        content: Text('Copiado. Pega este texto en WhatsApp para compartirlo.'),
       ),
     );
   }

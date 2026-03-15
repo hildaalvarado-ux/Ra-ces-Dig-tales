@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../main.dart';
 import 'cultivo_detalle.dart';
 
@@ -20,8 +21,14 @@ class _CultivosPageState extends State<CultivosPage> {
   String _filtroEstacion = 'Todas';
 
   bool _loading = true;
+
+  /// Cultivos “por defecto” cargados desde assets/data/cultivos.json
   final List<Cultivo> _catalogo = [];
-  final List<Cultivo> _agregados = []; // importados por el usuario (local)
+
+  /// Cultivos creados/importados por el usuario (local)
+  /// ✅ Por ahora se guardan en memoria
+  /// 🔜 Luego los guardamos en Drift para que no se pierdan.
+  final List<Cultivo> _agregados = [];
 
   @override
   void initState() {
@@ -35,6 +42,7 @@ class _CultivosPageState extends State<CultivosPage> {
     super.dispose();
   }
 
+  /// Carga el catálogo desde assets (Opción A)
   Future<void> _loadCatalogFromAssets() async {
     try {
       final raw = await rootBundle.loadString('assets/data/cultivos.json');
@@ -54,8 +62,12 @@ class _CultivosPageState extends State<CultivosPage> {
     }
   }
 
+  /// ✅ Aquí combinamos:
+  /// - catálogo por defecto (solo lectura)
+  /// - + cultivos agregados por el usuario (editables/eliminables)
   List<Cultivo> get _all => [..._catalogo, ..._agregados];
 
+  /// Aplica búsqueda + filtros + orden
   List<Cultivo> get _filtered {
     final q = _searchCtrl.text.trim().toLowerCase();
 
@@ -66,7 +78,9 @@ class _CultivosPageState extends State<CultivosPage> {
 
       final matchesCosecha = _filtroCosecha == 'Todas' ||
           (_filtroCosecha == '1-3' && c.cosechaMeses <= 3) ||
-          (_filtroCosecha == '4-6' && c.cosechaMeses >= 4 && c.cosechaMeses <= 6) ||
+          (_filtroCosecha == '4-6' &&
+              c.cosechaMeses >= 4 &&
+              c.cosechaMeses <= 6) ||
           (_filtroCosecha == '7+' && c.cosechaMeses >= 7);
 
       final matchesTipo = _filtroTipo == 'Todos' || c.tipo == _filtroTipo;
@@ -76,6 +90,7 @@ class _CultivosPageState extends State<CultivosPage> {
       return matchesText && matchesCosecha && matchesTipo && matchesEstacion;
     }).toList();
 
+    // Orden
     if (_orden == 'Nombre') {
       list.sort((a, b) => a.nombre.compareTo(b.nombre));
     } else if (_orden == 'Cosecha') {
@@ -89,6 +104,7 @@ class _CultivosPageState extends State<CultivosPage> {
     return list;
   }
 
+  /// Importar cultivo pegando JSON (WhatsApp)
   Future<void> _importFromJsonPaste() async {
     final ctrl = TextEditingController();
     final ok = await showDialog<bool>(
@@ -133,14 +149,72 @@ class _CultivosPageState extends State<CultivosPage> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('✅ Importado: ${cultivo.nombre}')),
+        SnackBar(content: Text('Importado: ${cultivo.nombre}')),
       );
+
+      // 🔜 Cuando lo conectemos a Drift:
+      // await cultivosRepo.insertUserCultivo(cultivo);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ JSON inválido: $e')),
+        SnackBar(content: Text('JSON inválido: $e')),
       );
     }
+  }
+
+  /// ✅ Crear un cultivo nuevo (por ahora simple)
+  /// 🔜 Luego lo cambiamos a un formulario completo como “Ajo”.
+  Future<void> _nuevoCultivo() async {
+    final nameCtrl = TextEditingController();
+    final ok = await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Nuevo cultivo'),
+            content: TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(hintText: 'Nombre del cultivo'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.greenDarker,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Crear'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!ok) return;
+
+    final nombre = nameCtrl.text.trim();
+    if (nombre.isEmpty) return;
+
+    // ✅ cultivo mínimo (para probar)
+    final nuevo = Cultivo(
+      nombre: nombre,
+      cientifico: '',
+      imagen: '', // si luego quieres, eliges imagen
+      cosechaMeses: 0,
+      tipo: 'Vegetal',
+      estacion: 'Todas',
+      identificacion: '',
+      siembra: '',
+      ficha: const {},
+      plagas: const [],
+    );
+
+    setState(() => _agregados.add(nuevo));
+
+    // 🔜 Cuando lo conectemos a Drift:
+    // await cultivosRepo.insertUserCultivo(nuevo);
   }
 
   @override
@@ -151,8 +225,16 @@ class _CultivosPageState extends State<CultivosPage> {
         appBar: AppBar(
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
-          title: const Text('Cultivos', style: TextStyle(fontWeight: FontWeight.w900)),
+          title:
+              const Text('Cultivos', style: TextStyle(fontWeight: FontWeight.w900)),
           actions: [
+            // ✅ Nuevo cultivo
+            IconButton(
+              tooltip: 'Nuevo cultivo',
+              onPressed: _nuevoCultivo,
+              icon: const Icon(Icons.add_rounded),
+            ),
+            // ✅ Importar
             IconButton(
               tooltip: 'Importar (WhatsApp)',
               onPressed: _importFromJsonPaste,
@@ -183,11 +265,13 @@ class _CultivosPageState extends State<CultivosPage> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: AppColors.greenDark.withOpacity(0.15)),
+                      borderSide:
+                          BorderSide(color: AppColors.greenDark.withOpacity(0.15)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(color: AppColors.greenDark.withOpacity(0.15)),
+                      borderSide:
+                          BorderSide(color: AppColors.greenDark.withOpacity(0.15)),
                     ),
                   ),
                 ),
@@ -209,7 +293,15 @@ class _CultivosPageState extends State<CultivosPage> {
                     ),
                     _Drop(
                       value: _filtroTipo,
-                      items: const ['Todos', 'Raíz', 'Hoja', 'Frutal', 'Legumbre', 'Aromáticas', 'Vegetal'],
+                      items: const [
+                        'Todos',
+                        'Raíz',
+                        'Hoja',
+                        'Frutal',
+                        'Legumbre',
+                        'Aromáticas',
+                        'Vegetal'
+                      ],
                       onChanged: (v) => setState(() => _filtroTipo = v),
                     ),
                     _Drop(
@@ -233,7 +325,9 @@ class _CultivosPageState extends State<CultivosPage> {
                             return _CultivoTile(
                               cultivo: c,
                               onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => CultivoDetallePage(cultivo: c)),
+                                MaterialPageRoute(
+                                  builder: (_) => CultivoDetallePage(cultivo: c),
+                                ),
                               ),
                             );
                           },
@@ -267,7 +361,9 @@ class _Drop extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value,
-          items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          items: items
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .toList(),
           onChanged: (v) => onChanged(v!),
         ),
       ),
@@ -288,7 +384,8 @@ class _CultivoTile extends StatelessWidget {
       case 'Hoja':
         return Icons.eco_rounded;
       case 'Frutal':
-        return Icons.apple_rounded;
+        // ✅ Evita apple_rounded (no existe en algunas versiones)
+        return Icons.apple; // o Icons.local_grocery_store_rounded
       case 'Legumbre':
         return Icons.grass_rounded;
       case 'Aromáticas':
@@ -306,8 +403,8 @@ class _CultivoTile extends StatelessWidget {
         return Icons.ac_unit_rounded;
       case 'Primavera':
         return Icons.wb_sunny_rounded;
-case 'Verano':
-  return Icons.wb_sunny_rounded;
+      case 'Verano':
+        return Icons.wb_sunny_rounded; // ✅ sin sunny_rounded
       default:
         return Icons.calendar_month_rounded;
     }
@@ -329,16 +426,36 @@ case 'Verano':
           ),
           child: Row(
             children: [
+              // ✅ Si hay imagen del cultivo, la mostramos.
+              // Si no, mostramos ícono por defecto.
               Container(
                 width: 54,
                 height: 54,
                 decoration: BoxDecoration(
                   color: AppColors.greenDark.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
                 ),
-                child: const Icon(Icons.local_florist_rounded, color: AppColors.greenDarker),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: cultivo.imagen.isNotEmpty
+                      ? Image.asset(
+                          cultivo.imagen,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.local_florist_rounded,
+                            color: AppColors.greenDarker,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.local_florist_rounded,
+                          color: AppColors.greenDarker,
+                        ),
+                ),
               ),
+
               const SizedBox(width: 12),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,7 +470,9 @@ case 'Verano':
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${cultivo.cosechaMeses} meses',
+                      cultivo.cosechaMeses > 0
+                          ? '${cultivo.cosechaMeses} meses'
+                          : 'Sin dato',
                       style: TextStyle(
                         color: AppColors.greenDarker.withOpacity(0.70),
                         fontWeight: FontWeight.w700,
@@ -362,6 +481,7 @@ case 'Verano':
                   ],
                 ),
               ),
+
               const SizedBox(width: 8),
               Icon(_tipoIcon(cultivo.tipo), color: AppColors.greenDarker),
               const SizedBox(width: 10),

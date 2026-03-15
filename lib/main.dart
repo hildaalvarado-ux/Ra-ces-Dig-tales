@@ -64,7 +64,11 @@ class AppGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<int?>(
-      future: appDb.getActiveUserId(),
+      future: Future(() async {
+        // ✅ Asegura que la BD esté abierta antes de pedir la sesión
+        await appDb.executor.ensureOpen(appDb);
+        return appDb.getActiveUserId();
+      }),
       builder: (context, snapshot) {
         // Mientras carga
         if (snapshot.connectionState != ConnectionState.done) {
@@ -269,7 +273,6 @@ class BienvenidaPage extends StatelessWidget {
                       'Para darle seguimiento a tus cultivos necesitamos una cuenta.\n\n'
                       'Guardamos tu historial (siembra, riego, notas y avances)\n'
                       'Puedes ver el progreso de cada cultivo con el tiempo\n'
-                      'No pierdes información si cambias de dispositivo\n\n'
                       'Inicia sesión o crea tu cuenta para comenzar.',
                       textAlign: TextAlign.left,
                       style: TextStyle(
