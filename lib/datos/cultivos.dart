@@ -58,14 +58,30 @@ class _CultivosPageState extends State<CultivosPage> {
     }
 
     try {
-      await _loadCatalogFromAssets();
-      await _loadUserCultivos();
-      await _loadSharedCultivos();
+      try {
+        await _loadCatalogFromAssets();
+      } catch (e) {
+        debugPrint('Error loading catalog: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error cargando catálogo: $e')),
+          );
+        }
+      }
+
+      try {
+        await _loadUserCultivos();
+      } catch (e) {
+        debugPrint('Error loading user crops: $e');
+      }
+
+      try {
+        await _loadSharedCultivos();
+      } catch (e) {
+        debugPrint('Error loading shared crops: $e');
+      }
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando datos: $e')),
-      );
+      debugPrint('Unexpected error in _loadData: $e');
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -75,7 +91,11 @@ class _CultivosPageState extends State<CultivosPage> {
 
   Future<void> _loadCatalogFromAssets() async {
     final raw = await rootBundle.loadString('assets/data/cultivos.json');
-    final decoded = jsonDecode(raw);
+
+    // Remove multi-line comments /* ... */
+    final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
+
+    final decoded = jsonDecode(cleanJson);
 
     if (decoded is! List) {
       throw Exception('El archivo cultivos.json no contiene una lista válida');
