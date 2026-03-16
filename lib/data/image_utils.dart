@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,10 +10,10 @@ import 'package:uuid/uuid.dart';
 class ImageUtils {
   static final ImagePicker _picker = ImagePicker();
 
-  static Future<String?> pickAndSaveImage(String subDir) async {
+  static Future<String?> pickAndSaveImage(String subDir, {ImageSource source = ImageSource.gallery}) async {
     try {
       final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         maxWidth: 1024,
         maxHeight: 1024,
         imageQuality: 85,
@@ -40,6 +41,47 @@ class ImageUtils {
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
+      return null;
+    }
+  }
+
+  static Future<String?> pickAndSaveImageFromFiles(String subDir) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+      );
+
+      if (result == null || result.files.isEmpty) return null;
+
+      final file = result.files.first;
+
+      if (kIsWeb) {
+        if (file.bytes == null) return null;
+        final ext = file.extension ?? 'png';
+        return 'data:image/$ext;base64,${base64Encode(file.bytes!)}';
+      } else {
+        final directory = await getApplicationDocumentsDirectory();
+        final path = p.join(directory.path, subDir);
+        final dir = Directory(path);
+        if (!await dir.exists()) {
+          await dir.create(recursive: true);
+        }
+
+        final fileName = '${const Uuid().v4()}.${file.extension ?? 'png'}';
+        final savedPath = p.join(path, fileName);
+
+        if (file.path != null) {
+          await File(file.path!).copy(savedPath);
+        } else if (file.bytes != null) {
+          await File(savedPath).writeAsBytes(file.bytes!);
+        } else {
+          return null;
+        }
+
+        return savedPath;
+      }
+    } catch (e) {
+      debugPrint('Error picking image from files: $e');
       return null;
     }
   }
