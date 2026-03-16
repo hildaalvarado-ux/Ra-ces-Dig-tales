@@ -7,6 +7,8 @@ import 'data/db_instance.dart'; // conexión a tu BD (Drift)
 import 'data/image_utils.dart';
 import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
 import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
+import 'datos/fertilizantes.dart';
+import 'datos/plagas.dart';
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -103,8 +105,22 @@ class _DashboardPageState extends State<DashboardPage> {
       // -------------------------------
 
       case 'Fertilizantes':
-      case 'Pesticidas':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => FertilizantesPage(userId: widget.userId),
+          ),
+        );
+        return;
+
       case 'Plagas':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => PlagasPage(userId: widget.userId),
+          ),
+        );
+        return;
+
+      case 'Pesticidas':
       case 'Favoritos':
       case 'Calendario':
       case 'Notificaciones':

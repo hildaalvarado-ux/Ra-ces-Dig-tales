@@ -32,6 +32,20 @@ class HelpDialogs {
         return 'Época del año donde normalmente se cosecha.';
       case 'Época de cosecha':
         return 'Temprana, media o tardía según el ciclo.';
+      case 'Origen':
+        return 'Procedencia de los materiales usados para el fertilizante.';
+      case 'Beneficios':
+        return 'Ventajas que aporta al suelo o a la planta.';
+      case 'Nutrientes':
+        return 'Elementos químicos principales que aporta (N-P-K, etc.).';
+      case 'Gravedad':
+        return 'Nivel de daño que puede causar al cultivo si no se controla.';
+      case 'Detección':
+        return 'Dónde buscar para encontrar rastros de la plaga.';
+      case 'Tratamiento':
+        return 'Acciones recomendadas para eliminar o reducir la plaga.';
+      case 'Prevención':
+        return 'Acciones para evitar que la plaga aparezca.';
       default:
         return 'Información de referencia para este campo.';
     }

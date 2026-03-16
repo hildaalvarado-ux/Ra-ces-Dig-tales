@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../main.dart';
 import 'help_dialogs.dart';
+import 'plagas.dart';
+import 'plaga_detalle.dart';
 
 class Cultivo {
   final int? id; // null si es del catálogo
@@ -299,18 +301,48 @@ const SizedBox(height: 12),
                       runSpacing: 10,
                       children: cultivo.plagas
                           .map(
-                            (p) => Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: AppColors.greenDark.withOpacity(0.14)),
-                              ),
-                              child: Text(
-                                p,
-                                style: const TextStyle(
-                                  color: AppColors.greenDarker,
-                                  fontWeight: FontWeight.w800,
+                            (p) => InkWell(
+                              borderRadius: BorderRadius.circular(14),
+                              onTap: () async {
+                                try {
+                                  final raw = await rootBundle.loadString('assets/data/plagas.json');
+                                  final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
+                                  final decoded = jsonDecode(cleanJson) as List;
+                                  final catalog = decoded.map((e) => Plaga.fromJson(Map<String, dynamic>.from(e))).toList();
+
+                                  final plaga = catalog.firstWhere(
+                                    (item) => item.nombre.toLowerCase() == p.toLowerCase(),
+                                    orElse: () => throw 'No encontrada',
+                                  );
+
+                                  if (context.mounted) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => PlagaDetallePage(plaga: plaga),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('No hay más información de: $p')),
+                                    );
+                                  }
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(color: AppColors.greenDark.withOpacity(0.14)),
+                                ),
+                                child: Text(
+                                  p,
+                                  style: const TextStyle(
+                                    color: AppColors.greenDarker,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
                               ),
                             ),

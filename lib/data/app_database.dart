@@ -53,12 +53,57 @@ class SharedCultivos extends Table {
   TextColumn get payloadJson => text()();
 }
 
-@DriftDatabase(tables: [Users, Sessions, UserCultivos, SharedCultivos])
+class UserFertilizantes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get nombre => text().withDefault(const Constant(''))();
+  TextColumn get tipo => text().withDefault(const Constant(''))();
+  TextColumn get imagePath => text().nullable()();
+  TextColumn get payloadJson => text()();
+}
+
+class SharedFertilizantes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get nombre => text().withDefault(const Constant(''))();
+  TextColumn get tipo => text().withDefault(const Constant(''))();
+  TextColumn get imagePath => text().nullable()();
+  TextColumn get payloadJson => text()();
+}
+
+class UserPlagas extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get nombre => text().withDefault(const Constant(''))();
+  TextColumn get cientifico => text().withDefault(const Constant(''))();
+  TextColumn get imagePath => text().nullable()();
+  TextColumn get payloadJson => text()();
+}
+
+class SharedPlagas extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get nombre => text().withDefault(const Constant(''))();
+  TextColumn get cientifico => text().withDefault(const Constant(''))();
+  TextColumn get imagePath => text().nullable()();
+  TextColumn get payloadJson => text()();
+}
+
+@DriftDatabase(tables: [
+  Users,
+  Sessions,
+  UserCultivos,
+  SharedCultivos,
+  UserFertilizantes,
+  SharedFertilizantes,
+  UserPlagas,
+  SharedPlagas
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -85,6 +130,12 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(userCultivos, userCultivos.estacion);
             await m.addColumn(userCultivos, userCultivos.imagePath);
             await m.createTable(sharedCultivos);
+          }
+          if (from < 5) {
+            await m.createTable(userFertilizantes);
+            await m.createTable(sharedFertilizantes);
+            await m.createTable(userPlagas);
+            await m.createTable(sharedPlagas);
           }
         },
         beforeOpen: (details) async {

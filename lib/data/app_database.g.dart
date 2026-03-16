@@ -1700,6 +1700,1600 @@ class SharedCultivosCompanion extends UpdateCompanion<SharedCultivo> {
   }
 }
 
+class $UserFertilizantesTable extends UserFertilizantes
+    with TableInfo<$UserFertilizantesTable, UserFertilizante> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserFertilizantesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  @override
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _tipoMeta = const VerificationMeta('tipo');
+  @override
+  late final GeneratedColumn<String> tipo = GeneratedColumn<String>(
+    'tipo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    nombre,
+    tipo,
+    imagePath,
+    payloadJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_fertilizantes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserFertilizante> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    }
+    if (data.containsKey('tipo')) {
+      context.handle(
+        _tipoMeta,
+        tipo.isAcceptableOrUnknown(data['tipo']!, _tipoMeta),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserFertilizante map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserFertilizante(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      tipo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tipo'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+    );
+  }
+
+  @override
+  $UserFertilizantesTable createAlias(String alias) {
+    return $UserFertilizantesTable(attachedDatabase, alias);
+  }
+}
+
+class UserFertilizante extends DataClass
+    implements Insertable<UserFertilizante> {
+  final int id;
+  final int userId;
+  final String nombre;
+  final String tipo;
+  final String? imagePath;
+  final String payloadJson;
+  const UserFertilizante({
+    required this.id,
+    required this.userId,
+    required this.nombre,
+    required this.tipo,
+    this.imagePath,
+    required this.payloadJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['nombre'] = Variable<String>(nombre);
+    map['tipo'] = Variable<String>(tipo);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    map['payload_json'] = Variable<String>(payloadJson);
+    return map;
+  }
+
+  UserFertilizantesCompanion toCompanion(bool nullToAbsent) {
+    return UserFertilizantesCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      nombre: Value(nombre),
+      tipo: Value(tipo),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      payloadJson: Value(payloadJson),
+    );
+  }
+
+  factory UserFertilizante.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserFertilizante(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      tipo: serializer.fromJson<String>(json['tipo']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'nombre': serializer.toJson<String>(nombre),
+      'tipo': serializer.toJson<String>(tipo),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+    };
+  }
+
+  UserFertilizante copyWith({
+    int? id,
+    int? userId,
+    String? nombre,
+    String? tipo,
+    Value<String?> imagePath = const Value.absent(),
+    String? payloadJson,
+  }) => UserFertilizante(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    nombre: nombre ?? this.nombre,
+    tipo: tipo ?? this.tipo,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    payloadJson: payloadJson ?? this.payloadJson,
+  );
+  UserFertilizante copyWithCompanion(UserFertilizantesCompanion data) {
+    return UserFertilizante(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      tipo: data.tipo.present ? data.tipo.value : this.tipo,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserFertilizante(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, userId, nombre, tipo, imagePath, payloadJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserFertilizante &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.nombre == this.nombre &&
+          other.tipo == this.tipo &&
+          other.imagePath == this.imagePath &&
+          other.payloadJson == this.payloadJson);
+}
+
+class UserFertilizantesCompanion extends UpdateCompanion<UserFertilizante> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> nombre;
+  final Value<String> tipo;
+  final Value<String?> imagePath;
+  final Value<String> payloadJson;
+  const UserFertilizantesCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+  });
+  UserFertilizantesCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    required String payloadJson,
+  }) : userId = Value(userId),
+       payloadJson = Value(payloadJson);
+  static Insertable<UserFertilizante> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? nombre,
+    Expression<String>? tipo,
+    Expression<String>? imagePath,
+    Expression<String>? payloadJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (nombre != null) 'nombre': nombre,
+      if (tipo != null) 'tipo': tipo,
+      if (imagePath != null) 'image_path': imagePath,
+      if (payloadJson != null) 'payload_json': payloadJson,
+    });
+  }
+
+  UserFertilizantesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? nombre,
+    Value<String>? tipo,
+    Value<String?>? imagePath,
+    Value<String>? payloadJson,
+  }) {
+    return UserFertilizantesCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      nombre: nombre ?? this.nombre,
+      tipo: tipo ?? this.tipo,
+      imagePath: imagePath ?? this.imagePath,
+      payloadJson: payloadJson ?? this.payloadJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (tipo.present) {
+      map['tipo'] = Variable<String>(tipo.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserFertilizantesCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SharedFertilizantesTable extends SharedFertilizantes
+    with TableInfo<$SharedFertilizantesTable, SharedFertilizante> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SharedFertilizantesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  @override
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _tipoMeta = const VerificationMeta('tipo');
+  @override
+  late final GeneratedColumn<String> tipo = GeneratedColumn<String>(
+    'tipo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    nombre,
+    tipo,
+    imagePath,
+    payloadJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'shared_fertilizantes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SharedFertilizante> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    }
+    if (data.containsKey('tipo')) {
+      context.handle(
+        _tipoMeta,
+        tipo.isAcceptableOrUnknown(data['tipo']!, _tipoMeta),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SharedFertilizante map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SharedFertilizante(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      tipo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tipo'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+    );
+  }
+
+  @override
+  $SharedFertilizantesTable createAlias(String alias) {
+    return $SharedFertilizantesTable(attachedDatabase, alias);
+  }
+}
+
+class SharedFertilizante extends DataClass
+    implements Insertable<SharedFertilizante> {
+  final int id;
+  final int userId;
+  final String nombre;
+  final String tipo;
+  final String? imagePath;
+  final String payloadJson;
+  const SharedFertilizante({
+    required this.id,
+    required this.userId,
+    required this.nombre,
+    required this.tipo,
+    this.imagePath,
+    required this.payloadJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['nombre'] = Variable<String>(nombre);
+    map['tipo'] = Variable<String>(tipo);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    map['payload_json'] = Variable<String>(payloadJson);
+    return map;
+  }
+
+  SharedFertilizantesCompanion toCompanion(bool nullToAbsent) {
+    return SharedFertilizantesCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      nombre: Value(nombre),
+      tipo: Value(tipo),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      payloadJson: Value(payloadJson),
+    );
+  }
+
+  factory SharedFertilizante.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SharedFertilizante(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      tipo: serializer.fromJson<String>(json['tipo']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'nombre': serializer.toJson<String>(nombre),
+      'tipo': serializer.toJson<String>(tipo),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+    };
+  }
+
+  SharedFertilizante copyWith({
+    int? id,
+    int? userId,
+    String? nombre,
+    String? tipo,
+    Value<String?> imagePath = const Value.absent(),
+    String? payloadJson,
+  }) => SharedFertilizante(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    nombre: nombre ?? this.nombre,
+    tipo: tipo ?? this.tipo,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    payloadJson: payloadJson ?? this.payloadJson,
+  );
+  SharedFertilizante copyWithCompanion(SharedFertilizantesCompanion data) {
+    return SharedFertilizante(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      tipo: data.tipo.present ? data.tipo.value : this.tipo,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharedFertilizante(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, userId, nombre, tipo, imagePath, payloadJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SharedFertilizante &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.nombre == this.nombre &&
+          other.tipo == this.tipo &&
+          other.imagePath == this.imagePath &&
+          other.payloadJson == this.payloadJson);
+}
+
+class SharedFertilizantesCompanion extends UpdateCompanion<SharedFertilizante> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> nombre;
+  final Value<String> tipo;
+  final Value<String?> imagePath;
+  final Value<String> payloadJson;
+  const SharedFertilizantesCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+  });
+  SharedFertilizantesCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    required String payloadJson,
+  }) : userId = Value(userId),
+       payloadJson = Value(payloadJson);
+  static Insertable<SharedFertilizante> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? nombre,
+    Expression<String>? tipo,
+    Expression<String>? imagePath,
+    Expression<String>? payloadJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (nombre != null) 'nombre': nombre,
+      if (tipo != null) 'tipo': tipo,
+      if (imagePath != null) 'image_path': imagePath,
+      if (payloadJson != null) 'payload_json': payloadJson,
+    });
+  }
+
+  SharedFertilizantesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? nombre,
+    Value<String>? tipo,
+    Value<String?>? imagePath,
+    Value<String>? payloadJson,
+  }) {
+    return SharedFertilizantesCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      nombre: nombre ?? this.nombre,
+      tipo: tipo ?? this.tipo,
+      imagePath: imagePath ?? this.imagePath,
+      payloadJson: payloadJson ?? this.payloadJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (tipo.present) {
+      map['tipo'] = Variable<String>(tipo.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharedFertilizantesCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UserPlagasTable extends UserPlagas
+    with TableInfo<$UserPlagasTable, UserPlaga> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserPlagasTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  @override
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _cientificoMeta = const VerificationMeta(
+    'cientifico',
+  );
+  @override
+  late final GeneratedColumn<String> cientifico = GeneratedColumn<String>(
+    'cientifico',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    nombre,
+    cientifico,
+    imagePath,
+    payloadJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_plagas';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserPlaga> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    }
+    if (data.containsKey('cientifico')) {
+      context.handle(
+        _cientificoMeta,
+        cientifico.isAcceptableOrUnknown(data['cientifico']!, _cientificoMeta),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserPlaga map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserPlaga(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      cientifico: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cientifico'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+    );
+  }
+
+  @override
+  $UserPlagasTable createAlias(String alias) {
+    return $UserPlagasTable(attachedDatabase, alias);
+  }
+}
+
+class UserPlaga extends DataClass implements Insertable<UserPlaga> {
+  final int id;
+  final int userId;
+  final String nombre;
+  final String cientifico;
+  final String? imagePath;
+  final String payloadJson;
+  const UserPlaga({
+    required this.id,
+    required this.userId,
+    required this.nombre,
+    required this.cientifico,
+    this.imagePath,
+    required this.payloadJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['nombre'] = Variable<String>(nombre);
+    map['cientifico'] = Variable<String>(cientifico);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    map['payload_json'] = Variable<String>(payloadJson);
+    return map;
+  }
+
+  UserPlagasCompanion toCompanion(bool nullToAbsent) {
+    return UserPlagasCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      nombre: Value(nombre),
+      cientifico: Value(cientifico),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      payloadJson: Value(payloadJson),
+    );
+  }
+
+  factory UserPlaga.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserPlaga(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      cientifico: serializer.fromJson<String>(json['cientifico']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'nombre': serializer.toJson<String>(nombre),
+      'cientifico': serializer.toJson<String>(cientifico),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+    };
+  }
+
+  UserPlaga copyWith({
+    int? id,
+    int? userId,
+    String? nombre,
+    String? cientifico,
+    Value<String?> imagePath = const Value.absent(),
+    String? payloadJson,
+  }) => UserPlaga(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    nombre: nombre ?? this.nombre,
+    cientifico: cientifico ?? this.cientifico,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    payloadJson: payloadJson ?? this.payloadJson,
+  );
+  UserPlaga copyWithCompanion(UserPlagasCompanion data) {
+    return UserPlaga(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      cientifico: data.cientifico.present
+          ? data.cientifico.value
+          : this.cientifico,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserPlaga(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('cientifico: $cientifico, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, userId, nombre, cientifico, imagePath, payloadJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserPlaga &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.nombre == this.nombre &&
+          other.cientifico == this.cientifico &&
+          other.imagePath == this.imagePath &&
+          other.payloadJson == this.payloadJson);
+}
+
+class UserPlagasCompanion extends UpdateCompanion<UserPlaga> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> nombre;
+  final Value<String> cientifico;
+  final Value<String?> imagePath;
+  final Value<String> payloadJson;
+  const UserPlagasCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.cientifico = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+  });
+  UserPlagasCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.nombre = const Value.absent(),
+    this.cientifico = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    required String payloadJson,
+  }) : userId = Value(userId),
+       payloadJson = Value(payloadJson);
+  static Insertable<UserPlaga> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? nombre,
+    Expression<String>? cientifico,
+    Expression<String>? imagePath,
+    Expression<String>? payloadJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (nombre != null) 'nombre': nombre,
+      if (cientifico != null) 'cientifico': cientifico,
+      if (imagePath != null) 'image_path': imagePath,
+      if (payloadJson != null) 'payload_json': payloadJson,
+    });
+  }
+
+  UserPlagasCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? nombre,
+    Value<String>? cientifico,
+    Value<String?>? imagePath,
+    Value<String>? payloadJson,
+  }) {
+    return UserPlagasCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      nombre: nombre ?? this.nombre,
+      cientifico: cientifico ?? this.cientifico,
+      imagePath: imagePath ?? this.imagePath,
+      payloadJson: payloadJson ?? this.payloadJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (cientifico.present) {
+      map['cientifico'] = Variable<String>(cientifico.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserPlagasCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('cientifico: $cientifico, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SharedPlagasTable extends SharedPlagas
+    with TableInfo<$SharedPlagasTable, SharedPlaga> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SharedPlagasTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  @override
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _cientificoMeta = const VerificationMeta(
+    'cientifico',
+  );
+  @override
+  late final GeneratedColumn<String> cientifico = GeneratedColumn<String>(
+    'cientifico',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    nombre,
+    cientifico,
+    imagePath,
+    payloadJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'shared_plagas';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SharedPlaga> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    }
+    if (data.containsKey('cientifico')) {
+      context.handle(
+        _cientificoMeta,
+        cientifico.isAcceptableOrUnknown(data['cientifico']!, _cientificoMeta),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SharedPlaga map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SharedPlaga(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      cientifico: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cientifico'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+    );
+  }
+
+  @override
+  $SharedPlagasTable createAlias(String alias) {
+    return $SharedPlagasTable(attachedDatabase, alias);
+  }
+}
+
+class SharedPlaga extends DataClass implements Insertable<SharedPlaga> {
+  final int id;
+  final int userId;
+  final String nombre;
+  final String cientifico;
+  final String? imagePath;
+  final String payloadJson;
+  const SharedPlaga({
+    required this.id,
+    required this.userId,
+    required this.nombre,
+    required this.cientifico,
+    this.imagePath,
+    required this.payloadJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['nombre'] = Variable<String>(nombre);
+    map['cientifico'] = Variable<String>(cientifico);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    map['payload_json'] = Variable<String>(payloadJson);
+    return map;
+  }
+
+  SharedPlagasCompanion toCompanion(bool nullToAbsent) {
+    return SharedPlagasCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      nombre: Value(nombre),
+      cientifico: Value(cientifico),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      payloadJson: Value(payloadJson),
+    );
+  }
+
+  factory SharedPlaga.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SharedPlaga(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      cientifico: serializer.fromJson<String>(json['cientifico']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'nombre': serializer.toJson<String>(nombre),
+      'cientifico': serializer.toJson<String>(cientifico),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+    };
+  }
+
+  SharedPlaga copyWith({
+    int? id,
+    int? userId,
+    String? nombre,
+    String? cientifico,
+    Value<String?> imagePath = const Value.absent(),
+    String? payloadJson,
+  }) => SharedPlaga(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    nombre: nombre ?? this.nombre,
+    cientifico: cientifico ?? this.cientifico,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    payloadJson: payloadJson ?? this.payloadJson,
+  );
+  SharedPlaga copyWithCompanion(SharedPlagasCompanion data) {
+    return SharedPlaga(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      cientifico: data.cientifico.present
+          ? data.cientifico.value
+          : this.cientifico,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharedPlaga(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('cientifico: $cientifico, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, userId, nombre, cientifico, imagePath, payloadJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SharedPlaga &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.nombre == this.nombre &&
+          other.cientifico == this.cientifico &&
+          other.imagePath == this.imagePath &&
+          other.payloadJson == this.payloadJson);
+}
+
+class SharedPlagasCompanion extends UpdateCompanion<SharedPlaga> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> nombre;
+  final Value<String> cientifico;
+  final Value<String?> imagePath;
+  final Value<String> payloadJson;
+  const SharedPlagasCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.cientifico = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+  });
+  SharedPlagasCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.nombre = const Value.absent(),
+    this.cientifico = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    required String payloadJson,
+  }) : userId = Value(userId),
+       payloadJson = Value(payloadJson);
+  static Insertable<SharedPlaga> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? nombre,
+    Expression<String>? cientifico,
+    Expression<String>? imagePath,
+    Expression<String>? payloadJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (nombre != null) 'nombre': nombre,
+      if (cientifico != null) 'cientifico': cientifico,
+      if (imagePath != null) 'image_path': imagePath,
+      if (payloadJson != null) 'payload_json': payloadJson,
+    });
+  }
+
+  SharedPlagasCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? nombre,
+    Value<String>? cientifico,
+    Value<String?>? imagePath,
+    Value<String>? payloadJson,
+  }) {
+    return SharedPlagasCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      nombre: nombre ?? this.nombre,
+      cientifico: cientifico ?? this.cientifico,
+      imagePath: imagePath ?? this.imagePath,
+      payloadJson: payloadJson ?? this.payloadJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (cientifico.present) {
+      map['cientifico'] = Variable<String>(cientifico.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharedPlagasCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('cientifico: $cientifico, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1707,6 +3301,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $UserCultivosTable userCultivos = $UserCultivosTable(this);
   late final $SharedCultivosTable sharedCultivos = $SharedCultivosTable(this);
+  late final $UserFertilizantesTable userFertilizantes =
+      $UserFertilizantesTable(this);
+  late final $SharedFertilizantesTable sharedFertilizantes =
+      $SharedFertilizantesTable(this);
+  late final $UserPlagasTable userPlagas = $UserPlagasTable(this);
+  late final $SharedPlagasTable sharedPlagas = $SharedPlagasTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1716,6 +3316,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     sessions,
     userCultivos,
     sharedCultivos,
+    userFertilizantes,
+    sharedFertilizantes,
+    userPlagas,
+    sharedPlagas,
   ];
 }
 
@@ -2608,6 +4212,896 @@ typedef $$SharedCultivosTableProcessedTableManager =
       SharedCultivo,
       PrefetchHooks Function()
     >;
+typedef $$UserFertilizantesTableCreateCompanionBuilder =
+    UserFertilizantesCompanion Function({
+      Value<int> id,
+      required int userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<String?> imagePath,
+      required String payloadJson,
+    });
+typedef $$UserFertilizantesTableUpdateCompanionBuilder =
+    UserFertilizantesCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<String?> imagePath,
+      Value<String> payloadJson,
+    });
+
+class $$UserFertilizantesTableFilterComposer
+    extends Composer<_$AppDatabase, $UserFertilizantesTable> {
+  $$UserFertilizantesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserFertilizantesTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserFertilizantesTable> {
+  $$UserFertilizantesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserFertilizantesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserFertilizantesTable> {
+  $$UserFertilizantesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<String> get tipo =>
+      $composableBuilder(column: $table.tipo, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+}
+
+class $$UserFertilizantesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserFertilizantesTable,
+          UserFertilizante,
+          $$UserFertilizantesTableFilterComposer,
+          $$UserFertilizantesTableOrderingComposer,
+          $$UserFertilizantesTableAnnotationComposer,
+          $$UserFertilizantesTableCreateCompanionBuilder,
+          $$UserFertilizantesTableUpdateCompanionBuilder,
+          (
+            UserFertilizante,
+            BaseReferences<
+              _$AppDatabase,
+              $UserFertilizantesTable,
+              UserFertilizante
+            >,
+          ),
+          UserFertilizante,
+          PrefetchHooks Function()
+        > {
+  $$UserFertilizantesTableTableManager(
+    _$AppDatabase db,
+    $UserFertilizantesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserFertilizantesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserFertilizantesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserFertilizantesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => UserFertilizantesCompanion(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                required String payloadJson,
+              }) => UserFertilizantesCompanion.insert(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserFertilizantesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserFertilizantesTable,
+      UserFertilizante,
+      $$UserFertilizantesTableFilterComposer,
+      $$UserFertilizantesTableOrderingComposer,
+      $$UserFertilizantesTableAnnotationComposer,
+      $$UserFertilizantesTableCreateCompanionBuilder,
+      $$UserFertilizantesTableUpdateCompanionBuilder,
+      (
+        UserFertilizante,
+        BaseReferences<
+          _$AppDatabase,
+          $UserFertilizantesTable,
+          UserFertilizante
+        >,
+      ),
+      UserFertilizante,
+      PrefetchHooks Function()
+    >;
+typedef $$SharedFertilizantesTableCreateCompanionBuilder =
+    SharedFertilizantesCompanion Function({
+      Value<int> id,
+      required int userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<String?> imagePath,
+      required String payloadJson,
+    });
+typedef $$SharedFertilizantesTableUpdateCompanionBuilder =
+    SharedFertilizantesCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<String?> imagePath,
+      Value<String> payloadJson,
+    });
+
+class $$SharedFertilizantesTableFilterComposer
+    extends Composer<_$AppDatabase, $SharedFertilizantesTable> {
+  $$SharedFertilizantesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SharedFertilizantesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SharedFertilizantesTable> {
+  $$SharedFertilizantesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SharedFertilizantesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SharedFertilizantesTable> {
+  $$SharedFertilizantesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<String> get tipo =>
+      $composableBuilder(column: $table.tipo, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+}
+
+class $$SharedFertilizantesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SharedFertilizantesTable,
+          SharedFertilizante,
+          $$SharedFertilizantesTableFilterComposer,
+          $$SharedFertilizantesTableOrderingComposer,
+          $$SharedFertilizantesTableAnnotationComposer,
+          $$SharedFertilizantesTableCreateCompanionBuilder,
+          $$SharedFertilizantesTableUpdateCompanionBuilder,
+          (
+            SharedFertilizante,
+            BaseReferences<
+              _$AppDatabase,
+              $SharedFertilizantesTable,
+              SharedFertilizante
+            >,
+          ),
+          SharedFertilizante,
+          PrefetchHooks Function()
+        > {
+  $$SharedFertilizantesTableTableManager(
+    _$AppDatabase db,
+    $SharedFertilizantesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SharedFertilizantesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SharedFertilizantesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SharedFertilizantesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => SharedFertilizantesCompanion(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                required String payloadJson,
+              }) => SharedFertilizantesCompanion.insert(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SharedFertilizantesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SharedFertilizantesTable,
+      SharedFertilizante,
+      $$SharedFertilizantesTableFilterComposer,
+      $$SharedFertilizantesTableOrderingComposer,
+      $$SharedFertilizantesTableAnnotationComposer,
+      $$SharedFertilizantesTableCreateCompanionBuilder,
+      $$SharedFertilizantesTableUpdateCompanionBuilder,
+      (
+        SharedFertilizante,
+        BaseReferences<
+          _$AppDatabase,
+          $SharedFertilizantesTable,
+          SharedFertilizante
+        >,
+      ),
+      SharedFertilizante,
+      PrefetchHooks Function()
+    >;
+typedef $$UserPlagasTableCreateCompanionBuilder =
+    UserPlagasCompanion Function({
+      Value<int> id,
+      required int userId,
+      Value<String> nombre,
+      Value<String> cientifico,
+      Value<String?> imagePath,
+      required String payloadJson,
+    });
+typedef $$UserPlagasTableUpdateCompanionBuilder =
+    UserPlagasCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> nombre,
+      Value<String> cientifico,
+      Value<String?> imagePath,
+      Value<String> payloadJson,
+    });
+
+class $$UserPlagasTableFilterComposer
+    extends Composer<_$AppDatabase, $UserPlagasTable> {
+  $$UserPlagasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cientifico => $composableBuilder(
+    column: $table.cientifico,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserPlagasTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserPlagasTable> {
+  $$UserPlagasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cientifico => $composableBuilder(
+    column: $table.cientifico,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserPlagasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserPlagasTable> {
+  $$UserPlagasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<String> get cientifico => $composableBuilder(
+    column: $table.cientifico,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+}
+
+class $$UserPlagasTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserPlagasTable,
+          UserPlaga,
+          $$UserPlagasTableFilterComposer,
+          $$UserPlagasTableOrderingComposer,
+          $$UserPlagasTableAnnotationComposer,
+          $$UserPlagasTableCreateCompanionBuilder,
+          $$UserPlagasTableUpdateCompanionBuilder,
+          (
+            UserPlaga,
+            BaseReferences<_$AppDatabase, $UserPlagasTable, UserPlaga>,
+          ),
+          UserPlaga,
+          PrefetchHooks Function()
+        > {
+  $$UserPlagasTableTableManager(_$AppDatabase db, $UserPlagasTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserPlagasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserPlagasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserPlagasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> nombre = const Value.absent(),
+                Value<String> cientifico = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => UserPlagasCompanion(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                cientifico: cientifico,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                Value<String> nombre = const Value.absent(),
+                Value<String> cientifico = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                required String payloadJson,
+              }) => UserPlagasCompanion.insert(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                cientifico: cientifico,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserPlagasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserPlagasTable,
+      UserPlaga,
+      $$UserPlagasTableFilterComposer,
+      $$UserPlagasTableOrderingComposer,
+      $$UserPlagasTableAnnotationComposer,
+      $$UserPlagasTableCreateCompanionBuilder,
+      $$UserPlagasTableUpdateCompanionBuilder,
+      (UserPlaga, BaseReferences<_$AppDatabase, $UserPlagasTable, UserPlaga>),
+      UserPlaga,
+      PrefetchHooks Function()
+    >;
+typedef $$SharedPlagasTableCreateCompanionBuilder =
+    SharedPlagasCompanion Function({
+      Value<int> id,
+      required int userId,
+      Value<String> nombre,
+      Value<String> cientifico,
+      Value<String?> imagePath,
+      required String payloadJson,
+    });
+typedef $$SharedPlagasTableUpdateCompanionBuilder =
+    SharedPlagasCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> nombre,
+      Value<String> cientifico,
+      Value<String?> imagePath,
+      Value<String> payloadJson,
+    });
+
+class $$SharedPlagasTableFilterComposer
+    extends Composer<_$AppDatabase, $SharedPlagasTable> {
+  $$SharedPlagasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cientifico => $composableBuilder(
+    column: $table.cientifico,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SharedPlagasTableOrderingComposer
+    extends Composer<_$AppDatabase, $SharedPlagasTable> {
+  $$SharedPlagasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cientifico => $composableBuilder(
+    column: $table.cientifico,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SharedPlagasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SharedPlagasTable> {
+  $$SharedPlagasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<String> get cientifico => $composableBuilder(
+    column: $table.cientifico,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+}
+
+class $$SharedPlagasTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SharedPlagasTable,
+          SharedPlaga,
+          $$SharedPlagasTableFilterComposer,
+          $$SharedPlagasTableOrderingComposer,
+          $$SharedPlagasTableAnnotationComposer,
+          $$SharedPlagasTableCreateCompanionBuilder,
+          $$SharedPlagasTableUpdateCompanionBuilder,
+          (
+            SharedPlaga,
+            BaseReferences<_$AppDatabase, $SharedPlagasTable, SharedPlaga>,
+          ),
+          SharedPlaga,
+          PrefetchHooks Function()
+        > {
+  $$SharedPlagasTableTableManager(_$AppDatabase db, $SharedPlagasTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SharedPlagasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SharedPlagasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SharedPlagasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> nombre = const Value.absent(),
+                Value<String> cientifico = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => SharedPlagasCompanion(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                cientifico: cientifico,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                Value<String> nombre = const Value.absent(),
+                Value<String> cientifico = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                required String payloadJson,
+              }) => SharedPlagasCompanion.insert(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                cientifico: cientifico,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SharedPlagasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SharedPlagasTable,
+      SharedPlaga,
+      $$SharedPlagasTableFilterComposer,
+      $$SharedPlagasTableOrderingComposer,
+      $$SharedPlagasTableAnnotationComposer,
+      $$SharedPlagasTableCreateCompanionBuilder,
+      $$SharedPlagasTableUpdateCompanionBuilder,
+      (
+        SharedPlaga,
+        BaseReferences<_$AppDatabase, $SharedPlagasTable, SharedPlaga>,
+      ),
+      SharedPlaga,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2620,4 +5114,12 @@ class $AppDatabaseManager {
       $$UserCultivosTableTableManager(_db, _db.userCultivos);
   $$SharedCultivosTableTableManager get sharedCultivos =>
       $$SharedCultivosTableTableManager(_db, _db.sharedCultivos);
+  $$UserFertilizantesTableTableManager get userFertilizantes =>
+      $$UserFertilizantesTableTableManager(_db, _db.userFertilizantes);
+  $$SharedFertilizantesTableTableManager get sharedFertilizantes =>
+      $$SharedFertilizantesTableTableManager(_db, _db.sharedFertilizantes);
+  $$UserPlagasTableTableManager get userPlagas =>
+      $$UserPlagasTableTableManager(_db, _db.userPlagas);
+  $$SharedPlagasTableTableManager get sharedPlagas =>
+      $$SharedPlagasTableTableManager(_db, _db.sharedPlagas);
 }
