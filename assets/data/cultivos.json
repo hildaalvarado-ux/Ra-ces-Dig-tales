@@ -1,11 +1,4 @@
 [
-  /*
-    INSTRUCCIONES PARA AGREGAR NUEVOS CULTIVOS AL CATÁLOGO:
-    1. Agregue un nuevo objeto JSON a esta lista.
-    2. Los campos obligatorios son: nombre, imagen, cientifico, cosechaMeses, tipo, estacion, identificacion, siembra, ficha, plagas.
-    3. 'imagen' debe ser una ruta a un asset (ej. assets/cultivos/nuevo.png).
-    4. Asegúrese de que la imagen exista en la carpeta assets/cultivos/.
-  */
   {
     "imagen": "assets/cultivos/ajo.png",
     "nombre": "Ajo",
@@ -130,7 +123,7 @@
     "imagen": "assets/cultivos/rabano.jpg",
     "nombre": "Rabano",
     "cientifico": "Raphanus sativus",
-    "cosechaMeses":1 ,
+    "cosechaMeses": 1,
     "tipo": "Raíz",
     "estacion": "Otoño",
     "identificacion": "El rabano es una planta de rápido crecimiento con raíces comestible de forma redonda o alargada. Tiene una piel suave y un sabor ligeramente picante.",
