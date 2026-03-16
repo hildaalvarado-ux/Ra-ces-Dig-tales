@@ -30,9 +30,10 @@ class _CultivosPageState extends State<CultivosPage> {
 
   bool _loading = true;
 
-  /// Cultivos “por defecto” cargados desde assets/data/cultivos.json
+  /// Cultivos predeterminados desde assets/data/cultivos.json
   final List<Cultivo> _catalogo = [];
 
+  /// Cultivos creados/importados por el usuario
   /// Cultivos creados por el usuario
   final List<Cultivo> _agregados = [];
 
@@ -45,69 +46,64 @@ class _CultivosPageState extends State<CultivosPage> {
     _loadData();
   }
 
-  Future<void> _loadData() async {
-    await _loadCatalogFromAssets();
-    await _loadUserCultivos();
-    await _loadSharedCultivos();
-  }
-
-  Future<void> _loadUserCultivos() async {
-    try {
-      final list = await appDb.getUserCultivos(widget.userId);
-      setState(() {
-        _agregados.clear();
-        for (var row in list) {
-          final data = jsonDecode(row.payloadJson) as Map<String, dynamic>;
-          data['id'] = row.id;
-          data['imagePath'] = row.imagePath;
-          _agregados.add(Cultivo.fromJson(data));
-        }
-      });
-    } catch (e) {
-      debugPrint('Error loading user crops: $e');
-    }
-  }
-
-  Future<void> _loadSharedCultivos() async {
-    try {
-      final list = await appDb.getSharedCultivos(widget.userId);
-      setState(() {
-        _compartidos.clear();
-        for (var row in list) {
-          final data = jsonDecode(row.payloadJson) as Map<String, dynamic>;
-          data['id'] = row.id;
-          data['imagePath'] = row.imagePath;
-          _compartidos.add(Cultivo.fromJson(data));
-        }
-      });
-    } catch (e) {
-      debugPrint('Error loading shared crops: $e');
-    }
-  }
-
   @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();
   }
 
-  /// Carga el catálogo desde assets (Opción A)
-  Future<void> _loadCatalogFromAssets() async {
+  Future<void> _loadData() async {
+    if (mounted) {
+      setState(() => _loading = true);
+    }
+
     try {
-      final raw = await rootBundle.loadString('assets/data/cultivos.json');
-      final list = (jsonDecode(raw) as List).cast<dynamic>();
-
-      _catalogo
-        ..clear()
-        ..addAll(list.map((e) => Cultivo.fromJson(e as Map<String, dynamic>)));
-
-      if (mounted) setState(() => _loading = false);
+      await _loadCatalogFromAssets();
+      await _loadUserCultivos();
     } catch (e) {
       if (!mounted) return;
-      setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error cargando catálogo: $e')),
+        SnackBar(content: Text('Error cargando datos: $e')),
       );
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  Future<void> _loadCatalogFromAssets() async {
+    final raw = await rootBundle.loadString('assets/data/cultivos.json');
+    final decoded = jsonDecode(raw);
+
+    if (decoded is! List) {
+      throw Exception('El archivo cultivos.json no contiene una lista válida');
+    }
+
+    final list = decoded.cast<dynamic>();
+
+    _catalogo
+      ..clear()
+      ..addAll(
+        list.map((e) => Cultivo.fromJson(Map<String, dynamic>.from(e))),
+      );
+  }
+
+  Future<void> _loadUserCultivos() async {
+    final list = await appDb.getUserCultivos(widget.userId);
+
+    _agregados.clear();
+
+    for (final row in list) {
+      final data = jsonDecode(row.data) as Map<String, dynamic>;
+      data['id'] = row.id;
+      _agregados.add(Cultivo.fromJson(data));
+    }
+  }
+
+  List<Cultivo> get _all => [..._catalogo, ..._agregados];
+
+  List<Cultivo> get _filtered {
     }
   }
 
@@ -130,7 +126,10 @@ class _CultivosPageState extends State<CultivosPage> {
       final matchesEstacion =
           _filtroEstacion == 'Todas' || c.estacion == _filtroEstacion;
 
-      return matchesText && matchesCosecha && matchesTipo && matchesEstacion;
+      return matchesText &&
+          matchesCosecha &&
+          matchesTipo &&
+          matchesEstacion;
     }).toList();
 
     if (_orden == 'Nombre') {
@@ -146,67 +145,51 @@ class _CultivosPageState extends State<CultivosPage> {
     return list;
   }
 
-  List<Cultivo> get _filteredCatalogo => _applyFilters(_catalogo);
-  List<Cultivo> get _filteredAgregados => _applyFilters(_agregados);
-  List<Cultivo> get _filteredCompartidos => _applyFilters(_compartidos);
+  Future<void> _importFromJsonPaste() async {
+    final ctrl = TextEditingController();
 
-  /// Importar cultivo desde archivo .rdc (ZIP)
-  Future<void> _importFromFile() async {
+    final ok = await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Importar cultivo'),
+            content: TextField(
+              controller: ctrl,
+              minLines: 6,
+              maxLines: 12,
+              decoration: const InputDecoration(
+                hintText: 'Pega aquí el JSON que te enviaron por WhatsApp',
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.greenDarker,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Importar'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!ok) return;
+
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['rdc', 'zip'],
+      final obj = jsonDecode(ctrl.text.trim());
+      final cultivo = Cultivo.fromJson(obj as Map<String, dynamic>);
+
+      await appDb.insertUserCultivo(
+        widget.userId,
+        jsonEncode(cultivo.toJson()),
       );
 
-      if (result == null || result.files.isEmpty) return;
-
-      final file = result.files.first;
-      late final Uint8List bytes;
-
-      if (kIsWeb) {
-        bytes = file.bytes!;
-      } else {
-        bytes = await File(file.path!).readAsBytes();
-      }
-
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      String? jsonContent;
-      Uint8List? imageBytes;
-      String? imageExt;
-
-      for (final file in archive) {
-        if (file.name == 'cultivo.json') {
-          jsonContent = utf8.decode(file.content);
-        } else if (file.name.startsWith('imagen.')) {
-          imageBytes = file.content as Uint8List;
-          imageExt = file.name.split('.').last;
-        }
-      }
-
-      if (jsonContent == null) {
-        throw 'No se encontró el archivo cultivo.json';
-      }
-
-      final data = jsonDecode(jsonContent) as Map<String, dynamic>;
-      final tempCultivo = Cultivo.fromJson(data);
-
-      String? savedImagePath;
-      if (imageBytes != null && imageExt != null) {
-        savedImagePath = await ImageUtils.saveImageBytes(imageBytes, 'cultivos_images', imageExt);
-      }
-
-      await appDb.insertSharedCultivo(
-        userId: widget.userId,
-        nombre: tempCultivo.nombre,
-        tipo: tempCultivo.tipo,
-        cosechaMeses: tempCultivo.cosechaMeses,
-        estacion: tempCultivo.estacion,
-        imagePath: savedImagePath,
-        payloadJson: jsonContent,
-      );
-
-      await _loadSharedCultivos();
+      await _loadData();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -222,7 +205,9 @@ class _CultivosPageState extends State<CultivosPage> {
 
   Future<void> _abrirFormulario({Cultivo? cultivo}) async {
     final res = await Navigator.of(context).push<Cultivo>(
-      MaterialPageRoute(builder: (_) => CultivoFormPage(cultivo: cultivo)),
+      MaterialPageRoute(
+        builder: (_) => CultivoFormPage(cultivo: cultivo),
+      ),
     );
 
     if (res == null) return;
@@ -249,7 +234,7 @@ class _CultivosPageState extends State<CultivosPage> {
       );
     }
 
-    await _loadUserCultivos();
+    await _loadData();
   }
 
   Future<void> _eliminarCultivo(Cultivo c, {bool shared = false}) async {
@@ -265,7 +250,10 @@ class _CultivosPageState extends State<CultivosPage> {
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('Eliminar'),
               ),
             ],
@@ -273,15 +261,10 @@ class _CultivosPageState extends State<CultivosPage> {
         ) ??
         false;
 
-    if (ok) {
-      if (shared) {
-        await appDb.deleteSharedCultivo(c.id!);
-        await _loadSharedCultivos();
-      } else {
-        await appDb.deleteUserCultivo(c.id!);
-        await _loadUserCultivos();
-      }
-    }
+    if (!ok) return;
+
+    await appDb.deleteUserCultivo(c.id!);
+    await _loadData();
   }
 
   @override
@@ -292,16 +275,16 @@ class _CultivosPageState extends State<CultivosPage> {
         appBar: AppBar(
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
-          title:
-              const Text('Cultivos', style: TextStyle(fontWeight: FontWeight.w900)),
+          title: const Text(
+            'Cultivos',
+            style: TextStyle(fontWeight: FontWeight.w900),
+          ),
           actions: [
-            // ✅ Nuevo cultivo
             IconButton(
               tooltip: 'Nuevo cultivo',
               onPressed: () => _abrirFormulario(),
               icon: const Icon(Icons.add_rounded),
             ),
-            // ✅ Importar
             IconButton(
               tooltip: 'Importar cultivo (.rdc)',
               onPressed: _importFromFile,
@@ -332,18 +315,19 @@ class _CultivosPageState extends State<CultivosPage> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide:
-                          BorderSide(color: AppColors.greenDark.withOpacity(0.15)),
+                      borderSide: BorderSide(
+                        color: AppColors.greenDark.withOpacity(0.15),
+                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide:
-                          BorderSide(color: AppColors.greenDark.withOpacity(0.15)),
+                      borderSide: BorderSide(
+                        color: AppColors.greenDark.withOpacity(0.15),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 10),
-
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -373,70 +357,55 @@ class _CultivosPageState extends State<CultivosPage> {
                     ),
                     _Drop(
                       value: _filtroEstacion,
-                      items: const ['Todas', 'Otoño', 'Invierno', 'Primavera', 'Verano'],
+                      items: const [
+                        'Todas',
+                        'Otoño',
+                        'Invierno',
+                        'Primavera',
+                        'Verano'
+                      ],
                       onChanged: (v) => setState(() => _filtroEstacion = v),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
-
                 Expanded(
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
-                      : ListView(
-                          children: [
-                            if (_filteredAgregados.isNotEmpty) ...[
-                              _buildSectionHeader('Mis cultivos'),
-                              ..._filteredAgregados.map((c) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    child: _CultivoTile(
-                                      cultivo: c,
-                                      onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => CultivoDetallePage(cultivo: c),
-                                        ),
-                                      ),
-                                      onEdit: () => _abrirFormulario(cultivo: c),
-                                      onDelete: () => _eliminarCultivo(c),
+                      : _filtered.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'No hay cultivos para mostrar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          : ListView.separated(
+                              itemCount: _filtered.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 10),
+                              itemBuilder: (context, index) {
+                                final c = _filtered[index];
+                                return _CultivoTile(
+                                  cultivo: c,
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          CultivoDetallePage(cultivo: c),
                                     ),
-                                  )),
-                              const SizedBox(height: 10),
-                            ],
-                            if (_filteredCompartidos.isNotEmpty) ...[
-                              _buildSectionHeader('Cultivos compartidos'),
-                              ..._filteredCompartidos.map((c) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    child: _CultivoTile(
-                                      cultivo: c,
-                                      onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => CultivoDetallePage(cultivo: c),
-                                        ),
-                                      ),
-                                      onEdit: () => _abrirFormulario(cultivo: c),
-                                      onDelete: () => _eliminarCultivo(c, shared: true),
-                                    ),
-                                  )),
-                              const SizedBox(height: 10),
-                            ],
-                            if (_filteredCatalogo.isNotEmpty) ...[
-                              _buildSectionHeader('Catálogo'),
-                              ..._filteredCatalogo.map((c) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    child: _CultivoTile(
-                                      cultivo: c,
-                                      onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => CultivoDetallePage(cultivo: c),
-                                        ),
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          ],
-                        ),
-                )
+                                  ),
+                                  onEdit: c.id != null
+                                      ? () => _abrirFormulario(cultivo: c)
+                                      : null,
+                                  onDelete: c.id != null
+                                      ? () => _eliminarCultivo(c)
+                                      : null,
+                                );
+                              },
+                            ),
+                ),
               ],
             ),
           ),
@@ -466,7 +435,11 @@ class _Drop extends StatelessWidget {
   final List<String> items;
   final ValueChanged<String> onChanged;
 
-  const _Drop({required this.value, required this.items, required this.onChanged});
+  const _Drop({
+    required this.value,
+    required this.items,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -475,15 +448,22 @@ class _Drop extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.82),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.greenDark.withOpacity(0.14)),
+        border: Border.all(
+          color: AppColors.greenDark.withOpacity(0.14),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value,
           items: items
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .map((e) => DropdownMenuItem<String>(
+                    value: e,
+                    child: Text(e),
+                  ))
               .toList(),
-          onChanged: (v) => onChanged(v!),
+          onChanged: (v) {
+            if (v != null) onChanged(v);
+          },
         ),
       ),
     );
@@ -510,8 +490,7 @@ class _CultivoTile extends StatelessWidget {
       case 'Hoja':
         return Icons.eco_rounded;
       case 'Frutal':
-        // ✅ Evita apple_rounded (no existe en algunas versiones)
-        return Icons.apple; // o Icons.local_grocery_store_rounded
+        return Icons.local_florist_rounded;
       case 'Legumbre':
         return Icons.grass_rounded;
       case 'Aromáticas':
@@ -530,7 +509,7 @@ class _CultivoTile extends StatelessWidget {
       case 'Primavera':
         return Icons.wb_sunny_rounded;
       case 'Verano':
-        return Icons.wb_sunny_rounded; // ✅ sin sunny_rounded
+        return Icons.wb_sunny_rounded;
       default:
         return Icons.calendar_month_rounded;
     }
@@ -548,28 +527,28 @@ class _CultivoTile extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
+            border: Border.all(
+              color: AppColors.greenDark.withOpacity(0.12),
+            ),
           ),
           child: Row(
             children: [
-              // ✅ Si hay imagen del cultivo, la mostramos.
-              // Si no, mostramos ícono por defecto.
               Container(
                 width: 54,
                 height: 54,
                 decoration: BoxDecoration(
                   color: AppColors.greenDark.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
+                  border: Border.all(
+                    color: AppColors.greenDark.withOpacity(0.12),
+                  ),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),
                   child: _buildImage(),
                 ),
               ),
-
               const SizedBox(width: 12),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -595,12 +574,11 @@ class _CultivoTile extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(width: 8),
               Icon(_tipoIcon(cultivo.tipo), color: AppColors.greenDarker),
               const SizedBox(width: 10),
-              Icon(_estacionIcon(cultivo.estacion), color: AppColors.greenDarker),
-
+              Icon(_estacionIcon(cultivo.estacion),
+                  color: AppColors.greenDarker),
               if (onEdit != null || onDelete != null) ...[
                 const SizedBox(width: 4),
                 PopupMenuButton<String>(
@@ -608,11 +586,20 @@ class _CultivoTile extends StatelessWidget {
                     if (v == 'edit') onEdit?.call();
                     if (v == 'delete') onDelete?.call();
                   },
-                  itemBuilder: (_) => [
-                    const PopupMenuItem(value: 'edit', child: Text('Editar')),
-                    const PopupMenuItem(value: 'delete', child: Text('Eliminar')),
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Text('Editar'),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text('Eliminar'),
+                    ),
                   ],
-                  icon: const Icon(Icons.more_vert_rounded, color: AppColors.greenDarker),
+                  icon: const Icon(
+                    Icons.more_vert_rounded,
+                    color: AppColors.greenDarker,
+                  ),
                 ),
               ],
             ],
