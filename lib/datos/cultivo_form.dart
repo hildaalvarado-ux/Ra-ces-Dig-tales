@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../data/image_utils.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
@@ -106,10 +107,62 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
   }
 
   Future<void> _pickImage() async {
-    final path = await ImageUtils.pickAndSaveImage('cultivos_images');
-    if (path != null) {
-      setState(() => _imagePath = path);
-    }
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              const ListTile(
+                title: Text('Seleccionar imagen',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_rounded, color: AppColors.greenDark),
+                title: const Text('Cámara'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final path = await ImageUtils.pickAndSaveImage('cultivos_images', source: ImageSource.camera);
+                  if (path != null) setState(() => _imagePath = path);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded, color: AppColors.greenDark),
+                title: const Text('Galería'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final path = await ImageUtils.pickAndSaveImage('cultivos_images', source: ImageSource.gallery);
+                  if (path != null) setState(() => _imagePath = path);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.folder_rounded, color: AppColors.greenDark),
+                title: const Text('Archivos'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final path = await ImageUtils.pickAndSaveImageFromFiles('cultivos_images');
+                  if (path != null) setState(() => _imagePath = path);
+                },
+              ),
+              if (_imagePath != null)
+                ListTile(
+                  leading: const Icon(Icons.delete_rounded, color: Colors.red),
+                  title: const Text('Eliminar imagen', style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() => _imagePath = null);
+                  },
+                ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _save() {
