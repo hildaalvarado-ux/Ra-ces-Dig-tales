@@ -1,0 +1,28 @@
+[
+  {
+    "imagen": "",
+    "nombre": "Compost casero",
+    "tipo": "Orgánico",
+    "identificacion": "Abono obtenido a partir de la descomposición controlada de materia orgánica.",
+    "uso": "Se mezcla con la tierra antes de la siembra o se aplica como cobertura.",
+    "ficha": {
+      "Origen": "Residuos vegetales",
+      "Frecuencia": "Cada 6 meses",
+      "Beneficios": "Mejora la estructura del suelo",
+      "Nutrientes": "Nitrógeno, Fósforo, Potasio"
+    }
+  },
+  {
+    "nombre": "Humus de lombriz",
+    "imagen": "",
+    "tipo": "Orgánico",
+    "identificacion": "Producto de la digestión de lombrices, altamente nutritivo.",
+    "uso": "Aplicar directamente en la base de las plantas o mezclar con el sustrato.",
+    "ficha": {
+      "Origen": "Vermicompostaje",
+      "Frecuencia": "Cada 3-4 meses",
+      "Beneficios": "Aporta microorganismos benéficos",
+      "Nutrientes": "Alto en nitrógeno"
+    }
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "imagen": "",
+    "nombre": "Pulgón",
+    "cientifico": "Aphididae",
+    "identificacion": "Pequeños insectos de cuerpo blando, generalmente verdes o negros, que succionan la savia.",
+    "sintomas": "Hojas enrolladas, presencia de melaza pegajosa y hormigas.",
+    "control": "Jabón potásico o aceite de neem.",
+    "ficha": {
+      "Gravedad": "Media",
+      "Detección": "Envés de las hojas",
+      "Tratamiento": "Pulverización foliar",
+      "Prevención": "Biodiversidad en el huerto"
+    }
+  },
+  {
+    "imagen": "",
+    "nombre": "Mosca blanca",
+    "cientifico": "Aleyrodidae",
+    "identificacion": "Diminutos insectos voladores blancos que se encuentran en el envés de las hojas.",
+    "sintomas": "Amarillamiento de hojas y debilitamiento de la planta.",
+    "control": "Trampas cromáticas amarillas o infusión de ajo.",
+    "ficha": {
+      "Gravedad": "Alta",
+      "Detección": "Vuelo al mover la planta",
+      "Tratamiento": "Limpieza de hojas",
+      "Prevención": "Control de humedad"
+    }
+  }
+]

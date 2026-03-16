@@ -56,6 +56,8 @@ flutter:
   assets:
     - assets/images/
     - assets/data/cultivos.json
+    - assets/data/fertilizantes.json
+    - assets/data/plagas.json
     - assets/cultivos/
     # Si quieres agregar toda la carpeta:
     # - assets/images/
