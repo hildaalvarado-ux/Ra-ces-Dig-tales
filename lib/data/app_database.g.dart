@@ -4086,6 +4086,1411 @@ class SharedPesticidasCompanion extends UpdateCompanion<SharedPesticida> {
   }
 }
 
+class $CropPlansTable extends CropPlans
+    with TableInfo<$CropPlansTable, CropPlan> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CropPlansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cropNameMeta = const VerificationMeta(
+    'cropName',
+  );
+  @override
+  late final GeneratedColumn<String> cropName = GeneratedColumn<String>(
+    'crop_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startDateMeta = const VerificationMeta(
+    'startDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startDate = GeneratedColumn<DateTime>(
+    'start_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _preferredTimeMeta = const VerificationMeta(
+    'preferredTime',
+  );
+  @override
+  late final GeneratedColumn<String> preferredTime = GeneratedColumn<String>(
+    'preferred_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _activeMeta = const VerificationMeta('active');
+  @override
+  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
+    'active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    cropName,
+    startDate,
+    preferredTime,
+    payloadJson,
+    active,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'crop_plans';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CropPlan> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('crop_name')) {
+      context.handle(
+        _cropNameMeta,
+        cropName.isAcceptableOrUnknown(data['crop_name']!, _cropNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cropNameMeta);
+    }
+    if (data.containsKey('start_date')) {
+      context.handle(
+        _startDateMeta,
+        startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startDateMeta);
+    }
+    if (data.containsKey('preferred_time')) {
+      context.handle(
+        _preferredTimeMeta,
+        preferredTime.isAcceptableOrUnknown(
+          data['preferred_time']!,
+          _preferredTimeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_preferredTimeMeta);
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    if (data.containsKey('active')) {
+      context.handle(
+        _activeMeta,
+        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CropPlan map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CropPlan(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      cropName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}crop_name'],
+      )!,
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_date'],
+      )!,
+      preferredTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}preferred_time'],
+      )!,
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+      active: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}active'],
+      )!,
+    );
+  }
+
+  @override
+  $CropPlansTable createAlias(String alias) {
+    return $CropPlansTable(attachedDatabase, alias);
+  }
+}
+
+class CropPlan extends DataClass implements Insertable<CropPlan> {
+  final int id;
+  final int userId;
+  final String cropName;
+  final DateTime startDate;
+  final String preferredTime;
+  final String payloadJson;
+  final bool active;
+  const CropPlan({
+    required this.id,
+    required this.userId,
+    required this.cropName,
+    required this.startDate,
+    required this.preferredTime,
+    required this.payloadJson,
+    required this.active,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['crop_name'] = Variable<String>(cropName);
+    map['start_date'] = Variable<DateTime>(startDate);
+    map['preferred_time'] = Variable<String>(preferredTime);
+    map['payload_json'] = Variable<String>(payloadJson);
+    map['active'] = Variable<bool>(active);
+    return map;
+  }
+
+  CropPlansCompanion toCompanion(bool nullToAbsent) {
+    return CropPlansCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      cropName: Value(cropName),
+      startDate: Value(startDate),
+      preferredTime: Value(preferredTime),
+      payloadJson: Value(payloadJson),
+      active: Value(active),
+    );
+  }
+
+  factory CropPlan.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CropPlan(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      cropName: serializer.fromJson<String>(json['cropName']),
+      startDate: serializer.fromJson<DateTime>(json['startDate']),
+      preferredTime: serializer.fromJson<String>(json['preferredTime']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+      active: serializer.fromJson<bool>(json['active']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'cropName': serializer.toJson<String>(cropName),
+      'startDate': serializer.toJson<DateTime>(startDate),
+      'preferredTime': serializer.toJson<String>(preferredTime),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+      'active': serializer.toJson<bool>(active),
+    };
+  }
+
+  CropPlan copyWith({
+    int? id,
+    int? userId,
+    String? cropName,
+    DateTime? startDate,
+    String? preferredTime,
+    String? payloadJson,
+    bool? active,
+  }) => CropPlan(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    cropName: cropName ?? this.cropName,
+    startDate: startDate ?? this.startDate,
+    preferredTime: preferredTime ?? this.preferredTime,
+    payloadJson: payloadJson ?? this.payloadJson,
+    active: active ?? this.active,
+  );
+  CropPlan copyWithCompanion(CropPlansCompanion data) {
+    return CropPlan(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      cropName: data.cropName.present ? data.cropName.value : this.cropName,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      preferredTime: data.preferredTime.present
+          ? data.preferredTime.value
+          : this.preferredTime,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+      active: data.active.present ? data.active.value : this.active,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CropPlan(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('cropName: $cropName, ')
+          ..write('startDate: $startDate, ')
+          ..write('preferredTime: $preferredTime, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('active: $active')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    cropName,
+    startDate,
+    preferredTime,
+    payloadJson,
+    active,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CropPlan &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.cropName == this.cropName &&
+          other.startDate == this.startDate &&
+          other.preferredTime == this.preferredTime &&
+          other.payloadJson == this.payloadJson &&
+          other.active == this.active);
+}
+
+class CropPlansCompanion extends UpdateCompanion<CropPlan> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> cropName;
+  final Value<DateTime> startDate;
+  final Value<String> preferredTime;
+  final Value<String> payloadJson;
+  final Value<bool> active;
+  const CropPlansCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.cropName = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.preferredTime = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+    this.active = const Value.absent(),
+  });
+  CropPlansCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    required String cropName,
+    required DateTime startDate,
+    required String preferredTime,
+    required String payloadJson,
+    this.active = const Value.absent(),
+  }) : userId = Value(userId),
+       cropName = Value(cropName),
+       startDate = Value(startDate),
+       preferredTime = Value(preferredTime),
+       payloadJson = Value(payloadJson);
+  static Insertable<CropPlan> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? cropName,
+    Expression<DateTime>? startDate,
+    Expression<String>? preferredTime,
+    Expression<String>? payloadJson,
+    Expression<bool>? active,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (cropName != null) 'crop_name': cropName,
+      if (startDate != null) 'start_date': startDate,
+      if (preferredTime != null) 'preferred_time': preferredTime,
+      if (payloadJson != null) 'payload_json': payloadJson,
+      if (active != null) 'active': active,
+    });
+  }
+
+  CropPlansCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? cropName,
+    Value<DateTime>? startDate,
+    Value<String>? preferredTime,
+    Value<String>? payloadJson,
+    Value<bool>? active,
+  }) {
+    return CropPlansCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      cropName: cropName ?? this.cropName,
+      startDate: startDate ?? this.startDate,
+      preferredTime: preferredTime ?? this.preferredTime,
+      payloadJson: payloadJson ?? this.payloadJson,
+      active: active ?? this.active,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (cropName.present) {
+      map['crop_name'] = Variable<String>(cropName.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<DateTime>(startDate.value);
+    }
+    if (preferredTime.present) {
+      map['preferred_time'] = Variable<String>(preferredTime.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CropPlansCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('cropName: $cropName, ')
+          ..write('startDate: $startDate, ')
+          ..write('preferredTime: $preferredTime, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('active: $active')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CalendarTasksTable extends CalendarTasks
+    with TableInfo<$CalendarTasksTable, CalendarTask> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CalendarTasksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<int> planId = GeneratedColumn<int>(
+    'plan_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _completedMeta = const VerificationMeta(
+    'completed',
+  );
+  @override
+  late final GeneratedColumn<bool> completed = GeneratedColumn<bool>(
+    'completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    planId,
+    userId,
+    title,
+    description,
+    date,
+    type,
+    completed,
+    completedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'calendar_tasks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CalendarTask> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('plan_id')) {
+      context.handle(
+        _planIdMeta,
+        planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta),
+      );
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('completed')) {
+      context.handle(
+        _completedMeta,
+        completed.isAcceptableOrUnknown(data['completed']!, _completedMeta),
+      );
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
+          _completedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CalendarTask map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CalendarTask(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      planId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plan_id'],
+      ),
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      completed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}completed'],
+      )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at'],
+      ),
+    );
+  }
+
+  @override
+  $CalendarTasksTable createAlias(String alias) {
+    return $CalendarTasksTable(attachedDatabase, alias);
+  }
+}
+
+class CalendarTask extends DataClass implements Insertable<CalendarTask> {
+  final int id;
+  final int? planId;
+  final int userId;
+  final String title;
+  final String? description;
+  final DateTime date;
+  final String type;
+  final bool completed;
+  final DateTime? completedAt;
+  const CalendarTask({
+    required this.id,
+    this.planId,
+    required this.userId,
+    required this.title,
+    this.description,
+    required this.date,
+    required this.type,
+    required this.completed,
+    this.completedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || planId != null) {
+      map['plan_id'] = Variable<int>(planId);
+    }
+    map['user_id'] = Variable<int>(userId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['date'] = Variable<DateTime>(date);
+    map['type'] = Variable<String>(type);
+    map['completed'] = Variable<bool>(completed);
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
+    }
+    return map;
+  }
+
+  CalendarTasksCompanion toCompanion(bool nullToAbsent) {
+    return CalendarTasksCompanion(
+      id: Value(id),
+      planId: planId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(planId),
+      userId: Value(userId),
+      title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      date: Value(date),
+      type: Value(type),
+      completed: Value(completed),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
+    );
+  }
+
+  factory CalendarTask.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CalendarTask(
+      id: serializer.fromJson<int>(json['id']),
+      planId: serializer.fromJson<int?>(json['planId']),
+      userId: serializer.fromJson<int>(json['userId']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      type: serializer.fromJson<String>(json['type']),
+      completed: serializer.fromJson<bool>(json['completed']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'planId': serializer.toJson<int?>(planId),
+      'userId': serializer.toJson<int>(userId),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
+      'date': serializer.toJson<DateTime>(date),
+      'type': serializer.toJson<String>(type),
+      'completed': serializer.toJson<bool>(completed),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
+    };
+  }
+
+  CalendarTask copyWith({
+    int? id,
+    Value<int?> planId = const Value.absent(),
+    int? userId,
+    String? title,
+    Value<String?> description = const Value.absent(),
+    DateTime? date,
+    String? type,
+    bool? completed,
+    Value<DateTime?> completedAt = const Value.absent(),
+  }) => CalendarTask(
+    id: id ?? this.id,
+    planId: planId.present ? planId.value : this.planId,
+    userId: userId ?? this.userId,
+    title: title ?? this.title,
+    description: description.present ? description.value : this.description,
+    date: date ?? this.date,
+    type: type ?? this.type,
+    completed: completed ?? this.completed,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
+  );
+  CalendarTask copyWithCompanion(CalendarTasksCompanion data) {
+    return CalendarTask(
+      id: data.id.present ? data.id.value : this.id,
+      planId: data.planId.present ? data.planId.value : this.planId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      date: data.date.present ? data.date.value : this.date,
+      type: data.type.present ? data.type.value : this.type,
+      completed: data.completed.present ? data.completed.value : this.completed,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CalendarTask(')
+          ..write('id: $id, ')
+          ..write('planId: $planId, ')
+          ..write('userId: $userId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('date: $date, ')
+          ..write('type: $type, ')
+          ..write('completed: $completed, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    planId,
+    userId,
+    title,
+    description,
+    date,
+    type,
+    completed,
+    completedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CalendarTask &&
+          other.id == this.id &&
+          other.planId == this.planId &&
+          other.userId == this.userId &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.date == this.date &&
+          other.type == this.type &&
+          other.completed == this.completed &&
+          other.completedAt == this.completedAt);
+}
+
+class CalendarTasksCompanion extends UpdateCompanion<CalendarTask> {
+  final Value<int> id;
+  final Value<int?> planId;
+  final Value<int> userId;
+  final Value<String> title;
+  final Value<String?> description;
+  final Value<DateTime> date;
+  final Value<String> type;
+  final Value<bool> completed;
+  final Value<DateTime?> completedAt;
+  const CalendarTasksCompanion({
+    this.id = const Value.absent(),
+    this.planId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.date = const Value.absent(),
+    this.type = const Value.absent(),
+    this.completed = const Value.absent(),
+    this.completedAt = const Value.absent(),
+  });
+  CalendarTasksCompanion.insert({
+    this.id = const Value.absent(),
+    this.planId = const Value.absent(),
+    required int userId,
+    required String title,
+    this.description = const Value.absent(),
+    required DateTime date,
+    required String type,
+    this.completed = const Value.absent(),
+    this.completedAt = const Value.absent(),
+  }) : userId = Value(userId),
+       title = Value(title),
+       date = Value(date),
+       type = Value(type);
+  static Insertable<CalendarTask> custom({
+    Expression<int>? id,
+    Expression<int>? planId,
+    Expression<int>? userId,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<DateTime>? date,
+    Expression<String>? type,
+    Expression<bool>? completed,
+    Expression<DateTime>? completedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (planId != null) 'plan_id': planId,
+      if (userId != null) 'user_id': userId,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (date != null) 'date': date,
+      if (type != null) 'type': type,
+      if (completed != null) 'completed': completed,
+      if (completedAt != null) 'completed_at': completedAt,
+    });
+  }
+
+  CalendarTasksCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? planId,
+    Value<int>? userId,
+    Value<String>? title,
+    Value<String?>? description,
+    Value<DateTime>? date,
+    Value<String>? type,
+    Value<bool>? completed,
+    Value<DateTime?>? completedAt,
+  }) {
+    return CalendarTasksCompanion(
+      id: id ?? this.id,
+      planId: planId ?? this.planId,
+      userId: userId ?? this.userId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      date: date ?? this.date,
+      type: type ?? this.type,
+      completed: completed ?? this.completed,
+      completedAt: completedAt ?? this.completedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (planId.present) {
+      map['plan_id'] = Variable<int>(planId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (completed.present) {
+      map['completed'] = Variable<bool>(completed.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CalendarTasksCompanion(')
+          ..write('id: $id, ')
+          ..write('planId: $planId, ')
+          ..write('userId: $userId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('date: $date, ')
+          ..write('type: $type, ')
+          ..write('completed: $completed, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $NotificationLogsTable extends NotificationLogs
+    with TableInfo<$NotificationLogsTable, NotificationLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotificationLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<DateTime> timestamp = GeneratedColumn<DateTime>(
+    'timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _readMeta = const VerificationMeta('read');
+  @override
+  late final GeneratedColumn<bool> read = GeneratedColumn<bool>(
+    'read',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("read" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    title,
+    body,
+    timestamp,
+    read,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notification_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NotificationLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['timestamp']!, _timestampMeta),
+      );
+    }
+    if (data.containsKey('read')) {
+      context.handle(
+        _readMeta,
+        read.isAcceptableOrUnknown(data['read']!, _readMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NotificationLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NotificationLog(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}timestamp'],
+      )!,
+      read: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}read'],
+      )!,
+    );
+  }
+
+  @override
+  $NotificationLogsTable createAlias(String alias) {
+    return $NotificationLogsTable(attachedDatabase, alias);
+  }
+}
+
+class NotificationLog extends DataClass implements Insertable<NotificationLog> {
+  final int id;
+  final int userId;
+  final String title;
+  final String body;
+  final DateTime timestamp;
+  final bool read;
+  const NotificationLog({
+    required this.id,
+    required this.userId,
+    required this.title,
+    required this.body,
+    required this.timestamp,
+    required this.read,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    map['timestamp'] = Variable<DateTime>(timestamp);
+    map['read'] = Variable<bool>(read);
+    return map;
+  }
+
+  NotificationLogsCompanion toCompanion(bool nullToAbsent) {
+    return NotificationLogsCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      title: Value(title),
+      body: Value(body),
+      timestamp: Value(timestamp),
+      read: Value(read),
+    );
+  }
+
+  factory NotificationLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NotificationLog(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      timestamp: serializer.fromJson<DateTime>(json['timestamp']),
+      read: serializer.fromJson<bool>(json['read']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'timestamp': serializer.toJson<DateTime>(timestamp),
+      'read': serializer.toJson<bool>(read),
+    };
+  }
+
+  NotificationLog copyWith({
+    int? id,
+    int? userId,
+    String? title,
+    String? body,
+    DateTime? timestamp,
+    bool? read,
+  }) => NotificationLog(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    timestamp: timestamp ?? this.timestamp,
+    read: read ?? this.read,
+  );
+  NotificationLog copyWithCompanion(NotificationLogsCompanion data) {
+    return NotificationLog(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+      read: data.read.present ? data.read.value : this.read,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationLog(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('read: $read')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, title, body, timestamp, read);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NotificationLog &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.timestamp == this.timestamp &&
+          other.read == this.read);
+}
+
+class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<DateTime> timestamp;
+  final Value<bool> read;
+  const NotificationLogsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.timestamp = const Value.absent(),
+    this.read = const Value.absent(),
+  });
+  NotificationLogsCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    required String title,
+    required String body,
+    this.timestamp = const Value.absent(),
+    this.read = const Value.absent(),
+  }) : userId = Value(userId),
+       title = Value(title),
+       body = Value(body);
+  static Insertable<NotificationLog> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<DateTime>? timestamp,
+    Expression<bool>? read,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (timestamp != null) 'timestamp': timestamp,
+      if (read != null) 'read': read,
+    });
+  }
+
+  NotificationLogsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? title,
+    Value<String>? body,
+    Value<DateTime>? timestamp,
+    Value<bool>? read,
+  }) {
+    return NotificationLogsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      timestamp: timestamp ?? this.timestamp,
+      read: read ?? this.read,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (timestamp.present) {
+      map['timestamp'] = Variable<DateTime>(timestamp.value);
+    }
+    if (read.present) {
+      map['read'] = Variable<bool>(read.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationLogsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('timestamp: $timestamp, ')
+          ..write('read: $read')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4103,6 +5508,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SharedPesticidasTable sharedPesticidas = $SharedPesticidasTable(
     this,
   );
+  late final $CropPlansTable cropPlans = $CropPlansTable(this);
+  late final $CalendarTasksTable calendarTasks = $CalendarTasksTable(this);
+  late final $NotificationLogsTable notificationLogs = $NotificationLogsTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4118,6 +5528,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     sharedPlagas,
     userPesticidas,
     sharedPesticidas,
+    cropPlans,
+    calendarTasks,
+    notificationLogs,
   ];
 }
 
@@ -6338,6 +7751,729 @@ typedef $$SharedPesticidasTableProcessedTableManager =
       SharedPesticida,
       PrefetchHooks Function()
     >;
+typedef $$CropPlansTableCreateCompanionBuilder =
+    CropPlansCompanion Function({
+      Value<int> id,
+      required int userId,
+      required String cropName,
+      required DateTime startDate,
+      required String preferredTime,
+      required String payloadJson,
+      Value<bool> active,
+    });
+typedef $$CropPlansTableUpdateCompanionBuilder =
+    CropPlansCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> cropName,
+      Value<DateTime> startDate,
+      Value<String> preferredTime,
+      Value<String> payloadJson,
+      Value<bool> active,
+    });
+
+class $$CropPlansTableFilterComposer
+    extends Composer<_$AppDatabase, $CropPlansTable> {
+  $$CropPlansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cropName => $composableBuilder(
+    column: $table.cropName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get preferredTime => $composableBuilder(
+    column: $table.preferredTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CropPlansTableOrderingComposer
+    extends Composer<_$AppDatabase, $CropPlansTable> {
+  $$CropPlansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cropName => $composableBuilder(
+    column: $table.cropName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get preferredTime => $composableBuilder(
+    column: $table.preferredTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CropPlansTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CropPlansTable> {
+  $$CropPlansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get cropName =>
+      $composableBuilder(column: $table.cropName, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<String> get preferredTime => $composableBuilder(
+    column: $table.preferredTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get active =>
+      $composableBuilder(column: $table.active, builder: (column) => column);
+}
+
+class $$CropPlansTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CropPlansTable,
+          CropPlan,
+          $$CropPlansTableFilterComposer,
+          $$CropPlansTableOrderingComposer,
+          $$CropPlansTableAnnotationComposer,
+          $$CropPlansTableCreateCompanionBuilder,
+          $$CropPlansTableUpdateCompanionBuilder,
+          (CropPlan, BaseReferences<_$AppDatabase, $CropPlansTable, CropPlan>),
+          CropPlan,
+          PrefetchHooks Function()
+        > {
+  $$CropPlansTableTableManager(_$AppDatabase db, $CropPlansTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CropPlansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CropPlansTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CropPlansTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> cropName = const Value.absent(),
+                Value<DateTime> startDate = const Value.absent(),
+                Value<String> preferredTime = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+                Value<bool> active = const Value.absent(),
+              }) => CropPlansCompanion(
+                id: id,
+                userId: userId,
+                cropName: cropName,
+                startDate: startDate,
+                preferredTime: preferredTime,
+                payloadJson: payloadJson,
+                active: active,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                required String cropName,
+                required DateTime startDate,
+                required String preferredTime,
+                required String payloadJson,
+                Value<bool> active = const Value.absent(),
+              }) => CropPlansCompanion.insert(
+                id: id,
+                userId: userId,
+                cropName: cropName,
+                startDate: startDate,
+                preferredTime: preferredTime,
+                payloadJson: payloadJson,
+                active: active,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CropPlansTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CropPlansTable,
+      CropPlan,
+      $$CropPlansTableFilterComposer,
+      $$CropPlansTableOrderingComposer,
+      $$CropPlansTableAnnotationComposer,
+      $$CropPlansTableCreateCompanionBuilder,
+      $$CropPlansTableUpdateCompanionBuilder,
+      (CropPlan, BaseReferences<_$AppDatabase, $CropPlansTable, CropPlan>),
+      CropPlan,
+      PrefetchHooks Function()
+    >;
+typedef $$CalendarTasksTableCreateCompanionBuilder =
+    CalendarTasksCompanion Function({
+      Value<int> id,
+      Value<int?> planId,
+      required int userId,
+      required String title,
+      Value<String?> description,
+      required DateTime date,
+      required String type,
+      Value<bool> completed,
+      Value<DateTime?> completedAt,
+    });
+typedef $$CalendarTasksTableUpdateCompanionBuilder =
+    CalendarTasksCompanion Function({
+      Value<int> id,
+      Value<int?> planId,
+      Value<int> userId,
+      Value<String> title,
+      Value<String?> description,
+      Value<DateTime> date,
+      Value<String> type,
+      Value<bool> completed,
+      Value<DateTime?> completedAt,
+    });
+
+class $$CalendarTasksTableFilterComposer
+    extends Composer<_$AppDatabase, $CalendarTasksTable> {
+  $$CalendarTasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get planId => $composableBuilder(
+    column: $table.planId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get completed => $composableBuilder(
+    column: $table.completed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CalendarTasksTableOrderingComposer
+    extends Composer<_$AppDatabase, $CalendarTasksTable> {
+  $$CalendarTasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get planId => $composableBuilder(
+    column: $table.planId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get completed => $composableBuilder(
+    column: $table.completed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CalendarTasksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CalendarTasksTable> {
+  $$CalendarTasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<bool> get completed =>
+      $composableBuilder(column: $table.completed, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$CalendarTasksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CalendarTasksTable,
+          CalendarTask,
+          $$CalendarTasksTableFilterComposer,
+          $$CalendarTasksTableOrderingComposer,
+          $$CalendarTasksTableAnnotationComposer,
+          $$CalendarTasksTableCreateCompanionBuilder,
+          $$CalendarTasksTableUpdateCompanionBuilder,
+          (
+            CalendarTask,
+            BaseReferences<_$AppDatabase, $CalendarTasksTable, CalendarTask>,
+          ),
+          CalendarTask,
+          PrefetchHooks Function()
+        > {
+  $$CalendarTasksTableTableManager(_$AppDatabase db, $CalendarTasksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CalendarTasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CalendarTasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CalendarTasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> planId = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<bool> completed = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+              }) => CalendarTasksCompanion(
+                id: id,
+                planId: planId,
+                userId: userId,
+                title: title,
+                description: description,
+                date: date,
+                type: type,
+                completed: completed,
+                completedAt: completedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> planId = const Value.absent(),
+                required int userId,
+                required String title,
+                Value<String?> description = const Value.absent(),
+                required DateTime date,
+                required String type,
+                Value<bool> completed = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+              }) => CalendarTasksCompanion.insert(
+                id: id,
+                planId: planId,
+                userId: userId,
+                title: title,
+                description: description,
+                date: date,
+                type: type,
+                completed: completed,
+                completedAt: completedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CalendarTasksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CalendarTasksTable,
+      CalendarTask,
+      $$CalendarTasksTableFilterComposer,
+      $$CalendarTasksTableOrderingComposer,
+      $$CalendarTasksTableAnnotationComposer,
+      $$CalendarTasksTableCreateCompanionBuilder,
+      $$CalendarTasksTableUpdateCompanionBuilder,
+      (
+        CalendarTask,
+        BaseReferences<_$AppDatabase, $CalendarTasksTable, CalendarTask>,
+      ),
+      CalendarTask,
+      PrefetchHooks Function()
+    >;
+typedef $$NotificationLogsTableCreateCompanionBuilder =
+    NotificationLogsCompanion Function({
+      Value<int> id,
+      required int userId,
+      required String title,
+      required String body,
+      Value<DateTime> timestamp,
+      Value<bool> read,
+    });
+typedef $$NotificationLogsTableUpdateCompanionBuilder =
+    NotificationLogsCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> title,
+      Value<String> body,
+      Value<DateTime> timestamp,
+      Value<bool> read,
+    });
+
+class $$NotificationLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $NotificationLogsTable> {
+  $$NotificationLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get read => $composableBuilder(
+    column: $table.read,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NotificationLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotificationLogsTable> {
+  $$NotificationLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get read => $composableBuilder(
+    column: $table.read,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NotificationLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotificationLogsTable> {
+  $$NotificationLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+
+  GeneratedColumn<bool> get read =>
+      $composableBuilder(column: $table.read, builder: (column) => column);
+}
+
+class $$NotificationLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NotificationLogsTable,
+          NotificationLog,
+          $$NotificationLogsTableFilterComposer,
+          $$NotificationLogsTableOrderingComposer,
+          $$NotificationLogsTableAnnotationComposer,
+          $$NotificationLogsTableCreateCompanionBuilder,
+          $$NotificationLogsTableUpdateCompanionBuilder,
+          (
+            NotificationLog,
+            BaseReferences<
+              _$AppDatabase,
+              $NotificationLogsTable,
+              NotificationLog
+            >,
+          ),
+          NotificationLog,
+          PrefetchHooks Function()
+        > {
+  $$NotificationLogsTableTableManager(
+    _$AppDatabase db,
+    $NotificationLogsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotificationLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$NotificationLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$NotificationLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<bool> read = const Value.absent(),
+              }) => NotificationLogsCompanion(
+                id: id,
+                userId: userId,
+                title: title,
+                body: body,
+                timestamp: timestamp,
+                read: read,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                required String title,
+                required String body,
+                Value<DateTime> timestamp = const Value.absent(),
+                Value<bool> read = const Value.absent(),
+              }) => NotificationLogsCompanion.insert(
+                id: id,
+                userId: userId,
+                title: title,
+                body: body,
+                timestamp: timestamp,
+                read: read,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NotificationLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NotificationLogsTable,
+      NotificationLog,
+      $$NotificationLogsTableFilterComposer,
+      $$NotificationLogsTableOrderingComposer,
+      $$NotificationLogsTableAnnotationComposer,
+      $$NotificationLogsTableCreateCompanionBuilder,
+      $$NotificationLogsTableUpdateCompanionBuilder,
+      (
+        NotificationLog,
+        BaseReferences<_$AppDatabase, $NotificationLogsTable, NotificationLog>,
+      ),
+      NotificationLog,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6362,4 +8498,10 @@ class $AppDatabaseManager {
       $$UserPesticidasTableTableManager(_db, _db.userPesticidas);
   $$SharedPesticidasTableTableManager get sharedPesticidas =>
       $$SharedPesticidasTableTableManager(_db, _db.sharedPesticidas);
+  $$CropPlansTableTableManager get cropPlans =>
+      $$CropPlansTableTableManager(_db, _db.cropPlans);
+  $$CalendarTasksTableTableManager get calendarTasks =>
+      $$CalendarTasksTableTableManager(_db, _db.calendarTasks);
+  $$NotificationLogsTableTableManager get notificationLogs =>
+      $$NotificationLogsTableTableManager(_db, _db.notificationLogs);
 }

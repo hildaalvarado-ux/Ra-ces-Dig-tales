@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:intl/intl.dart';
+import '../data/db_instance.dart';
 import '../main.dart';
+import 'calendario.dart';
 import 'help_dialogs.dart';
 import 'plaga_detalle.dart';
 
@@ -183,6 +186,117 @@ class CultivoDetallePage extends StatelessWidget {
     );
   }
 
+  Widget _buildStartPlanButton(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 54,
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.greenDark.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ElevatedButton.icon(
+        onPressed: () => _showStartPlanDialog(context),
+        icon: const Icon(Icons.calendar_today_rounded, color: Colors.white),
+        label: const Text(
+          'EMPEZAR PLAN DE CULTIVO',
+          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.1),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.greenDark,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          elevation: 0,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showStartPlanDialog(BuildContext context) async {
+    DateTime selectedDate = DateTime.now();
+    TimeOfDay selectedTime = const TimeOfDay(hour: 7, minute: 0);
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Programar Cultivo', style: TextStyle(fontWeight: FontWeight.bold)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Elige cuándo quieres empezar y a qué hora quieres recibir recordatorios:'),
+                  const SizedBox(height: 20),
+                  ListTile(
+                    title: const Text('Fecha de inicio'),
+                    subtitle: Text(DateFormat('dd/MM/yyyy').format(selectedDate)),
+                    trailing: const Icon(Icons.calendar_month),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate,
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                      );
+                      if (picked != null) setState(() => selectedDate = picked);
+                    },
+                  ),
+                  ListTile(
+                    title: const Text('Hora de tareas'),
+                    subtitle: Text(selectedTime.format(context)),
+                    trailing: const Icon(Icons.access_time),
+                    onTap: () async {
+                      final picked = await showTimePicker(
+                        context: context,
+                        initialTime: selectedTime,
+                      );
+                      if (picked != null) setState(() => selectedTime = picked);
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark, foregroundColor: Colors.white),
+                  child: const Text('GENERAR PLAN'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result == true) {
+      final userId = await appDb.getActiveUserId();
+      if (userId == null) return;
+
+      await CropPlanGenerator.generate(
+        userId: userId,
+        cultivo: cultivo,
+        startDate: selectedDate,
+        preferredTime: selectedTime,
+      );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Plan para ${cultivo.nombre} generado con éxito.')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId)),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBackground(
@@ -204,6 +318,8 @@ class CultivoDetallePage extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
             children: [
+              _buildStartPlanButton(context),
+              const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -239,13 +355,16 @@ class CultivoDetallePage extends StatelessWidget {
                 title: 'Ficha rápida',
                 onHelp: () => HelpDialogs.show(context, title: 'Ficha rápida', text: 'Datos clave como distancia, profundidad, clima y riego.'),
                 child: Column(
-                  children: cultivo.ficha.entries
+                  children: [
+                    ...cultivo.ficha.entries
                       .map((e) => _InfoRow(
                             label: e.key,
-                            value: e.value,
+                            value: e.key == 'Temporada de siembra' || e.key == 'Temporada de cosecha'
+                                ? AgriculturalLogic.mapSeasonToElSalvador(e.value)
+                                : e.value,
                             onHelp: () => HelpDialogs.show(context, title: e.key, text: HelpDialogs.textForField(e.key)),
-                          ))
-                      .toList(),
+                          )),
+                  ],
                 ),
               ),
               const SizedBox(height: 12),
