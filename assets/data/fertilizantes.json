@@ -1,6 +1,6 @@
 [
   {
-    "imagen": "assets/fertilizantes/conpost.png",
+    "imagen": "assets/fertilizantes/compost.png",
     "nombre": "Compost casero",
     "tipo": "Orgánico",
     "identificacion": "Abono obtenido a partir de la descomposición controlada de materia orgánica.",

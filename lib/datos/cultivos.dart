@@ -811,11 +811,19 @@ class _CultivoTile extends StatelessWidget {
           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
         );
       } else {
-        return Image.file(
-          File(cultivo.imagePath!),
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
-        );
+        if (kIsWeb) {
+          return Image.network(
+            cultivo.imagePath!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        } else {
+          return Image.file(
+            File(cultivo.imagePath!),
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        }
       }
     }
 

@@ -116,11 +116,19 @@ class FertilizanteDetallePage extends StatelessWidget {
           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
         );
       } else {
-        return Image.file(
-          File(fertilizante.imagePath!),
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
-        );
+        if (kIsWeb) {
+          return Image.network(
+            fertilizante.imagePath!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        } else {
+          return Image.file(
+            File(fertilizante.imagePath!),
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        }
       }
     }
     if (fertilizante.imagen.isNotEmpty) {

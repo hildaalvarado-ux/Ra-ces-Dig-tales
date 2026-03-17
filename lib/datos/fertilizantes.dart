@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/db_instance.dart';
@@ -185,7 +186,11 @@ class _FertilizanteTile extends StatelessWidget {
       if (fertilizante.imagePath!.startsWith('data:image')) {
         return Image.memory(base64Decode(fertilizante.imagePath!.split(',').last), fit: BoxFit.cover);
       } else {
-        return Image.file(File(fertilizante.imagePath!), fit: BoxFit.cover);
+        if (kIsWeb) {
+          return Image.network(fertilizante.imagePath!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image));
+        } else {
+          return Image.file(File(fertilizante.imagePath!), fit: BoxFit.cover);
+        }
       }
     }
     if (fertilizante.imagen.isNotEmpty) {

@@ -165,11 +165,19 @@ class PesticidaDetallePage extends StatelessWidget {
           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
         );
       } else {
-        return Image.file(
-          File(pesticida.imagePath!),
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
-        );
+        if (kIsWeb) {
+          return Image.network(
+            pesticida.imagePath!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        } else {
+          return Image.file(
+            File(pesticida.imagePath!),
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        }
       }
     }
 

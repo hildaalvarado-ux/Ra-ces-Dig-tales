@@ -120,11 +120,19 @@ class PlagaDetallePage extends StatelessWidget {
           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
         );
       } else {
-        return Image.file(
-          File(plaga.imagePath!),
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
-        );
+        if (kIsWeb) {
+          return Image.network(
+            plaga.imagePath!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        } else {
+          return Image.file(
+            File(plaga.imagePath!),
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        }
       }
     }
     if (plaga.imagen.isNotEmpty) {
