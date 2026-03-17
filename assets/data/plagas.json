@@ -97,19 +97,5 @@
       "Tratamiento": "Pulverización",
       "Prevención": "Trampas cromáticas"
     }
-  },
-  {
-    "imagen": "assets/plagas/oruga.png",
-    "nombre": "Oruga",
-    "cientifico": "Lepidoptera (larva)",
-    "identificacion": "Larvas de mariposas o polillas que devoran el follaje.",
-    "sintomas": "Agujeros grandes en las hojas y excrementos visibles.",
-    "control": "Recolección manual o Bacillus thuringiensis.",
-    "ficha": {
-      "Gravedad": "Alta",
-      "Detección": "Hojas devoradas",
-      "Tratamiento": "Manual o biológico",
-      "Prevención": "Mallas anti-insectos"
-    }
   }
 ]

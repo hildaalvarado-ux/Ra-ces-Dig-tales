@@ -228,7 +228,7 @@
     "perjudiciales": ["Papa", "Pepino"]
   },
   {
-    "imagen": "assets/cultivos/zanahoria.jpg",
+    "imagen": "assets/cultivos/zanahoria.png",
     "nombre": "Zanahoria",
     "cientifico": "Daucus carota",
     "cosechaMeses": 3,

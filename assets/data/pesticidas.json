@@ -1,100 +1,144 @@
 [
   {
-    "imagen": "assets/pesticidas/jabon_potasico.png",
-    "nombre": "Jabón potásico",
-    "tipo": "Orgánico",
-    "identificacion": "El jabón potásico es un producto biodegradable, residuo cero, apto para agricultura ecológica.",
-    "uso": "Pulverizar sobre las hojas, especialmente en el envés, en horas de poca insolación.",
-    "ficha": {
-      "Origen": "Grasas vegetales y potasa",
-      "Frecuencia": "Cada 5-7 días en caso de plaga",
-      "Efecto": "Ablanda el exoesqueleto de los insectos",
-      "Toxicidad": "Nula para humanos y mascotas"
-    },
-    "plagas": ["Pulgón", "Mosca blanca", "Cochinilla", "Trips"]
-  },
-  {
-    "imagen": "assets/pesticidas/aceite_neem.png",
-    "nombre": "Aceite de Neem",
-    "tipo": "Orgánico",
-    "identificacion": "Aceite extraído de las semillas del árbol de Neem (Azadirachta indica).",
-    "uso": "Diluir en agua con un poco de jabón potásico y pulverizar.",
-    "ficha": {
-      "Origen": "Semillas de Neem",
-      "Frecuencia": "Cada 10-15 días preventivo",
-      "Efecto": "Sistémico e inhibidor de crecimiento",
-      "Toxicidad": "Baja"
-    },
-    "plagas": ["Pulgón", "Minador", "Arañuela roja", "Trips"]
-  },
-  {
-    "imagen": "assets/pesticidas/infusion_ajo.png",
-    "nombre": "Infusión de ajo",
+    "imagen": "assets/pesticidas/agua.png",
+    "nombre": "Agua jabonosa",
     "tipo": "Casero",
-    "identificacion": "Repelente natural elaborado a base de ajos machacados e infundidos en agua.",
-    "uso": "Pulverizar sobre las plantas para repeler insectos.",
+    "identificacion": "El agua jabonosa consiste en el insecticida más fácil y efectivo que puede realizarse. Actúa debilitando la piel protectora de los insectos de cuerpo blando, provocando que se sequen. Esta base jabonosa puede incluso ser mezclada con otros ingredientes para preparar insecticidas aún más potentes.",
+    "uso": "Preventivo: rociar una vez cada 7 o 15 días. Intensivo: una vez cada 3 días durante un mínimo de un mes o hasta eliminar plaga.",
+    "ingredientes": [
+      "50 g (1/4) de jabón en barra puro (blanco, sin aditivos ni aromas)",
+      "1 litro de agua hirviendo"
+    ],
+    "elaboracion": [
+      "Utilizar sólo 50 g o 1/4 del jabón.",
+      "Cortar el trozo y picarlo en pequeños trocitos.",
+      "Agregar el agua hirviendo y revolver hasta disolver.",
+      "Dejar reposar 24 horas o hasta que se disuelva por completo.",
+      "Se obtiene el concentrado de jabón, que se puede almacenar en un lugar oscuro por varios meses.",
+      "Agregar 40 ml o 3 cucharadas soperas del concentrado de jabón a un litro de agua."
+    ],
+    "precauciones": [
+      "No pasarse de la proporción del concentrado jabonoso en el agua, porque podría quemarse la planta.",
+      "Todos los pesticidas líquidos deben ser rociados en la tarde, una vez puesto el sol, para evitar quemar las hojas.",
+      "Se puede almacenar en lugar oscuro por varios meses."
+    ],
     "ficha": {
-      "Origen": "Ajo y agua",
-      "Frecuencia": "Cada 3-4 días",
-      "Efecto": "Repelente por olor",
-      "Toxicidad": "Nula"
+      "Tipo de pesticida": "Insecticida",
+      "Efecto": "Eliminador",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
     },
-    "plagas": ["Pulgón", "Mosca blanca", "Ácaros"]
+    "plagas": ["Pulgón", "Trips", "Mosca blanca", "Cochinilla"]
   },
   {
-    "imagen": "assets/pesticidas/purin_ortiga.png",
-    "nombre": "Purín de ortigas",
+    "imagen": "assets/pesticidas/ajop.png",
+    "nombre": "Repelente de ajo picante",
     "tipo": "Casero",
-    "identificacion": "Líquido fermentado de ortigas que sirve como preventivo y fertilizante.",
-    "uso": "Diluir y pulverizar o regar.",
+    "identificacion": "Una mejora más potente del agua jabonosa, que sirve para repeler insectos de mayor tamaño. Se basa en la acción repelente de los compuestos del ajo y el ají o chile picante.",
+    "uso": "Semanalmente hasta eliminar la plaga.",
+    "ingredientes": [
+      "25 g de ajo o de 5 a 6 dientes",
+      "50 g de ají o chile picante (de 3 a 5 unidades dependiendo tamaño)",
+      "3 cucharadas soperas de base agua jabonosa"
+    ],
+    "elaboracion": [
+      "Licuar los dientes de ajo enteros sin pelar ni cortar y los ají o chile picante con un poco de agua.",
+      "Reservar en un recipiente el licuado.",
+      "Completar con 1 litro de agua hirviendo o caliente y dejar reposar 24 horas.",
+      "Colar la preparación para filtrar pequeños trozos sólidos y evitar dañar el rociador o spray.",
+      "Agregar a la preparación 3 cucharadas soperas del insecticida base agua jabonosa."
+    ],
+    "precauciones": [
+      "Las plantas quedan con olor a ajo, que es el repelente efectivo.",
+      "Lavar antes de consumir frutos u hojas.",
+      "Dura 1 semana el repelente.",
+      "No se puede almacenar ya que debe ser utilizado no más de 24 a 48 horas de elaborado.",
+      "Todos los pesticidas líquidos deben ser rociados en la tarde, una vez puesto el sol, para evitar quemar las hojas.",
+      "Puede prepararse sin el ají o chile picante, pero disminuyendo su efectividad especialmente en orugas y arañuela roja."
+    ],
     "ficha": {
-      "Origen": "Ortigas frescas y agua",
-      "Frecuencia": "Cada 15 días",
-      "Efecto": "Fortalece la planta y repele",
-      "Toxicidad": "Nula"
+      "Tipo de pesticida": "Insecticida",
+      "Efecto": "Repelente",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
     },
-    "plagas": ["Pulgón", "Arañuela roja"]
+    "plagas": ["Cochinilla", "Chinche verde", "Arañuela roja", "Oruga"]
   },
   {
-    "imagen": "assets/pesticidas/alcohol_ajo.png",
-    "nombre": "Alcohol de ajo",
+    "imagen": "assets/pesticidas/canela.png",
+    "nombre": "Fungicida de canela",
     "tipo": "Casero",
-    "identificacion": "Mezcla potente de ajo, alcohol y agua para control de plagas persistentes.",
-    "uso": "Pulverizar directamente sobre las colonias de insectos.",
+    "identificacion": "La canela contiene elementos con propiedades antifúngicas y antimicrobianas, ayudando a controlar las enfermedades en las plantas producidas por hongos y microbios.",
+    "uso": "Esparcir en la tierra para evitar formación de moho u otros hongos.",
+    "ingredientes": [
+      "Canela molida"
+    ],
+    "elaboracion": [
+      "Se puede adquirir ya molida o en rama, para luego molerla a mano."
+    ],
+    "precauciones": [
+      "No tiene."
+    ],
     "ficha": {
-      "Origen": "Ajo, alcohol y agua",
-      "Frecuencia": "Uso puntual",
-      "Efecto": "Insecticida de contacto",
-      "Toxicidad": "Baja"
+      "Tipo de pesticida": "Fungicida",
+      "Efecto": "Repelente",
+      "Formato": "Sólido",
+      "Aplicación": "Dispersar"
     },
-    "plagas": ["Cochinilla", "Pulgón", "Ácaros"]
+    "plagas": ["Oídio"]
   },
   {
-    "imagen": "assets/pesticidas/caldo_bordeles.png",
-    "nombre": "Caldo bordelés",
-    "tipo": "Tradicional",
-    "identificacion": "Mezcla de sulfato de cobre y cal hidratada, muy eficaz contra hongos.",
-    "uso": "Pulverizar como preventivo contra enfermedades fúngicas.",
+    "imagen": "assets/pesticidas/limon.png",
+    "nombre": "Insecticida de Limón",
+    "tipo": "Casero",
+    "identificacion": "Este insecticida de limón aprovecha el limoneno, una sustancia química extraída del aceite de la cáscara del limón, que sirve como repelente y neutralizador de insectos de piel blanda.",
+    "uso": "Rociar el preparado puro sin diluir sobre las plantas cada 3 días hasta eliminar la plaga.",
+    "ingredientes": [
+      "2 limones",
+      "1 litro de agua hirviendo"
+    ],
+    "elaboracion": [
+      "Rayar la piel amarilla de los limones.",
+      "Agregar la piel rayada en un recipiente junto con el agua hirviendo y dejar reposar por 24 horas.",
+      "Filtrar y colar en otro recipiente para eliminar las partículas gruesas y dejar sólo el líquido.",
+      "Agregar a la preparación 3 cucharadas soperas del insecticida base agua jabonosa por cada litro del preparado."
+    ],
+    "precauciones": [
+      "Todos los pesticidas líquidos deben ser rociados en la tarde, una vez puesto el sol, para evitar quemar las hojas."
+    ],
     "ficha": {
-      "Origen": "Cobre y cal",
-      "Frecuencia": "Cada 15-20 días",
-      "Efecto": "Fungicida potente",
-      "Toxicidad": "Media (evitar ingesta)"
+      "Tipo de pesticida": "Insecticida",
+      "Efecto": "Eliminador",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
     },
-    "plagas": ["Hongos", "Mildiu", "Oidio"]
+    "plagas": ["Pulgón", "Mosca blanca", "Trips", "Cochinilla"]
   },
   {
-    "imagen": "assets/pesticidas/tierra_diatomeas.png",
-    "nombre": "Tierra de diatomeas",
-    "tipo": "Mineral",
-    "identificacion": "Polvo blanco compuesto por algas fosilizadas que actúan mecánicamente contra insectos.",
-    "uso": "Espolvorear sobre la tierra o diluir en agua para pulverizar.",
+    "imagen": "assets/pesticidas/tomatei.png",
+    "nombre": "Insecticida de Tomate",
+    "tipo": "Casero",
+    "identificacion": "La hoja de tomate tiene grandes cantidades de alcaloides tóxicos para los insectos, transformándolo en un efectivo insecticida casero. Es capaz de eliminar insectos de piel blanda y además repeler hormigas cortadoras.",
+    "uso": "Semanalmente hasta eliminar la plaga.",
+    "ingredientes": [
+      "Podas sanas de tomates (hojas y tallos)"
+    ],
+    "elaboracion": [
+      "Picar las hojas y tallos lo más pequeño posible en un recipiente plástico.",
+      "Agregar 10 veces la cantidad de agua (por 100 g de hojas de tomate, 1 litro de agua).",
+      "Dejar reposar y fermentar por 5 días, revolviendo y mezclando cada día.",
+      "Filtrar bien hasta quedarse sólo con el líquido.",
+      "Se puede conservar el concentrado en envase de vidrio hasta 30 días en refrigerador."
+    ],
+    "precauciones": [
+      "Se debe diluir al 20% con agua."
+    ],
     "ficha": {
-      "Origen": "Fósiles de algas",
-      "Frecuencia": "Después de lluvias",
-      "Efecto": "Deshidratación mecánica",
-      "Toxicidad": "Inocua (evitar inhalar polvo)"
+      "Tipo de pesticida": "Insecticida",
+      "Efecto": "Eliminador",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
     },
-    "plagas": ["Hormiga", "Caracoles", "Babosas", "Pulgón"]
+    "plagas": ["Pulgón", "Mosca blanca", "Cochinilla", "Trips", "Hormiga", "Minador"]
   }
 ]
