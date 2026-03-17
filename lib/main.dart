@@ -4,9 +4,12 @@ import 'login.dart';
 
 // ✅ NUEVO: para leer sesión
 import 'data/db_instance.dart';
+import 'data/notification_service.dart';
 import 'dashboard.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await notificationService.init();
   runApp(const MyApp());
 }
 

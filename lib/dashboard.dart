@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 
 import 'data/db_instance.dart'; // conexión a tu BD (Drift)
 import 'data/image_utils.dart';
+import 'data/notification_service.dart';
 import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
 import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
 import 'datos/fertilizantes.dart';
 import 'datos/plagas.dart';
 import 'datos/pesticidas.dart';
+import 'datos/calendario.dart';
+import 'datos/notificaciones.dart';
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -30,6 +33,26 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     _loadUser(); // cargar el nombre y correo desde Drift
+    _syncNotifications();
+  }
+
+  Future<void> _syncNotifications() async {
+    // Basic sync: schedule notifications for the next 7 days on every app start
+    final tasks = await appDb.getUserTasks(widget.userId);
+    final now = DateTime.now();
+    final sevenDaysFromNow = now.add(const Duration(days: 7));
+
+    for (final task in tasks) {
+      if (!task.completed && task.date.isAfter(now) && task.date.isBefore(sevenDaysFromNow)) {
+        await notificationService.scheduleTaskNotification(
+          taskId: task.id,
+          userId: widget.userId,
+          title: task.title,
+          body: task.description ?? '',
+          scheduledDate: task.date,
+        );
+      }
+    }
   }
 
   /// Lee el usuario desde la BD usando el userId recibido desde Login
@@ -130,9 +153,23 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         return;
 
-      case 'Favoritos':
       case 'Calendario':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => CalendarioPage(userId: widget.userId),
+          ),
+        );
+        return;
+
       case 'Notificaciones':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => NotificacionesPage(userId: widget.userId),
+          ),
+        );
+        return;
+
+      case 'Favoritos':
       case 'Diario':
       case 'Opciones':
       case 'Contacto':

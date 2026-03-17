@@ -107,6 +107,37 @@ class SharedPesticidas extends Table {
   TextColumn get payloadJson => text()();
 }
 
+class CropPlans extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get cropName => text()();
+  DateTimeColumn get startDate => dateTime()();
+  TextColumn get preferredTime => text()(); // HH:mm
+  TextColumn get payloadJson => text()();
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
+}
+
+class CalendarTasks extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get planId => integer().nullable()(); // null if manual task
+  IntColumn get userId => integer()();
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get type => text()(); // riego, fertilización, etc.
+  BoolColumn get completed => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get completedAt => dateTime().nullable()();
+}
+
+class NotificationLogs extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get title => text()();
+  TextColumn get body => text()();
+  DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
+  BoolColumn get read => boolean().withDefault(const Constant(false))();
+}
+
 @DriftDatabase(tables: [
   Users,
   Sessions,
@@ -117,13 +148,16 @@ class SharedPesticidas extends Table {
   UserPlagas,
   SharedPlagas,
   UserPesticidas,
-  SharedPesticidas
+  SharedPesticidas,
+  CropPlans,
+  CalendarTasks,
+  NotificationLogs
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -160,6 +194,11 @@ class AppDatabase extends _$AppDatabase {
           if (from < 6) {
             await m.createTable(userPesticidas);
             await m.createTable(sharedPesticidas);
+          }
+          if (from < 7) {
+            await m.createTable(cropPlans);
+            await m.createTable(calendarTasks);
+            await m.createTable(notificationLogs);
           }
         },
         beforeOpen: (details) async {
@@ -528,5 +567,61 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> deleteSharedPesticida(int id) {
     return (delete(sharedPesticidas)..where((t) => t.id.equals(id))).go();
+  }
+
+  // ---------------------------
+  // CALENDARIO Y PLANES
+  // ---------------------------
+  Future<List<CropPlan>> getUserCropPlans(int userId) {
+    return (select(cropPlans)..where((t) => t.userId.equals(userId) & t.active.equals(true))).get();
+  }
+
+  Future<int> insertCropPlan(CropPlansCompanion companion) {
+    return into(cropPlans).insert(companion);
+  }
+
+  Future<void> deleteCropPlan(int id) {
+    return (update(cropPlans)..where((t) => t.id.equals(id))).write(const CropPlansCompanion(active: Value(false)));
+  }
+
+  Future<List<CalendarTask>> getUserTasks(int userId) {
+    return (select(calendarTasks)..where((t) => t.userId.equals(userId))).get();
+  }
+
+  Future<void> insertTasks(List<CalendarTasksCompanion> companions) async {
+    await batch((batch) {
+      batch.insertAll(calendarTasks, companions);
+    });
+  }
+
+  Future<void> updateTaskStatus(int id, bool completed) {
+    return (update(calendarTasks)..where((t) => t.id.equals(id))).write(
+      CalendarTasksCompanion(
+        completed: Value(completed),
+        completedAt: Value(completed ? DateTime.now() : null),
+      ),
+    );
+  }
+
+  Future<void> deleteTask(int id) {
+    return (delete(calendarTasks)..where((t) => t.id.equals(id))).go();
+  }
+
+  // ---------------------------
+  // NOTIFICACIONES
+  // ---------------------------
+  Future<List<NotificationLog>> getNotificationLogs(int userId) {
+    return (select(notificationLogs)
+          ..where((t) => t.userId.equals(userId))
+          ..orderBy([(t) => OrderingTerm(expression: t.timestamp, mode: OrderingMode.desc)]))
+        .get();
+  }
+
+  Future<int> insertNotificationLog(NotificationLogsCompanion companion) {
+    return into(notificationLogs).insert(companion);
+  }
+
+  Future<void> markNotificationAsRead(int id) {
+    return (update(notificationLogs)..where((t) => t.id.equals(id))).write(const NotificationLogsCompanion(read: Value(true)));
   }
 }
