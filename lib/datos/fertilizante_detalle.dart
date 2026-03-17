@@ -170,43 +170,26 @@ class FertilizanteDetallePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              _Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeaderRow(
-                      title: 'Identificación',
-                      onHelp: () => HelpDialogs.show(context, title: 'Identificación', text: 'Descripción del fertilizante.'),
-                    ),
-                    Text(fertilizante.identificacion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
-                  ],
-                ),
+              _DetailCard(
+                icon: 'assets/iconos/id.png',
+                title: 'Identificación',
+                onHelp: () => HelpDialogs.show(context, title: 'Identificación', text: 'Descripción del fertilizante.'),
+                child: Text(fertilizante.identificacion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 12),
-              _Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeaderRow(
-                      title: 'Modo de Uso',
-                      onHelp: () => HelpDialogs.show(context, title: 'Modo de Uso', text: 'Cómo aplicar este fertilizante.'),
-                    ),
-                    Text(fertilizante.uso, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
-                  ],
-                ),
+              _DetailCard(
+                icon: 'assets/iconos/siembra.png',
+                title: 'Modo de Uso',
+                onHelp: () => HelpDialogs.show(context, title: 'Modo de Uso', text: 'Cómo aplicar este fertilizante.'),
+                child: Text(fertilizante.uso, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 12),
-              _Card(
+              _DetailCard(
+                icon: 'assets/iconos/indirecta.png',
+                title: 'Ficha rápida',
+                onHelp: () => HelpDialogs.show(context, title: 'Ficha rápida', text: 'Datos clave.'),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeaderRow(
-                      title: 'Ficha rápida',
-                      onHelp: () => HelpDialogs.show(context, title: 'Ficha rápida', text: 'Datos clave.'),
-                    ),
-                    const SizedBox(height: 8),
-                    ...fertilizante.ficha.entries.map((e) => _InfoRow(label: e.key, value: e.value)),
-                  ],
+                  children: fertilizante.ficha.entries.map((e) => _InfoRow(label: e.key, value: e.value)).toList(),
                 ),
               ),
             ],
@@ -217,9 +200,14 @@ class FertilizanteDetallePage extends StatelessWidget {
   }
 }
 
-class _Card extends StatelessWidget {
+class _DetailCard extends StatelessWidget {
+  final String icon;
+  final String title;
+  final VoidCallback onHelp;
   final Widget child;
-  const _Card({required this.child});
+
+  const _DetailCard({required this.icon, required this.title, required this.onHelp, required this.child});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -229,23 +217,22 @@ class _Card extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
       ),
-      child: child,
-    );
-  }
-}
-
-class _HeaderRow extends StatelessWidget {
-  final String title;
-  final VoidCallback onHelp;
-  const _HeaderRow({required this.title, required this.onHelp});
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(title, style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 16)),
-        const Spacer(),
-        IconButton(onPressed: onHelp, icon: const Icon(Icons.help_outline_rounded), color: AppColors.greenDarker),
-      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Image.asset(icon, width: 24, height: 24, errorBuilder: (_, __, ___) => const Icon(Icons.info_outline)),
+              const SizedBox(width: 8),
+              Text(title, style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 16)),
+              const Spacer(),
+              IconButton(onPressed: onHelp, icon: const Icon(Icons.help_outline_rounded), color: AppColors.greenDarker),
+            ],
+          ),
+          const SizedBox(height: 8),
+          child,
+        ],
+      ),
     );
   }
 }
@@ -264,7 +251,11 @@ class _InfoRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.greenDark.withOpacity(0.14)),
       ),
-      child: Text('$label: $value', style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w700, height: 1.25)),
+      child: Row(
+        children: [
+          Expanded(child: Text('$label: $value', style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w700, height: 1.25))),
+        ],
+      ),
     );
   }
 }

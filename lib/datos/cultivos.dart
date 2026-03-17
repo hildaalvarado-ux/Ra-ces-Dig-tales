@@ -317,7 +317,7 @@ class _CultivosPageState extends State<CultivosPage> {
         payloadJson: jsonContent,
       );
 
-      await _loadSharedCultivos();
+      await _loadData();
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

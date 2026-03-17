@@ -9,6 +9,7 @@ import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
 import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
 import 'datos/fertilizantes.dart';
 import 'datos/plagas.dart';
+import 'datos/pesticidas.dart';
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -121,6 +122,13 @@ class _DashboardPageState extends State<DashboardPage> {
         return;
 
       case 'Pesticidas':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => PesticidasPage(userId: widget.userId),
+          ),
+        );
+        return;
+
       case 'Favoritos':
       case 'Calendario':
       case 'Notificaciones':
