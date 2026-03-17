@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/db_instance.dart';
@@ -185,7 +186,11 @@ class _PlagaTile extends StatelessWidget {
       if (plaga.imagePath!.startsWith('data:image')) {
         return Image.memory(base64Decode(plaga.imagePath!.split(',').last), fit: BoxFit.cover);
       } else {
-        return Image.file(File(plaga.imagePath!), fit: BoxFit.cover);
+        if (kIsWeb) {
+          return Image.network(plaga.imagePath!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image));
+        } else {
+          return Image.file(File(plaga.imagePath!), fit: BoxFit.cover);
+        }
       }
     }
     if (plaga.imagen.isNotEmpty) {
