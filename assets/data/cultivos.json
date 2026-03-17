@@ -26,8 +26,8 @@
       "Época de cosecha": "Temprana"
     },
     "plagas": ["Pulgón", "Hormiga"],
-    "beneficiosos": [],
-    "perjudiciales": []
+    "beneficiosos": ["Cebolla morada", "Tomate", "Zanahoria"],
+    "perjudiciales": ["Poroto", "Arveja"]
   },
   {
     "imagen": "assets/cultivos/cebolla.jpg",
@@ -207,5 +207,41 @@
       "Papa",
       "tomate"
     ]
+  },
+  {
+    "imagen": "assets/cultivos/tomate.jpg",
+    "nombre": "Tomate",
+    "cientifico": "Solanum lycopersicum",
+    "cosechaMeses": 4,
+    "tipo": "Frutal",
+    "estacion": "Verano",
+    "identificacion": "Planta herbácea de tallos volubles con frutos globosos rojos.",
+    "siembra": "En almácigo a finales de invierno, trasplante en primavera.",
+    "ficha": {
+      "Riego": "Frecuente",
+      "Luz": "Sol pleno",
+      "Suelo": "Rico en nutrientes"
+    },
+    "plagas": ["Mosca blanca", "Pulgón"],
+    "beneficiosos": ["Ajo", "Cebolla morada", "Zanahoria"],
+    "perjudiciales": ["Papa", "Pepino"]
+  },
+  {
+    "imagen": "assets/cultivos/zanahoria.jpg",
+    "nombre": "Zanahoria",
+    "cientifico": "Daucus carota",
+    "cosechaMeses": 3,
+    "tipo": "Raíz",
+    "estacion": "Primavera",
+    "identificacion": "Planta con raíz carnosa de color naranja.",
+    "siembra": "Siembra directa a 1cm de profundidad.",
+    "ficha": {
+      "Riego": "Moderado",
+      "Luz": "Sol pleno",
+      "Distancia": "10cm"
+    },
+    "plagas": ["Pulgón"],
+    "beneficiosos": ["Tomate", "Cebolla morada", "Ajo"],
+    "perjudiciales": ["Acelga"]
   }
 ]

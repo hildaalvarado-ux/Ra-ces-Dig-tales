@@ -4,22 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/db_instance.dart';
 import '../main.dart';
-import 'plaga_detalle.dart';
+import 'pesticida_detalle.dart';
 
-class PlagasPage extends StatefulWidget {
+class PesticidasPage extends StatefulWidget {
   final int userId;
-  const PlagasPage({super.key, required this.userId});
+  const PesticidasPage({super.key, required this.userId});
 
   @override
-  State<PlagasPage> createState() => _PlagasPageState();
+  State<PesticidasPage> createState() => _PesticidasPageState();
 }
 
-class _PlagasPageState extends State<PlagasPage> {
+class _PesticidasPageState extends State<PesticidasPage> {
   final TextEditingController _searchCtrl = TextEditingController();
   bool _loading = true;
-  final List<Plaga> _catalogo = [];
-  final List<Plaga> _agregados = [];
-  final List<Plaga> _compartidos = [];
+  final List<Pesticida> _catalogo = [];
+  final List<Pesticida> _agregados = [];
+  final List<Pesticida> _compartidos = [];
 
   @override
   void initState() {
@@ -31,53 +31,53 @@ class _PlagasPageState extends State<PlagasPage> {
     if (mounted) setState(() => _loading = true);
     try {
       await _loadCatalog();
-      await _loadUserPlagas();
-      await _loadSharedPlagas();
+      await _loadUserPesticidas();
+      await _loadSharedPesticidas();
     } catch (e) {
-      debugPrint('Error loading data: $e');
+      debugPrint('Error loading pesticides: $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   Future<void> _loadCatalog() async {
-    final raw = await rootBundle.loadString('assets/data/plagas.json');
+    final raw = await rootBundle.loadString('assets/data/pesticidas.json');
     final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
     final decoded = jsonDecode(cleanJson) as List;
     _catalogo.clear();
-    _catalogo.addAll(decoded.map((e) => Plaga.fromJson(Map<String, dynamic>.from(e))));
+    _catalogo.addAll(decoded.map((e) => Pesticida.fromJson(Map<String, dynamic>.from(e))));
   }
 
-  Future<void> _loadUserPlagas() async {
-    final list = await appDb.getUserPlagas(widget.userId);
+  Future<void> _loadUserPesticidas() async {
+    final list = await appDb.getUserPesticidas(widget.userId);
     _agregados.clear();
     for (final row in list) {
       final data = jsonDecode(row.payloadJson) as Map<String, dynamic>;
       data['id'] = row.id;
       data['imagePath'] = row.imagePath;
-      _agregados.add(Plaga.fromJson(data));
+      _agregados.add(Pesticida.fromJson(data));
     }
   }
 
-  Future<void> _loadSharedPlagas() async {
-    final list = await appDb.getSharedPlagas(widget.userId);
+  Future<void> _loadSharedPesticidas() async {
+    final list = await appDb.getSharedPesticidas(widget.userId);
     _compartidos.clear();
     for (final row in list) {
       final data = jsonDecode(row.payloadJson) as Map<String, dynamic>;
       data['id'] = row.id;
       data['imagePath'] = row.imagePath;
-      _compartidos.add(Plaga.fromJson(data));
+      _compartidos.add(Pesticida.fromJson(data));
     }
   }
 
-  List<Plaga> _applyFilters(List<Plaga> list) {
+  List<Pesticida> _applyFilters(List<Pesticida> list) {
     final q = _searchCtrl.text.toLowerCase();
-    return list.where((p) => p.nombre.toLowerCase().contains(q) || p.cientifico.toLowerCase().contains(q)).toList();
+    return list.where((p) => p.nombre.toLowerCase().contains(q) || p.tipo.toLowerCase().contains(q)).toList();
   }
 
-  List<Plaga> get _filteredCatalogo => _applyFilters(_catalogo);
-  List<Plaga> get _filteredAgregados => _applyFilters(_agregados);
-  List<Plaga> get _filteredCompartidos => _applyFilters(_compartidos);
+  List<Pesticida> get _filteredCatalogo => _applyFilters(_catalogo);
+  List<Pesticida> get _filteredAgregados => _applyFilters(_agregados);
+  List<Pesticida> get _filteredCompartidos => _applyFilters(_compartidos);
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +87,7 @@ class _PlagasPageState extends State<PlagasPage> {
         appBar: AppBar(
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
-          title: const Text('Plagas', style: TextStyle(fontWeight: FontWeight.w900)),
+          title: const Text('Pesticidas', style: TextStyle(fontWeight: FontWeight.w900)),
         ),
         body: SafeArea(
           child: Padding(
@@ -98,7 +98,7 @@ class _PlagasPageState extends State<PlagasPage> {
                   controller: _searchCtrl,
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
-                    hintText: 'Buscar plaga...',
+                    hintText: 'Buscar pesticida...',
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.85),
                     prefixIcon: const Icon(Icons.search_rounded),
@@ -112,21 +112,21 @@ class _PlagasPageState extends State<PlagasPage> {
                       : ListView(
                           children: [
                             if (_filteredAgregados.isNotEmpty) ...[
-                              _buildSectionHeader('Mis plagas'),
-                              ..._filteredAgregados.map((p) => _PlagaTile(plaga: p)),
+                              _buildSectionHeader('Mis pesticidas'),
+                              ..._filteredAgregados.map((p) => _PesticidaTile(pesticida: p)),
                             ],
                             if (_filteredCompartidos.isNotEmpty) ...[
-                              _buildSectionHeader('Compartidas'),
-                              ..._filteredCompartidos.map((p) => _PlagaTile(plaga: p)),
+                              _buildSectionHeader('Compartidos'),
+                              ..._filteredCompartidos.map((p) => _PesticidaTile(pesticida: p)),
                             ],
                             if (_filteredCatalogo.isNotEmpty) ...[
                               _buildSectionHeader('Catálogo'),
-                              ..._filteredCatalogo.map((p) => _PlagaTile(plaga: p)),
+                              ..._filteredCatalogo.map((p) => _PesticidaTile(pesticida: p)),
                             ],
                             if (_filteredCatalogo.isEmpty && _filteredAgregados.isEmpty && _filteredCompartidos.isEmpty)
                               const Center(child: Padding(
                                 padding: EdgeInsets.all(20.0),
-                                child: Text('No se encontraron plagas'),
+                                child: Text('No se encontraron pesticidas'),
                               )),
                           ],
                         ),
@@ -150,9 +150,9 @@ class _PlagasPageState extends State<PlagasPage> {
   }
 }
 
-class _PlagaTile extends StatelessWidget {
-  final Plaga plaga;
-  const _PlagaTile({required this.plaga});
+class _PesticidaTile extends StatelessWidget {
+  final Pesticida pesticida;
+  const _PesticidaTile({required this.pesticida});
 
   @override
   Widget build(BuildContext context) {
@@ -173,24 +173,24 @@ class _PlagaTile extends StatelessWidget {
             child: _buildImage(),
           ),
         ),
-        title: Text(plaga.nombre, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker)),
-        subtitle: Text(plaga.cientifico, style: const TextStyle(fontStyle: FontStyle.italic)),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: plaga))),
+        title: Text(pesticida.nombre, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker)),
+        subtitle: Text(pesticida.tipo),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PesticidaDetallePage(pesticida: pesticida))),
       ),
     );
   }
 
   Widget _buildImage() {
-    if (plaga.imagePath != null && plaga.imagePath!.isNotEmpty) {
-      if (plaga.imagePath!.startsWith('data:image')) {
-        return Image.memory(base64Decode(plaga.imagePath!.split(',').last), fit: BoxFit.cover);
+    if (pesticida.imagePath != null && pesticida.imagePath!.isNotEmpty) {
+      if (pesticida.imagePath!.startsWith('data:image')) {
+        return Image.memory(base64Decode(pesticida.imagePath!.split(',').last), fit: BoxFit.cover);
       } else {
-        return Image.file(File(plaga.imagePath!), fit: BoxFit.cover);
+        return Image.file(File(pesticida.imagePath!), fit: BoxFit.cover);
       }
     }
-    if (plaga.imagen.isNotEmpty) {
-      return Image.asset(plaga.imagen, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded));
+    if (pesticida.imagen.isNotEmpty) {
+      return Image.asset(pesticida.imagen, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.sanitizer_rounded));
     }
-    return const Icon(Icons.bug_report_rounded, color: AppColors.greenDarker);
+    return const Icon(Icons.sanitizer_rounded, color: AppColors.greenDarker);
   }
 }

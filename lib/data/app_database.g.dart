@@ -3294,6 +3294,798 @@ class SharedPlagasCompanion extends UpdateCompanion<SharedPlaga> {
   }
 }
 
+class $UserPesticidasTable extends UserPesticidas
+    with TableInfo<$UserPesticidasTable, UserPesticida> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserPesticidasTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  @override
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _tipoMeta = const VerificationMeta('tipo');
+  @override
+  late final GeneratedColumn<String> tipo = GeneratedColumn<String>(
+    'tipo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    nombre,
+    tipo,
+    imagePath,
+    payloadJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_pesticidas';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserPesticida> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    }
+    if (data.containsKey('tipo')) {
+      context.handle(
+        _tipoMeta,
+        tipo.isAcceptableOrUnknown(data['tipo']!, _tipoMeta),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserPesticida map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserPesticida(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      tipo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tipo'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+    );
+  }
+
+  @override
+  $UserPesticidasTable createAlias(String alias) {
+    return $UserPesticidasTable(attachedDatabase, alias);
+  }
+}
+
+class UserPesticida extends DataClass implements Insertable<UserPesticida> {
+  final int id;
+  final int userId;
+  final String nombre;
+  final String tipo;
+  final String? imagePath;
+  final String payloadJson;
+  const UserPesticida({
+    required this.id,
+    required this.userId,
+    required this.nombre,
+    required this.tipo,
+    this.imagePath,
+    required this.payloadJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['nombre'] = Variable<String>(nombre);
+    map['tipo'] = Variable<String>(tipo);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    map['payload_json'] = Variable<String>(payloadJson);
+    return map;
+  }
+
+  UserPesticidasCompanion toCompanion(bool nullToAbsent) {
+    return UserPesticidasCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      nombre: Value(nombre),
+      tipo: Value(tipo),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      payloadJson: Value(payloadJson),
+    );
+  }
+
+  factory UserPesticida.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserPesticida(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      tipo: serializer.fromJson<String>(json['tipo']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'nombre': serializer.toJson<String>(nombre),
+      'tipo': serializer.toJson<String>(tipo),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+    };
+  }
+
+  UserPesticida copyWith({
+    int? id,
+    int? userId,
+    String? nombre,
+    String? tipo,
+    Value<String?> imagePath = const Value.absent(),
+    String? payloadJson,
+  }) => UserPesticida(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    nombre: nombre ?? this.nombre,
+    tipo: tipo ?? this.tipo,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    payloadJson: payloadJson ?? this.payloadJson,
+  );
+  UserPesticida copyWithCompanion(UserPesticidasCompanion data) {
+    return UserPesticida(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      tipo: data.tipo.present ? data.tipo.value : this.tipo,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserPesticida(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, userId, nombre, tipo, imagePath, payloadJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserPesticida &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.nombre == this.nombre &&
+          other.tipo == this.tipo &&
+          other.imagePath == this.imagePath &&
+          other.payloadJson == this.payloadJson);
+}
+
+class UserPesticidasCompanion extends UpdateCompanion<UserPesticida> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> nombre;
+  final Value<String> tipo;
+  final Value<String?> imagePath;
+  final Value<String> payloadJson;
+  const UserPesticidasCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+  });
+  UserPesticidasCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    required String payloadJson,
+  }) : userId = Value(userId),
+       payloadJson = Value(payloadJson);
+  static Insertable<UserPesticida> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? nombre,
+    Expression<String>? tipo,
+    Expression<String>? imagePath,
+    Expression<String>? payloadJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (nombre != null) 'nombre': nombre,
+      if (tipo != null) 'tipo': tipo,
+      if (imagePath != null) 'image_path': imagePath,
+      if (payloadJson != null) 'payload_json': payloadJson,
+    });
+  }
+
+  UserPesticidasCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? nombre,
+    Value<String>? tipo,
+    Value<String?>? imagePath,
+    Value<String>? payloadJson,
+  }) {
+    return UserPesticidasCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      nombre: nombre ?? this.nombre,
+      tipo: tipo ?? this.tipo,
+      imagePath: imagePath ?? this.imagePath,
+      payloadJson: payloadJson ?? this.payloadJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (tipo.present) {
+      map['tipo'] = Variable<String>(tipo.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserPesticidasCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SharedPesticidasTable extends SharedPesticidas
+    with TableInfo<$SharedPesticidasTable, SharedPesticida> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SharedPesticidasTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreMeta = const VerificationMeta('nombre');
+  @override
+  late final GeneratedColumn<String> nombre = GeneratedColumn<String>(
+    'nombre',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _tipoMeta = const VerificationMeta('tipo');
+  @override
+  late final GeneratedColumn<String> tipo = GeneratedColumn<String>(
+    'tipo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
+  @override
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    nombre,
+    tipo,
+    imagePath,
+    payloadJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'shared_pesticidas';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SharedPesticida> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('nombre')) {
+      context.handle(
+        _nombreMeta,
+        nombre.isAcceptableOrUnknown(data['nombre']!, _nombreMeta),
+      );
+    }
+    if (data.containsKey('tipo')) {
+      context.handle(
+        _tipoMeta,
+        tipo.isAcceptableOrUnknown(data['tipo']!, _tipoMeta),
+      );
+    }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SharedPesticida map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SharedPesticida(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      nombre: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre'],
+      )!,
+      tipo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tipo'],
+      )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+    );
+  }
+
+  @override
+  $SharedPesticidasTable createAlias(String alias) {
+    return $SharedPesticidasTable(attachedDatabase, alias);
+  }
+}
+
+class SharedPesticida extends DataClass implements Insertable<SharedPesticida> {
+  final int id;
+  final int userId;
+  final String nombre;
+  final String tipo;
+  final String? imagePath;
+  final String payloadJson;
+  const SharedPesticida({
+    required this.id,
+    required this.userId,
+    required this.nombre,
+    required this.tipo,
+    this.imagePath,
+    required this.payloadJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['nombre'] = Variable<String>(nombre);
+    map['tipo'] = Variable<String>(tipo);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
+    map['payload_json'] = Variable<String>(payloadJson);
+    return map;
+  }
+
+  SharedPesticidasCompanion toCompanion(bool nullToAbsent) {
+    return SharedPesticidasCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      nombre: Value(nombre),
+      tipo: Value(tipo),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
+      payloadJson: Value(payloadJson),
+    );
+  }
+
+  factory SharedPesticida.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SharedPesticida(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      nombre: serializer.fromJson<String>(json['nombre']),
+      tipo: serializer.fromJson<String>(json['tipo']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'nombre': serializer.toJson<String>(nombre),
+      'tipo': serializer.toJson<String>(tipo),
+      'imagePath': serializer.toJson<String?>(imagePath),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+    };
+  }
+
+  SharedPesticida copyWith({
+    int? id,
+    int? userId,
+    String? nombre,
+    String? tipo,
+    Value<String?> imagePath = const Value.absent(),
+    String? payloadJson,
+  }) => SharedPesticida(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    nombre: nombre ?? this.nombre,
+    tipo: tipo ?? this.tipo,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    payloadJson: payloadJson ?? this.payloadJson,
+  );
+  SharedPesticida copyWithCompanion(SharedPesticidasCompanion data) {
+    return SharedPesticida(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      nombre: data.nombre.present ? data.nombre.value : this.nombre,
+      tipo: data.tipo.present ? data.tipo.value : this.tipo,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharedPesticida(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, userId, nombre, tipo, imagePath, payloadJson);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SharedPesticida &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.nombre == this.nombre &&
+          other.tipo == this.tipo &&
+          other.imagePath == this.imagePath &&
+          other.payloadJson == this.payloadJson);
+}
+
+class SharedPesticidasCompanion extends UpdateCompanion<SharedPesticida> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> nombre;
+  final Value<String> tipo;
+  final Value<String?> imagePath;
+  final Value<String> payloadJson;
+  const SharedPesticidasCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+  });
+  SharedPesticidasCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.nombre = const Value.absent(),
+    this.tipo = const Value.absent(),
+    this.imagePath = const Value.absent(),
+    required String payloadJson,
+  }) : userId = Value(userId),
+       payloadJson = Value(payloadJson);
+  static Insertable<SharedPesticida> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? nombre,
+    Expression<String>? tipo,
+    Expression<String>? imagePath,
+    Expression<String>? payloadJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (nombre != null) 'nombre': nombre,
+      if (tipo != null) 'tipo': tipo,
+      if (imagePath != null) 'image_path': imagePath,
+      if (payloadJson != null) 'payload_json': payloadJson,
+    });
+  }
+
+  SharedPesticidasCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? nombre,
+    Value<String>? tipo,
+    Value<String?>? imagePath,
+    Value<String>? payloadJson,
+  }) {
+    return SharedPesticidasCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      nombre: nombre ?? this.nombre,
+      tipo: tipo ?? this.tipo,
+      imagePath: imagePath ?? this.imagePath,
+      payloadJson: payloadJson ?? this.payloadJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (nombre.present) {
+      map['nombre'] = Variable<String>(nombre.value);
+    }
+    if (tipo.present) {
+      map['tipo'] = Variable<String>(tipo.value);
+    }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SharedPesticidasCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('nombre: $nombre, ')
+          ..write('tipo: $tipo, ')
+          ..write('imagePath: $imagePath, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3307,6 +4099,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $SharedFertilizantesTable(this);
   late final $UserPlagasTable userPlagas = $UserPlagasTable(this);
   late final $SharedPlagasTable sharedPlagas = $SharedPlagasTable(this);
+  late final $UserPesticidasTable userPesticidas = $UserPesticidasTable(this);
+  late final $SharedPesticidasTable sharedPesticidas = $SharedPesticidasTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3320,6 +4116,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     sharedFertilizantes,
     userPlagas,
     sharedPlagas,
+    userPesticidas,
+    sharedPesticidas,
   ];
 }
 
@@ -5102,6 +5900,444 @@ typedef $$SharedPlagasTableProcessedTableManager =
       SharedPlaga,
       PrefetchHooks Function()
     >;
+typedef $$UserPesticidasTableCreateCompanionBuilder =
+    UserPesticidasCompanion Function({
+      Value<int> id,
+      required int userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<String?> imagePath,
+      required String payloadJson,
+    });
+typedef $$UserPesticidasTableUpdateCompanionBuilder =
+    UserPesticidasCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<String?> imagePath,
+      Value<String> payloadJson,
+    });
+
+class $$UserPesticidasTableFilterComposer
+    extends Composer<_$AppDatabase, $UserPesticidasTable> {
+  $$UserPesticidasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserPesticidasTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserPesticidasTable> {
+  $$UserPesticidasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserPesticidasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserPesticidasTable> {
+  $$UserPesticidasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<String> get tipo =>
+      $composableBuilder(column: $table.tipo, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+}
+
+class $$UserPesticidasTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserPesticidasTable,
+          UserPesticida,
+          $$UserPesticidasTableFilterComposer,
+          $$UserPesticidasTableOrderingComposer,
+          $$UserPesticidasTableAnnotationComposer,
+          $$UserPesticidasTableCreateCompanionBuilder,
+          $$UserPesticidasTableUpdateCompanionBuilder,
+          (
+            UserPesticida,
+            BaseReferences<_$AppDatabase, $UserPesticidasTable, UserPesticida>,
+          ),
+          UserPesticida,
+          PrefetchHooks Function()
+        > {
+  $$UserPesticidasTableTableManager(
+    _$AppDatabase db,
+    $UserPesticidasTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserPesticidasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserPesticidasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserPesticidasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => UserPesticidasCompanion(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                required String payloadJson,
+              }) => UserPesticidasCompanion.insert(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserPesticidasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserPesticidasTable,
+      UserPesticida,
+      $$UserPesticidasTableFilterComposer,
+      $$UserPesticidasTableOrderingComposer,
+      $$UserPesticidasTableAnnotationComposer,
+      $$UserPesticidasTableCreateCompanionBuilder,
+      $$UserPesticidasTableUpdateCompanionBuilder,
+      (
+        UserPesticida,
+        BaseReferences<_$AppDatabase, $UserPesticidasTable, UserPesticida>,
+      ),
+      UserPesticida,
+      PrefetchHooks Function()
+    >;
+typedef $$SharedPesticidasTableCreateCompanionBuilder =
+    SharedPesticidasCompanion Function({
+      Value<int> id,
+      required int userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<String?> imagePath,
+      required String payloadJson,
+    });
+typedef $$SharedPesticidasTableUpdateCompanionBuilder =
+    SharedPesticidasCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> nombre,
+      Value<String> tipo,
+      Value<String?> imagePath,
+      Value<String> payloadJson,
+    });
+
+class $$SharedPesticidasTableFilterComposer
+    extends Composer<_$AppDatabase, $SharedPesticidasTable> {
+  $$SharedPesticidasTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SharedPesticidasTableOrderingComposer
+    extends Composer<_$AppDatabase, $SharedPesticidasTable> {
+  $$SharedPesticidasTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombre => $composableBuilder(
+    column: $table.nombre,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tipo => $composableBuilder(
+    column: $table.tipo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SharedPesticidasTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SharedPesticidasTable> {
+  $$SharedPesticidasTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombre =>
+      $composableBuilder(column: $table.nombre, builder: (column) => column);
+
+  GeneratedColumn<String> get tipo =>
+      $composableBuilder(column: $table.tipo, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+}
+
+class $$SharedPesticidasTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SharedPesticidasTable,
+          SharedPesticida,
+          $$SharedPesticidasTableFilterComposer,
+          $$SharedPesticidasTableOrderingComposer,
+          $$SharedPesticidasTableAnnotationComposer,
+          $$SharedPesticidasTableCreateCompanionBuilder,
+          $$SharedPesticidasTableUpdateCompanionBuilder,
+          (
+            SharedPesticida,
+            BaseReferences<
+              _$AppDatabase,
+              $SharedPesticidasTable,
+              SharedPesticida
+            >,
+          ),
+          SharedPesticida,
+          PrefetchHooks Function()
+        > {
+  $$SharedPesticidasTableTableManager(
+    _$AppDatabase db,
+    $SharedPesticidasTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SharedPesticidasTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SharedPesticidasTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SharedPesticidasTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => SharedPesticidasCompanion(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                Value<String> nombre = const Value.absent(),
+                Value<String> tipo = const Value.absent(),
+                Value<String?> imagePath = const Value.absent(),
+                required String payloadJson,
+              }) => SharedPesticidasCompanion.insert(
+                id: id,
+                userId: userId,
+                nombre: nombre,
+                tipo: tipo,
+                imagePath: imagePath,
+                payloadJson: payloadJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SharedPesticidasTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SharedPesticidasTable,
+      SharedPesticida,
+      $$SharedPesticidasTableFilterComposer,
+      $$SharedPesticidasTableOrderingComposer,
+      $$SharedPesticidasTableAnnotationComposer,
+      $$SharedPesticidasTableCreateCompanionBuilder,
+      $$SharedPesticidasTableUpdateCompanionBuilder,
+      (
+        SharedPesticida,
+        BaseReferences<_$AppDatabase, $SharedPesticidasTable, SharedPesticida>,
+      ),
+      SharedPesticida,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5122,4 +6358,8 @@ class $AppDatabaseManager {
       $$UserPlagasTableTableManager(_db, _db.userPlagas);
   $$SharedPlagasTableTableManager get sharedPlagas =>
       $$SharedPlagasTableTableManager(_db, _db.sharedPlagas);
+  $$UserPesticidasTableTableManager get userPesticidas =>
+      $$UserPesticidasTableTableManager(_db, _db.userPesticidas);
+  $$SharedPesticidasTableTableManager get sharedPesticidas =>
+      $$SharedPesticidasTableTableManager(_db, _db.sharedPesticidas);
 }

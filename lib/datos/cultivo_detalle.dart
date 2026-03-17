@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../main.dart';
 import 'help_dialogs.dart';
-import 'plagas.dart';
 import 'plaga_detalle.dart';
 
 class Cultivo {
@@ -24,6 +23,8 @@ class Cultivo {
   final String siembra;
   final Map<String, String> ficha;
   final List<String> plagas;
+  final List<String> beneficiosos;
+  final List<String> perjudiciales;
 
   const Cultivo({
     this.id,
@@ -38,6 +39,8 @@ class Cultivo {
     required this.siembra,
     required this.ficha,
     required this.plagas,
+    this.beneficiosos = const [],
+    this.perjudiciales = const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -53,6 +56,8 @@ class Cultivo {
         'siembra': siembra,
         'ficha': ficha,
         'plagas': plagas,
+        'beneficiosos': beneficiosos,
+        'perjudiciales': perjudiciales,
       };
 
   static Cultivo fromJson(Map<String, dynamic> j) {
@@ -62,6 +67,8 @@ class Cultivo {
         <String, String>{};
 
     final plagas = (j['plagas'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
+    final ben = (j['beneficiosos'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
+    final per = (j['perjudiciales'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
 
     return Cultivo(
       id: j['id'] as int?,
@@ -78,6 +85,8 @@ class Cultivo {
       siembra: (j['siembra'] ?? '').toString(),
       ficha: ficha,
       plagas: plagas,
+      beneficiosos: ben,
+      perjudiciales: per,
     );
   }
 }
@@ -188,170 +197,87 @@ class CultivoDetallePage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
             children: [
               Container(
-  padding: const EdgeInsets.all(14),
-  decoration: BoxDecoration(
-    color: Colors.white.withOpacity(0.82),
-    borderRadius: BorderRadius.circular(16),
-    border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
-  ),
-  child: ClipRRect(
-    borderRadius: BorderRadius.circular(14),
-    child: AspectRatio(
-      aspectRatio: 16 / 9,
-      child: _buildImage(),
-    ),
-  ),
-),
-const SizedBox(height: 12),
-              _Card(
-                cultivo: cultivo,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeaderRow(
-                      title: 'Identificación',
-                      onHelp: () => HelpDialogs.show(
-                        context,
-                        title: 'Identificación',
-                        text: 'Descripción breve para reconocer el cultivo.',
-                      ),
-                    ),
-                    Text(
-                      cultivo.identificacion,
-                      style: TextStyle(
-                        color: AppColors.greenDarker.withOpacity(0.86),
-                        height: 1.35,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.82),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: _buildImage(),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
-              _Card(
-                cultivo: cultivo,
+              _DetailCard(
+                icon: 'assets/iconos/id.png',
+                title: 'Identificación',
+                onHelp: () => HelpDialogs.show(context, title: 'Identificación', text: 'Descripción breve para reconocer el cultivo.'),
+                child: Text(cultivo.identificacion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+              ),
+              const SizedBox(height: 12),
+              _DetailCard(
+                icon: 'assets/iconos/siembra.png',
+                title: 'Siembra',
+                onHelp: () => HelpDialogs.show(context, title: 'Siembra', text: 'Consejos básicos para sembrar este cultivo.'),
+                child: Text(cultivo.siembra, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+              ),
+              const SizedBox(height: 12),
+              _DetailCard(
+                icon: 'assets/iconos/indirecta.png',
+                title: 'Ficha rápida',
+                onHelp: () => HelpDialogs.show(context, title: 'Ficha rápida', text: 'Datos clave como distancia, profundidad, clima y riego.'),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeaderRow(
-                      title: 'Siembra',
-                      onHelp: () => HelpDialogs.show(
-                        context,
-                        title: 'Siembra',
-                        text: 'Consejos básicos para sembrar este cultivo.',
-                      ),
-                    ),
-                    Text(
-                      cultivo.siembra,
-                      style: TextStyle(
-                        color: AppColors.greenDarker.withOpacity(0.86),
-                        height: 1.35,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                  children: cultivo.ficha.entries
+                      .map((e) => _InfoRow(
+                            label: e.key,
+                            value: e.value,
+                            onHelp: () => HelpDialogs.show(context, title: e.key, text: HelpDialogs.textForField(e.key)),
+                          ))
+                      .toList(),
                 ),
               ),
               const SizedBox(height: 12),
-              _Card(
-                cultivo: cultivo,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeaderRow(
-                      title: 'Ficha rápida',
-                      onHelp: () => HelpDialogs.show(
-                        context,
-                        title: 'Ficha rápida',
-                        text: 'Datos clave como distancia, profundidad, clima y riego.',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ...cultivo.ficha.entries.map(
-                      (e) => _InfoRow(
-                        label: e.key,
-                        value: e.value,
-                        onHelp: () => HelpDialogs.show(
-                          context,
-                          title: e.key,
-                          text: HelpDialogs.textForField(e.key),
-                        ),
-                      ),
-                    ),
-                  ],
+              if (cultivo.plagas.isNotEmpty)
+                _DetailCard(
+                  icon: 'assets/iconos/id.png', // Reusing ID for now
+                  title: 'Plagas',
+                  onHelp: () => HelpDialogs.show(context, title: 'Plagas', text: 'Plagas comunes que pueden afectar este cultivo.'),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: cultivo.plagas.map((p) => _RelatedChip(name: p, type: 'plaga')).toList(),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              _Card(
-                cultivo: cultivo,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _HeaderRow(
-                      title: 'Plagas',
-                      onHelp: () => HelpDialogs.show(
-                        context,
-                        title: 'Plagas',
-                        text: 'Plagas comunes que pueden afectar este cultivo.',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: cultivo.plagas
-                          .map(
-                            (p) => InkWell(
-                              borderRadius: BorderRadius.circular(14),
-                              onTap: () async {
-                                try {
-                                  final raw = await rootBundle.loadString('assets/data/plagas.json');
-                                  final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
-                                  final decoded = jsonDecode(cleanJson) as List;
-                                  final catalog = decoded.map((e) => Plaga.fromJson(Map<String, dynamic>.from(e))).toList();
-
-                                  final plaga = catalog.firstWhere(
-                                    (item) => item.nombre.toLowerCase() == p.toLowerCase(),
-                                    orElse: () => throw 'No encontrada',
-                                  );
-
-                                  if (context.mounted) {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => PlagaDetallePage(plaga: plaga),
-                                      ),
-                                    );
-                                  }
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('No hay más información de: $p')),
-                                    );
-                                  }
-                                }
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(color: AppColors.greenDark.withOpacity(0.14)),
-                                ),
-                                child: Text(
-                                  p,
-                                  style: const TextStyle(
-                                    color: AppColors.greenDarker,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ],
+              if (cultivo.beneficiosos.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _DetailCard(
+                  icon: 'assets/iconos/verano.png',
+                  title: 'Cultivos Beneficiosos',
+                  onHelp: () => HelpDialogs.show(context, title: 'Beneficiosos', text: 'Cultivos que crecen mejor junto a este.'),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: cultivo.beneficiosos.map((c) => _RelatedChip(name: c, type: 'cultivo')).toList(),
+                  ),
                 ),
-              ),
+              ],
+              if (cultivo.perjudiciales.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _DetailCard(
+                  icon: 'assets/iconos/invierno.png',
+                  title: 'Cultivos Perjudiciales',
+                  onHelp: () => HelpDialogs.show(context, title: 'Perjudiciales', text: 'Cultivos que deben evitarse cerca de este.'),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: cultivo.perjudiciales.map((c) => _RelatedChip(name: c, type: 'cultivo')).toList(),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -360,10 +286,13 @@ const SizedBox(height: 12),
   }
 }
 
-class _Card extends StatelessWidget {
-  final Cultivo cultivo;
+class _DetailCard extends StatelessWidget {
+  final String icon;
+  final String title;
+  final VoidCallback onHelp;
   final Widget child;
-  const _Card({required this.cultivo, required this.child});
+
+  const _DetailCard({required this.icon, required this.title, required this.onHelp, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -374,36 +303,22 @@ class _Card extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
       ),
-      child: child,
-    );
-  }
-}
-
-class _HeaderRow extends StatelessWidget {
-  final String title;
-  final VoidCallback onHelp;
-  const _HeaderRow({required this.title, required this.onHelp});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            color: AppColors.greenDarker,
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Image.asset(icon, width: 24, height: 24, errorBuilder: (_, __, ___) => const Icon(Icons.info_outline)),
+              const SizedBox(width: 8),
+              Text(title, style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 16)),
+              const Spacer(),
+              IconButton(onPressed: onHelp, icon: const Icon(Icons.help_outline_rounded), color: AppColors.greenDarker),
+            ],
           ),
-        ),
-        const Spacer(),
-        IconButton(
-          tooltip: '¿Qué significa?',
-          onPressed: onHelp,
-          icon: const Icon(Icons.help_outline_rounded),
-          color: AppColors.greenDarker,
-        ),
-      ],
+          const SizedBox(height: 8),
+          child,
+        ],
+      ),
     );
   }
 }
@@ -412,9 +327,7 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
   final VoidCallback onHelp;
-
   const _InfoRow({required this.label, required this.value, required this.onHelp});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -427,22 +340,58 @@ class _InfoRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            child: Text(
-              '$label\n$value',
-              style: const TextStyle(
-                color: AppColors.greenDarker,
-                fontWeight: FontWeight.w700,
-                height: 1.25,
-              ),
-            ),
-          ),
-          IconButton(
-            onPressed: onHelp,
-            icon: const Icon(Icons.help_outline_rounded),
-            color: AppColors.greenDarker,
-          ),
+          Expanded(child: Text('$label\n$value', style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w700, height: 1.25))),
+          IconButton(onPressed: onHelp, icon: const Icon(Icons.help_outline_rounded), color: AppColors.greenDarker),
         ],
+      ),
+    );
+  }
+}
+
+class _RelatedChip extends StatelessWidget {
+  final String name;
+  final String type; // 'cultivo' or 'plaga'
+
+  const _RelatedChip({required this.name, required this.type});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () async {
+        try {
+          final String assetPath = type == 'cultivo' ? 'assets/data/cultivos.json' : 'assets/data/plagas.json';
+          final raw = await rootBundle.loadString(assetPath);
+          final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
+          final decoded = jsonDecode(cleanJson) as List;
+
+          if (type == 'cultivo') {
+            final catalog = decoded.map((e) => Cultivo.fromJson(Map<String, dynamic>.from(e))).toList();
+            final item = catalog.firstWhere((i) => i.nombre.toLowerCase() == name.toLowerCase());
+            if (context.mounted) Navigator.push(context, MaterialPageRoute(builder: (_) => CultivoDetallePage(cultivo: item)));
+          } else {
+            final catalog = decoded.map((e) => Plaga.fromJson(Map<String, dynamic>.from(e))).toList();
+            final item = catalog.firstWhere((i) => i.nombre.toLowerCase() == name.toLowerCase());
+            if (context.mounted) Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: item)));
+          }
+        } catch (e) {
+          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sin detalle para: $name')));
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.greenDark.withOpacity(0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(type == 'cultivo' ? Icons.local_florist_rounded : Icons.bug_report_rounded, size: 16, color: AppColors.greenDarker),
+            const SizedBox(width: 4),
+            Text(name, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.greenDarker)),
+          ],
+        ),
       ),
     );
   }

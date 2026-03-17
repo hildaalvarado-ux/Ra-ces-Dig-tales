@@ -58,9 +58,12 @@ flutter:
     - assets/data/cultivos.json
     - assets/data/fertilizantes.json
     - assets/data/plagas.json
+    - assets/data/pesticidas.json
     - assets/cultivos/
-    # Si quieres agregar toda la carpeta:
-    # - assets/images/
+    - assets/fertilizantes/
+    - assets/plagas/
+    - assets/pesticidas/
+    - assets/iconos/
 
 flutter_launcher_icons:
   android: true

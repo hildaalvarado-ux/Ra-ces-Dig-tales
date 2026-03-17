@@ -1,0 +1,30 @@
+[
+  {
+    "imagen": "assets/pesticidas/jabon_potasico.png",
+    "nombre": "Jabón potásico",
+    "tipo": "Orgánico",
+    "identificacion": "El jabón potásico es un producto biodegradable, residuo cero, apto para agricultura ecológica.",
+    "uso": "Pulverizar sobre las hojas, especialmente en el envés, en horas de poca insolación.",
+    "ficha": {
+      "Origen": "Grasas vegetales y potasa",
+      "Frecuencia": "Cada 5-7 días en caso de plaga",
+      "Efecto": "Ablanda el exoesqueleto de los insectos",
+      "Toxicidad": "Nula para humanos y mascotas"
+    },
+    "plagas": ["Pulgón", "Mosca blanca", "Cochinilla"]
+  },
+  {
+    "imagen": "assets/pesticidas/aceite_neem.png",
+    "nombre": "Aceite de Neem",
+    "tipo": "Orgánico",
+    "identificacion": "Aceite extraído de las semillas del árbol de Neem (Azadirachta indica).",
+    "uso": "Diluir en agua con un poco de jabón potásico y pulverizar.",
+    "ficha": {
+      "Origen": "Semillas de Neem",
+      "Frecuencia": "Cada 10-15 días preventivo",
+      "Efecto": "Sistémico e inhibidor de crecimiento",
+      "Toxicidad": "Baja"
+    },
+    "plagas": ["Pulgón", "Minador", "Arañuela roja", "Trips"]
+  }
+]
