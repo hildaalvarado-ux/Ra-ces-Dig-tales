@@ -215,15 +215,16 @@
     "cosechaMeses": 4,
     "tipo": "Frutal",
     "estacion": "Verano",
-    "identificacion": "Planta herbácea de tallos volubles con frutos globosos rojos.",
-    "siembra": "En almácigo a finales de invierno, trasplante en primavera.",
+    "identificacion": "Planta herbácea de tallos volubles con frutos globosos rojos. Es uno de los cultivos más populares del huerto, requiriendo tutores para su correcto crecimiento y ventilación.",
+    "siembra": "En almácigo a finales de invierno, trasplante en primavera cuando no haya riesgo de heladas. Requiere suelos profundos y bien abonados.",
     "ficha": {
       "Riego": "Frecuente",
       "Luz": "Sol pleno",
-      "Suelo": "Rico en nutrientes"
+      "Suelo": "Rico en nutrientes",
+      "Distancia": "40cm"
     },
-    "plagas": ["Mosca blanca", "Pulgón"],
-    "beneficiosos": ["Ajo", "Cebolla morada", "Zanahoria"],
+    "plagas": ["Mosca blanca", "Pulgón", "Minador", "Oruga"],
+    "beneficiosos": ["Ajo", "Cebolla morada", "Zanahoria", "Albahaca"],
     "perjudiciales": ["Papa", "Pepino"]
   },
   {
@@ -233,15 +234,53 @@
     "cosechaMeses": 3,
     "tipo": "Raíz",
     "estacion": "Primavera",
-    "identificacion": "Planta con raíz carnosa de color naranja.",
-    "siembra": "Siembra directa a 1cm de profundidad.",
+    "identificacion": "Planta con raíz carnosa de color naranja. Sus hojas son finamente divididas y su cultivo requiere un suelo libre de piedras para que la raíz crezca recta.",
+    "siembra": "Siembra directa a 1cm de profundidad. Se recomienda mezclar las semillas con arena fina para una distribución más uniforme.",
     "ficha": {
       "Riego": "Moderado",
       "Luz": "Sol pleno",
-      "Distancia": "10cm"
+      "Distancia": "10cm",
+      "Suelo": "Arenoso y profundo"
     },
-    "plagas": ["Pulgón"],
-    "beneficiosos": ["Tomate", "Cebolla morada", "Ajo"],
+    "plagas": ["Pulgón", "Mosca de la zanahoria"],
+    "beneficiosos": ["Tomate", "Cebolla morada", "Ajo", "Puerro"],
     "perjudiciales": ["Acelga"]
+  },
+  {
+    "imagen": "assets/cultivos/lechuga.png",
+    "nombre": "Lechuga",
+    "cientifico": "Lactuca sativa",
+    "cosechaMeses": 2,
+    "tipo": "Hoja",
+    "estacion": "Primavera",
+    "identificacion": "Planta herbácea con hojas que se disponen en roseta. Existen múltiples variedades con diferentes formas, colores y texturas.",
+    "siembra": "Siembra en almácigo y trasplante o siembra directa. Tolera bien el frío pero requiere humedad constante.",
+    "ficha": {
+      "Riego": "Frecuente",
+      "Luz": "Media luz",
+      "Suelo": "Drenado y rico",
+      "Temporada": "Todo el año"
+    },
+    "plagas": ["Pulgón", "Babosas", "Trips"],
+    "beneficiosos": ["Zanahoria", "Rábano", "Cebolla"],
+    "perjudiciales": ["Perejil"]
+  },
+  {
+    "imagen": "assets/cultivos/papa.png",
+    "nombre": "Papa",
+    "cientifico": "Solanum tuberosum",
+    "cosechaMeses": 4,
+    "tipo": "Tuberculo",
+    "estacion": "Primavera",
+    "identificacion": "Planta con tubérculos subterráneos ricos en almidón. Pertenece a la familia de las solanáceas, al igual que el tomate y el morrón.",
+    "siembra": "Siembra de tubérculos a 10cm de profundidad. Es importante realizar el aporcado (arrimar tierra al tallo) para proteger los tubérculos de la luz.",
+    "ficha": {
+      "Riego": "Moderado",
+      "Luz": "Sol pleno",
+      "Suelo": "Suelto y profundo"
+    },
+    "plagas": ["Escarabajo de la papa", "Pulgón", "Polilla de la papa"],
+    "beneficiosos": ["Maíz", "Poroto", "Haba"],
+    "perjudiciales": ["Tomate", "Pepino"]
   }
 ]

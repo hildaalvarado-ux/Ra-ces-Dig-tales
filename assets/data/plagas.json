@@ -25,6 +25,91 @@
       "Detección": "Vuelo al mover la planta",
       "Tratamiento": "Limpieza de hojas",
       "Prevención": "Control de humedad"
+    },
+    "pesticidas": ["Jabón potásico", "Infusión de ajo"]
+  },
+  {
+    "imagen": "assets/plagas/hormiga.png",
+    "nombre": "Hormiga",
+    "cientifico": "Formicidae",
+    "identificacion": "Insectos sociales que pueden defoliar plantas rápidamente o proteger pulgones.",
+    "sintomas": "Caminos de hormigas y hojas cortadas.",
+    "control": "Arroz partido o barreras físicas.",
+    "ficha": {
+      "Gravedad": "Media",
+      "Detección": "Troncos y suelo",
+      "Tratamiento": "Cebos naturales",
+      "Prevención": "Mantener suelo limpio"
+    }
+  },
+  {
+    "imagen": "assets/plagas/cochinilla.png",
+    "nombre": "Cochinilla",
+    "cientifico": "Coccoidea",
+    "identificacion": "Insectos con cubierta cerosa blanca o parda que se pegan a los tallos y hojas.",
+    "sintomas": "Manchas blancas algodonosas y debilitamiento.",
+    "control": "Alcohol diluido o jabón potásico.",
+    "ficha": {
+      "Gravedad": "Media",
+      "Detección": "Tallos y axilas",
+      "Tratamiento": "Limpieza manual",
+      "Prevención": "Poda y ventilación"
+    }
+  },
+  {
+    "imagen": "assets/plagas/minador.png",
+    "nombre": "Minador",
+    "cientifico": "Liriomyza spp.",
+    "identificacion": "Larvas de pequeñas moscas que viven dentro del tejido de las hojas.",
+    "sintomas": "Galerías blancas o transparentes en las hojas.",
+    "control": "Aceite de neem o retirar hojas afectadas.",
+    "ficha": {
+      "Gravedad": "Baja",
+      "Detección": "Galerías en hojas",
+      "Tratamiento": "Eliminación de larvas",
+      "Prevención": "Trampas amarillas"
+    }
+  },
+  {
+    "imagen": "assets/plagas/aranuela.png",
+    "nombre": "Arañuela roja",
+    "cientifico": "Tetranychus urticae",
+    "identificacion": "Ácaros diminutos que forman finas telarañas en el envés de las hojas.",
+    "sintomas": "Puntos amarillos en hojas y telarañas finas.",
+    "control": "Humedad alta o azufre.",
+    "ficha": {
+      "Gravedad": "Alta",
+      "Detección": "Lupa en envés",
+      "Tratamiento": "Pulverización con agua",
+      "Prevención": "Evitar sequedad"
+    }
+  },
+  {
+    "imagen": "assets/plagas/trips.png",
+    "nombre": "Trips",
+    "cientifico": "Thysanoptera",
+    "identificacion": "Pequeños insectos alargados que raspan la superficie de las hojas y flores.",
+    "sintomas": "Manchas plateadas y puntos negros (excrementos).",
+    "control": "Jabón potásico o trampas azules.",
+    "ficha": {
+      "Gravedad": "Media",
+      "Detección": "Flores y hojas",
+      "Tratamiento": "Pulverización",
+      "Prevención": "Trampas cromáticas"
+    }
+  },
+  {
+    "imagen": "assets/plagas/oruga.png",
+    "nombre": "Oruga",
+    "cientifico": "Lepidoptera (larva)",
+    "identificacion": "Larvas de mariposas o polillas que devoran el follaje.",
+    "sintomas": "Agujeros grandes en las hojas y excrementos visibles.",
+    "control": "Recolección manual o Bacillus thuringiensis.",
+    "ficha": {
+      "Gravedad": "Alta",
+      "Detección": "Hojas devoradas",
+      "Tratamiento": "Manual o biológico",
+      "Prevención": "Mallas anti-insectos"
     }
   }
 ]

@@ -24,5 +24,83 @@
       "Beneficios": "Aporta microorganismos benéficos",
       "Nutrientes": "Alto en nitrógeno"
     }
+  },
+  {
+    "nombre": "Estiércol maduro",
+    "imagen": "assets/fertilizantes/estiercol.png",
+    "tipo": "Orgánico",
+    "identificacion": "Deyecciones animales procesadas y estabilizadas para uso agrícola.",
+    "uso": "Incorporar al suelo varias semanas antes de la siembra.",
+    "ficha": {
+      "Origen": "Animal (vaca, oveja, caballo)",
+      "Frecuencia": "Anual",
+      "Beneficios": "Aporta gran cantidad de materia orgánica",
+      "Nutrientes": "NPK equilibrado"
+    }
+  },
+  {
+    "nombre": "Té de plátano",
+    "imagen": "assets/fertilizantes/te_platano.png",
+    "tipo": "Casero",
+    "identificacion": "Líquido rico en potasio elaborado hirviendo cáscaras de plátano.",
+    "uso": "Regar las plantas durante la fase de floración y fructificación.",
+    "ficha": {
+      "Origen": "Cáscaras de plátano",
+      "Frecuencia": "Cada 15 días en floración",
+      "Beneficios": "Promueve el desarrollo de frutos",
+      "Nutrientes": "Potasio"
+    }
+  },
+  {
+    "nombre": "Harina de huesos",
+    "imagen": "assets/fertilizantes/harina_huesos.png",
+    "tipo": "Orgánico",
+    "identificacion": "Huesos animales triturados, excelente fuente de fósforo de liberación lenta.",
+    "uso": "Mezclar con el sustrato cerca de las raíces.",
+    "ficha": {
+      "Origen": "Huesos triturados",
+      "Frecuencia": "Cada 4-6 meses",
+      "Beneficios": "Fortalece las raíces y flores",
+      "Nutrientes": "Fósforo y Calcio"
+    }
+  },
+  {
+    "nombre": "Ceniza de madera",
+    "imagen": "assets/fertilizantes/ceniza.png",
+    "tipo": "Orgánico",
+    "identificacion": "Residuo de la combustión de madera no tratada.",
+    "uso": "Espolvorear ligeramente sobre el suelo (evitar exceso).",
+    "ficha": {
+      "Origen": "Madera quemada",
+      "Frecuencia": "Puntual",
+      "Beneficios": "Neutraliza la acidez del suelo",
+      "Nutrientes": "Potasio y Magnesio"
+    }
+  },
+  {
+    "nombre": "Lixiviado de lombriz",
+    "imagen": "assets/fertilizantes/lixiviado.png",
+    "tipo": "Orgánico",
+    "identificacion": "Líquido concentrado que se drena durante el proceso de vermicompostaje.",
+    "uso": "Diluir en agua (1:10) y aplicar mediante riego o pulverización foliar.",
+    "ficha": {
+      "Origen": "Vermicompostaje líquido",
+      "Frecuencia": "Cada 15-30 días",
+      "Beneficios": "Rápida absorción de nutrientes",
+      "Nutrientes": "Nitrógeno y microorganismos"
+    }
+  },
+  {
+    "nombre": "Fertilizante de algas",
+    "imagen": "assets/fertilizantes/algas.png",
+    "tipo": "Orgánico",
+    "identificacion": "Extracto líquido de algas marinas ricas en micronutrientes y hormonas de crecimiento.",
+    "uso": "Aplicación foliar o mediante riego.",
+    "ficha": {
+      "Origen": "Algas marinas",
+      "Frecuencia": "Cada 20 días",
+      "Beneficios": "Bioestimulante y anti-estrés",
+      "Nutrientes": "Micronutrientes"
+    }
   }
 ]
