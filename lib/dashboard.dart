@@ -218,10 +218,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
 
-              title: const Text(
-                'Inicio',
-                style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.3),
-              ),
+              title: isDesktop
+                  ? const Text(
+                      'Inicio',
+                      style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.3),
+                    )
+                  : null,
 
               // ==========================================================
               // ✅ MENÚ DE ESCRITORIO (tipo web) + PERFIL
@@ -281,7 +283,25 @@ class _DashboardPageState extends State<DashboardPage> {
                         onChangePhoto: _changeAvatar,
                         onLogout: _logout,
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
+                      // Logo de la app en la barra superior (Web)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 14),
+                        child: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/images/logosp.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
                     ]
                   : [
                       // En móvil, solo dejamos el botón ayuda (opcional)
@@ -426,10 +446,24 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Container(
             color: AppColors.greenDark,
-            padding: const EdgeInsets.fromLTRB(16, 44, 16, 16),
+            padding: const EdgeInsets.fromLTRB(14, 44, 14, 16),
             child: Row(
               children: [
-                _buildAvatar(radius: 28, fontSize: 18),
+                // Logo de la app en el Drawer (Móvil)
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/logosp.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -459,10 +493,33 @@ class _DashboardPageState extends State<DashboardPage> {
                     ],
                   ),
                 ),
-                IconButton(
-                  tooltip: 'Cambiar foto',
-                  onPressed: _changeAvatar,
-                  icon: const Icon(Icons.camera_alt_rounded, color: Colors.white),
+                // El avatar ahora es interactivo en móvil
+                GestureDetector(
+                  onTap: () => _showAvatarPreview(context),
+                  child: Stack(
+                    children: [
+                      _buildAvatar(radius: 28, fontSize: 18),
+                      Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: GestureDetector(
+                          onTap: _changeAvatar,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt_rounded,
+                              size: 14,
+                              color: AppColors.greenDarker,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -627,6 +684,56 @@ class _DashboardPageState extends State<DashboardPage> {
                       fit: BoxFit.cover,
                     ),
             ),
+    );
+  }
+
+  void _showAvatarPreview(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: _avatarPath == null
+                    ? Center(
+                        child: Text(
+                          _initials(_fullName),
+                          style: const TextStyle(
+                            color: AppColors.greenDarker,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 80,
+                          ),
+                        ),
+                      )
+                    : _avatarPath!.startsWith('data:image')
+                        ? Image.memory(
+                            base64Decode(_avatarPath!.split(',').last),
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(_avatarPath!),
+                            fit: BoxFit.cover,
+                          ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close_rounded, color: Colors.white, size: 36),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -842,6 +949,56 @@ class _ProfileMenuV2 extends StatelessWidget {
     );
   }
 
+  void _showPreview(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: avatarPath == null
+                    ? Center(
+                        child: Text(
+                          initials,
+                          style: const TextStyle(
+                            color: AppColors.greenDarker,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 80,
+                          ),
+                        ),
+                      )
+                    : avatarPath!.startsWith('data:image')
+                        ? Image.memory(
+                            base64Decode(avatarPath!.split(',').last),
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(avatarPath!),
+                            fit: BoxFit.cover,
+                          ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close_rounded, color: Colors.white, size: 36),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
@@ -853,7 +1010,10 @@ class _ProfileMenuV2 extends StatelessWidget {
       },
       child: Row(
         children: [
-          _buildSmallAvatar(),
+          GestureDetector(
+            onTap: () => _showPreview(context),
+            child: _buildSmallAvatar(),
+          ),
           const SizedBox(width: 6),
           const Icon(Icons.arrow_drop_down_rounded, color: Colors.white),
         ],

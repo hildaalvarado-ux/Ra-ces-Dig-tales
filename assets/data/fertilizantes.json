@@ -13,8 +13,8 @@
     }
   },
   {
-    "nombre": "Humus de lombriz",
     "imagen": "assets/fertilizantes/humus.png",
+    "nombre": "Humus de lombriz",
     "tipo": "Orgánico",
     "identificacion": "Producto de la digestión de lombrices, altamente nutritivo.",
     "uso": "Aplicar directamente en la base de las plantas o mezclar con el sustrato.",
@@ -23,6 +23,71 @@
       "Frecuencia": "Cada 3-4 meses",
       "Beneficios": "Aporta microorganismos benéficos",
       "Nutrientes": "Alto en nitrógeno"
+    }
+  },
+  {
+    "imagen": "assets/fertilizantes/estiercol.png",
+    "nombre": "Estiércol",
+    "tipo": "Orgánico",
+    "identificacion": "De origen animal, debe estar bien compostado para no quemar las raíces.",
+    "uso": "Incorporar al suelo semanas antes de la siembra.",
+    "ficha": {
+      "Origen": "Animal (vaca, oveja, caballo)",
+      "Frecuencia": "Anual",
+      "Beneficios": "Aporta mucha materia orgánica",
+      "Nutrientes": "Equilibrado"
+    }
+  },
+  {
+    "imagen": "assets/fertilizantes/guano.png",
+    "nombre": "Guano",
+    "tipo": "Orgánico",
+    "identificacion": "Sustrato resultante de los excrementos de aves marinas o murciélagos.",
+    "uso": "Usar en pequeñas cantidades por su alta concentración.",
+    "ficha": {
+      "Origen": "Aves marinas o murciélagos",
+      "Frecuencia": "Cada 4 meses",
+      "Beneficios": "Rápida disponibilidad",
+      "Nutrientes": "Muy alto en Fósforo"
+    }
+  },
+  {
+    "imagen": "assets/fertilizantes/huesos.png",
+    "nombre": "Harina de huesos",
+    "tipo": "Orgánico",
+    "identificacion": "Huesos de animales molidos y tratados.",
+    "uso": "Ideal para la fase de floración y desarrollo de raíces.",
+    "ficha": {
+      "Origen": "Huesos animales",
+      "Frecuencia": "Una vez por ciclo",
+      "Beneficios": "Estimula floración",
+      "Nutrientes": "Calcio y Fósforo"
+    }
+  },
+  {
+    "imagen": "assets/fertilizantes/ortiga.png",
+    "nombre": "Purín de ortigas",
+    "tipo": "Orgánico / Bioestimulante",
+    "identificacion": "Fermentación de hojas de ortiga en agua.",
+    "uso": "Regar diluido en agua o pulverizar sobre las hojas.",
+    "ficha": {
+      "Origen": "Urtica dioica",
+      "Frecuencia": "Cada 15 días",
+      "Beneficios": "Fortalece las defensas",
+      "Nutrientes": "Rico en Hierro y Nitrógeno"
+    }
+  },
+  {
+    "imagen": "assets/fertilizantes/ceniza.png",
+    "nombre": "Cenizas de madera",
+    "tipo": "Mineral / Orgánico",
+    "identificacion": "Residuo de la combustión de madera no tratada.",
+    "uso": "Esparcir con moderación para evitar subir demasiado el pH.",
+    "ficha": {
+      "Origen": "Madera virgen quemada",
+      "Frecuencia": "Anual",
+      "Beneficios": "Corrige acidez",
+      "Nutrientes": "Potasio y Magnesio"
     }
   }
 ]

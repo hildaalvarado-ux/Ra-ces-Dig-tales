@@ -11,7 +11,7 @@
       "Efecto": "Ablanda el exoesqueleto de los insectos",
       "Toxicidad": "Nula para humanos y mascotas"
     },
-    "plagas": ["Pulgón", "Mosca blanca", "Cochinilla"]
+    "plagas": ["Pulgón", "Mosca blanca", "Cochinilla", "Trips"]
   },
   {
     "imagen": "assets/pesticidas/aceite_neem.png",
@@ -26,5 +26,75 @@
       "Toxicidad": "Baja"
     },
     "plagas": ["Pulgón", "Minador", "Arañuela roja", "Trips"]
+  },
+  {
+    "imagen": "assets/pesticidas/ajo.png",
+    "nombre": "Infusión de ajo",
+    "tipo": "Orgánico / Repelente",
+    "identificacion": "Repelente casero basado en los compuestos azufrados del ajo.",
+    "uso": "Pulverizar sobre las plantas para ahuyentar insectos.",
+    "ficha": {
+      "Origen": "Dientes de ajo",
+      "Frecuencia": "Semanal",
+      "Efecto": "Repelente",
+      "Toxicidad": "Nula"
+    },
+    "plagas": ["Pulgón", "Hormiga", "Mosca blanca"]
+  },
+  {
+    "imagen": "assets/pesticidas/trampas.png",
+    "nombre": "Trampas cromáticas",
+    "tipo": "Físico",
+    "identificacion": "Placas de colores (amarillo o azul) con pegamento.",
+    "uso": "Colocar cerca de las plantas a la altura del follaje.",
+    "ficha": {
+      "Origen": "Plástico y adhesivo",
+      "Frecuencia": "Reemplazar cuando estén llenas",
+      "Efecto": "Captura por atracción visual",
+      "Toxicidad": "Nula"
+    },
+    "plagas": ["Mosca blanca", "Minador", "Trips"]
+  },
+  {
+    "imagen": "assets/pesticidas/azufre.png",
+    "nombre": "Azufre",
+    "tipo": "Mineral",
+    "identificacion": "Mineral natural usado como fungicida y acaricida.",
+    "uso": "Espolvorear o pulverizar (mojable) evitando altas temperaturas.",
+    "ficha": {
+      "Origen": "Natural",
+      "Frecuencia": "Cada 15-20 días",
+      "Efecto": "Contacto",
+      "Toxicidad": "Baja (irritante)"
+    },
+    "plagas": ["Arañuela roja"]
+  },
+  {
+    "imagen": "assets/pesticidas/bordeles.png",
+    "nombre": "Caldo bordelés",
+    "tipo": "Mineral / Fungicida",
+    "identificacion": "Mezcla de sulfato de cobre y cal hidratada.",
+    "uso": "Uso principalmente preventivo contra hongos, pero también repele algunos insectos.",
+    "ficha": {
+      "Origen": "Cobre y Cal",
+      "Frecuencia": "Cada 15 días en épocas húmedas",
+      "Efecto": "Protección de superficie",
+      "Toxicidad": "Media (uso controlado)"
+    },
+    "plagas": ["Minador"]
+  },
+  {
+    "imagen": "assets/pesticidas/diatomeas.png",
+    "nombre": "Tierra de diatomeas",
+    "tipo": "Mineral / Orgánico",
+    "identificacion": "Algas fosilizadas que actúan de forma mecánica sobre los insectos.",
+    "uso": "Esparcir sobre la tierra o diluir para pulverizar.",
+    "ficha": {
+      "Origen": "Fósiles marinos",
+      "Frecuencia": "Después de lluvias o riego",
+      "Efecto": "Deshidratación mecánica",
+      "Toxicidad": "Nula (grado alimentario)"
+    },
+    "plagas": ["Hormiga", "Cochinilla", "Oruga"]
   }
 ]

@@ -36,8 +36,8 @@
     "cosechaMeses": 7,
     "tipo": "Raíz",
     "estacion": "Otoño",
-    "identificacion": "La cebolla roja es fácilmente reconocible por su piel de color morado oscuro y su interior de tonos rojizos a violáceos. Es más dulce y suave que otras variedades de cebolla, lo que la hace ideal para consumir en crudo en ensaladas, sándwiches y guarniciones.",
-    "siembra": "Las cebollas rojas se siembran mejor en almácigo y se trasplantan al suelo cuando las plántulas son robustas. Prefieren suelos ligeros y bien drenados. El espacio entre plantas permite el desarrollo adecuado de cada cebolla sin competencia por nutrientes.",
+    "identificacion": "La cebolla roja es fácilmente reconocible por su piel de color morado oscuro y su interior de tonos rojizos a violáceos.",
+    "siembra": "Las cebollas rojas se siembran mejor en almácigo y se trasplantan al suelo cuando las plántulas son robustas.",
     "ficha": {
       "Temporada de siembra": "Otoño",
       "Época de siembra": "Media",
@@ -46,33 +46,13 @@
       "Distancia entre plantas": "10 cm",
       "Fase lunar": "Menguante",
       "Clima ideal": "Frío",
-      "Resistencia al frío": "Muy resistente",
-      "Temperatura mínima": "10°C",
-      "Temperatura máxima": "25°C",
       "Riego": "Cada 3 días",
       "Luz solar": "Plena luz",
-      "Cosecha en": "7 meses",
-      "Temporada de cosecha": "Primavera",
-      "Época de cosecha": "Tardía"
+      "Cosecha en": "7 meses"
     },
-    "plagas": [
-      "Pulgón",
-      "Cochinilla",
-      "Minador",
-      "Arañuela roja",
-      "Hormiga"
-    ],
-    "beneficiosos": [
-      "Zanahoria",
-      "Lechuga",
-      "Tomate",
-      "Remolacha"
-    ],
-    "perjudiciales": [
-      "Poroto",
-      "Arveja",
-      "Espinaca"
-    ]
+    "plagas": ["Pulgón", "Cochinilla", "Minador", "Arañuela roja", "Hormiga"],
+    "beneficiosos": ["Zanahoria", "Lechuga", "Tomate", "Remolacha"],
+    "perjudiciales": ["Poroto", "Arveja", "Espinaca"]
   },
   {
     "imagen": "assets/cultivos/acelga.png",
@@ -81,43 +61,19 @@
     "cosechaMeses": 3,
     "tipo": "Hoja",
     "estacion": "Primavera",
-    "identificacion": "La acelga es una planta de hojas verdes con tallos comestibles. Las hojas son lanceoladas y dentadas, mientras que los tallos pueden ser blancos o rojos.",
-    "siembra": "Se siembra durante la primavera, plantando las semillas directamente en el suelo o en almácigo a una profundidad de 2 cm y dejando un espacio entre plantas de unos 20 cm.",
+    "identificacion": "La acelga es una planta de hojas verdes con tallos comestibles.",
+    "siembra": "Se siembra durante la primavera, plantando las semillas directamente en el suelo o en almácigo.",
     "ficha": {
       "Temporada de siembra": "Primavera",
-      "Época de siembra": "Temprana",
       "Tipo de siembra": "Almácigo",
       "Profundidad de semilla": "2 cm",
       "Distancia entre plantas": "20 cm",
-      "Fase lunar": "Creciente",
       "Clima ideal": "Templado",
-      "Resistencia al frío": "Sensible",
-      "Temperatura mínima": "15°C",
-      "Temperatura máxima": "25°C",
-      "Riego": "Cada 3 días",
-      "Luz solar": "Media luz",
-      "Cosecha en": "3 meses",
-      "Temporada de cosecha": "Verano",
-      "Época de cosecha": "Tardía"
+      "Riego": "Cada 3 días"
     },
-    "plagas": [
-      "Pulgón",
-      "Trips",
-      "Hormiga"
-    ],
-    "beneficiosos": [
-      "Tomate",
-      "Rabanito",
-      "Lechuga",
-      "Cebolla",
-      "Romero"
-    ],
-    "perjudiciales": [
-      "Haba",
-      "Maíz dulce",
-      "Papa",
-      "Pepino"
-    ]
+    "plagas": ["Pulgón", "Trips", "Hormiga"],
+    "beneficiosos": ["Tomate", "Rabanito", "Lechuga", "Cebolla morada"],
+    "perjudiciales": ["Papa", "Pepino"]
   },
   {
     "imagen": "assets/cultivos/rabano.jpg",
@@ -126,43 +82,18 @@
     "cosechaMeses": 1,
     "tipo": "Raíz",
     "estacion": "Otoño",
-    "identificacion": "El rabano es una planta de rápido crecimiento con raíces comestible de forma redonda o alargada. Tiene una piel suave y un sabor ligeramente picante.",
-    "siembra": "Se siembra en primavera u otoño. las semillas se siembran directamente en el suelo u almácigo, a una profundidad de 1 cm y dejando un espacio entre plantas de unos 5 cm.",
+    "identificacion": "El rabano es una planta de rápido crecimiento con raíces comestibles.",
+    "siembra": "Se siembra en primavera u otoño directamente en el suelo.",
     "ficha": {
       "Temporada de siembra": "Primavera",
-      "Época de siembra": "Temprana",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "2 cm",
       "Distancia entre plantas": "10 cm",
-      "Fase lunar": "Menguante",
-      "Clima ideal": "Templado",
-      "Resistencia al frío": "Sensible",
-      "Temperatura mínima": "5°C",
-      "Temperatura máxima": "30°C",
-      "Riego": "Cada 2 días",
-      "Luz solar": "Media luz",
-      "Cosecha en": "1 meses",
-      "Temporada de cosecha": "Primavera",
-      "Época de cosecha": "Media"
+      "Riego": "Cada 2 días"
     },
-    "plagas": [
-      "Pulgón",
-      "Mosca blanca",
-      "Minador",
-      "Arañuela roja",
-      "trips"
-    ],
-    "beneficiosos": [
-      "pepino",
-      "Lechuga",
-      "Tomate",
-      "morrón"
-    ],
-    "perjudiciales": [
-      "repollo",
-      "coliflor",
-      "Brocoli"
-    ]
+    "plagas": ["Pulgón", "Mosca blanca", "Minador", "Arañuela roja", "Trips"],
+    "beneficiosos": ["Pepino", "Lechuga", "Tomate"],
+    "perjudiciales": ["Repollo", "Coliflor"]
   },
   {
     "imagen": "assets/cultivos/pepino.jpg",
@@ -171,42 +102,17 @@
     "cosechaMeses": 4,
     "tipo": "Vegetal",
     "estacion": "Primavera",
-    "identificacion": "El pepino es una planta trepadora con hojas verdes y flores amarillas, con frutos comestibles de forma alargada y color verde brillante.",
-    "siembra": "Las semillas de pepino se siembran en primavera, preferiblemente en almácigo o en macetas, y luego se trasplantan al suelo cuando las plántulas son robustas y brindales soporte para trepar. Prefieren suelos ligeros y bien drenados. El espacio entre plantas permite el desarrollo adecuado de cada pepino sin competencia por nutrientes.",
+    "identificacion": "El pepino es una planta trepadora con frutos comestibles.",
+    "siembra": "Las semillas se siembran en primavera, preferiblemente en almácigo.",
     "ficha": {
       "Temporada de siembra": "Primavera",
-      "Época de siembra": "Toda",
-      "Tipo de siembra": "Directa o maceta",
       "Profundidad de semilla": "3 cm",
       "Distancia entre plantas": "30 cm",
-      "Fase lunar": "Creciente",
-      "Clima ideal": "Templado",
-      "Resistencia al frío": "Sensible",
-      "Temperatura mínima": "18°C",
-      "Temperatura máxima": "30°C",
-      "Riego": "Cada 3 días",
-      "Luz solar": "Plena luz",
-      "Cosecha en": "4 meses",
-      "Temporada de cosecha": "Verano",
-      "Época de cosecha": "Toda"
+      "Riego": "Cada 3 días"
     },
-    "plagas": [
-      "Pulgón",
-      "Mosca blanca",
-      "Minador",
-      "Arañuela roja",
-      "oruga"
-    ],
-    "beneficiosos": [
-      "Maíz",
-      "Poroto",
-      "Rabanito"
-    ],
-    "perjudiciales": [
-      "Melón",
-      "Papa",
-      "tomate"
-    ]
+    "plagas": ["Pulgón", "Mosca blanca", "Minador", "Arañuela roja", "Oruga"],
+    "beneficiosos": ["Ajo", "Cebolla morada", "Rabano"],
+    "perjudiciales": ["Melón", "Papa", "Tomate"]
   },
   {
     "imagen": "assets/cultivos/tomate.jpg",
@@ -222,8 +128,8 @@
       "Luz": "Sol pleno",
       "Suelo": "Rico en nutrientes"
     },
-    "plagas": ["Mosca blanca", "Pulgón"],
-    "beneficiosos": ["Ajo", "Cebolla morada", "Zanahoria"],
+    "plagas": ["Mosca blanca", "Pulgón", "Oruga", "Trips"],
+    "beneficiosos": ["Ajo", "Cebolla morada", "Zanahoria", "Acelga"],
     "perjudiciales": ["Papa", "Pepino"]
   },
   {
@@ -240,8 +146,26 @@
       "Luz": "Sol pleno",
       "Distancia": "10cm"
     },
-    "plagas": ["Pulgón"],
-    "beneficiosos": ["Tomate", "Cebolla morada", "Ajo"],
+    "plagas": ["Pulgón", "Minador"],
+    "beneficiosos": ["Tomate", "Cebolla morada", "Ajo", "Lechuga"],
+    "perjudiciales": ["Acelga"]
+  },
+  {
+    "imagen": "assets/cultivos/lechuga.jpg",
+    "nombre": "Lechuga",
+    "cientifico": "Lactuca sativa",
+    "cosechaMeses": 2,
+    "tipo": "Hoja",
+    "estacion": "Primavera",
+    "identificacion": "Planta herbácea de hojas verdes que se consumen en ensaladas.",
+    "siembra": "Siembra escalonada para tener producción continua.",
+    "ficha": {
+      "Riego": "Constante",
+      "Luz": "Media sombra",
+      "Cosecha": "60 días"
+    },
+    "plagas": ["Pulgón", "Oruga", "Trips"],
+    "beneficiosos": ["Zanahoria", "Rabano", "Cebolla morada", "Tomate"],
     "perjudiciales": ["Acelga"]
   }
 ]
