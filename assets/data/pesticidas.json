@@ -11,7 +11,7 @@
       "Efecto": "Ablanda el exoesqueleto de los insectos",
       "Toxicidad": "Nula para humanos y mascotas"
     },
-    "plagas": ["Pulgón", "Mosca blanca", "Cochinilla"]
+    "plagas": ["Pulgón", "Mosca blanca", "Cochinilla", "Trips"]
   },
   {
     "imagen": "assets/pesticidas/aceite_neem.png",
@@ -26,5 +26,75 @@
       "Toxicidad": "Baja"
     },
     "plagas": ["Pulgón", "Minador", "Arañuela roja", "Trips"]
+  },
+  {
+    "imagen": "assets/pesticidas/infusion_ajo.png",
+    "nombre": "Infusión de ajo",
+    "tipo": "Casero",
+    "identificacion": "Repelente natural elaborado a base de ajos machacados e infundidos en agua.",
+    "uso": "Pulverizar sobre las plantas para repeler insectos.",
+    "ficha": {
+      "Origen": "Ajo y agua",
+      "Frecuencia": "Cada 3-4 días",
+      "Efecto": "Repelente por olor",
+      "Toxicidad": "Nula"
+    },
+    "plagas": ["Pulgón", "Mosca blanca", "Ácaros"]
+  },
+  {
+    "imagen": "assets/pesticidas/purin_ortiga.png",
+    "nombre": "Purín de ortigas",
+    "tipo": "Casero",
+    "identificacion": "Líquido fermentado de ortigas que sirve como preventivo y fertilizante.",
+    "uso": "Diluir y pulverizar o regar.",
+    "ficha": {
+      "Origen": "Ortigas frescas y agua",
+      "Frecuencia": "Cada 15 días",
+      "Efecto": "Fortalece la planta y repele",
+      "Toxicidad": "Nula"
+    },
+    "plagas": ["Pulgón", "Arañuela roja"]
+  },
+  {
+    "imagen": "assets/pesticidas/alcohol_ajo.png",
+    "nombre": "Alcohol de ajo",
+    "tipo": "Casero",
+    "identificacion": "Mezcla potente de ajo, alcohol y agua para control de plagas persistentes.",
+    "uso": "Pulverizar directamente sobre las colonias de insectos.",
+    "ficha": {
+      "Origen": "Ajo, alcohol y agua",
+      "Frecuencia": "Uso puntual",
+      "Efecto": "Insecticida de contacto",
+      "Toxicidad": "Baja"
+    },
+    "plagas": ["Cochinilla", "Pulgón", "Ácaros"]
+  },
+  {
+    "imagen": "assets/pesticidas/caldo_bordeles.png",
+    "nombre": "Caldo bordelés",
+    "tipo": "Tradicional",
+    "identificacion": "Mezcla de sulfato de cobre y cal hidratada, muy eficaz contra hongos.",
+    "uso": "Pulverizar como preventivo contra enfermedades fúngicas.",
+    "ficha": {
+      "Origen": "Cobre y cal",
+      "Frecuencia": "Cada 15-20 días",
+      "Efecto": "Fungicida potente",
+      "Toxicidad": "Media (evitar ingesta)"
+    },
+    "plagas": ["Hongos", "Mildiu", "Oidio"]
+  },
+  {
+    "imagen": "assets/pesticidas/tierra_diatomeas.png",
+    "nombre": "Tierra de diatomeas",
+    "tipo": "Mineral",
+    "identificacion": "Polvo blanco compuesto por algas fosilizadas que actúan mecánicamente contra insectos.",
+    "uso": "Espolvorear sobre la tierra o diluir en agua para pulverizar.",
+    "ficha": {
+      "Origen": "Fósiles de algas",
+      "Frecuencia": "Después de lluvias",
+      "Efecto": "Deshidratación mecánica",
+      "Toxicidad": "Inocua (evitar inhalar polvo)"
+    },
+    "plagas": ["Hormiga", "Caracoles", "Babosas", "Pulgón"]
   }
 ]

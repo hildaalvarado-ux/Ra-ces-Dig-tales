@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'data/db_instance.dart'; // conexión a tu BD (Drift)
@@ -186,6 +187,42 @@ class _DashboardPageState extends State<DashboardPage> {
  Navigator.pushNamedAndRemoveUntil(context, '/appgate', (_) => false);
   }
 
+  void _showFullImage() {
+    if (_avatarPath == null) return;
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              constraints: const BoxConstraints(maxHeight: 500, maxWidth: 500),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.white,
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: _avatarPath!.startsWith('data:image')
+                  ? Image.memory(
+                      base64Decode(_avatarPath!.split(',').last),
+                      fit: BoxFit.contain,
+                    )
+                  : (kIsWeb
+                      ? Image.network(_avatarPath!, fit: BoxFit.contain)
+                      : Image.file(File(_avatarPath!), fit: BoxFit.contain)),
+            ),
+            const SizedBox(height: 12),
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close, color: Colors.white, size: 32),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBackground(
@@ -270,6 +307,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
 
+                      const SizedBox(width: 10),
+
+                      // Logo circular en Web
+                      const _AppLogo(size: 38),
                       const SizedBox(width: 10),
 
                       // Perfil desplegable (con cámara y logout rojo)
@@ -426,43 +467,79 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Container(
             color: AppColors.greenDark,
-            padding: const EdgeInsets.fromLTRB(16, 44, 16, 16),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(16, 44, 16, 20),
+            child: Column(
               children: [
-                _buildAvatar(radius: 28, fontSize: 18),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _fullName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
-                        ),
+                Row(
+                  children: [
+                    const _AppLogo(size: 50),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _fullName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _email,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.85),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13.5,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _email,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.85),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12.5,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: _showFullImage,
+                        child: _buildAvatar(radius: 45, fontSize: 28),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: GestureDetector(
+                          onTap: _changeAvatar,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt_rounded,
+                              color: AppColors.greenDark,
+                              size: 20,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                IconButton(
-                  tooltip: 'Cambiar foto',
-                  onPressed: _changeAvatar,
-                  icon: const Icon(Icons.camera_alt_rounded, color: Colors.white),
                 ),
               ],
             ),
@@ -620,12 +697,19 @@ class _DashboardPageState extends State<DashboardPage> {
                       height: radius * 2,
                       fit: BoxFit.cover,
                     )
-                  : Image.file(
-                      File(_avatarPath!),
-                      width: radius * 2,
-                      height: radius * 2,
-                      fit: BoxFit.cover,
-                    ),
+                  : (kIsWeb
+                      ? Image.network(
+                          _avatarPath!,
+                          width: radius * 2,
+                          height: radius * 2,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(_avatarPath!),
+                          width: radius * 2,
+                          height: radius * 2,
+                          fit: BoxFit.cover,
+                        )),
             ),
     );
   }
@@ -634,6 +718,37 @@ class _DashboardPageState extends State<DashboardPage> {
 // ==========================================================
 // ✅ COMPONENTES REUTILIZABLES (UI)
 // ==========================================================
+
+class _AppLogo extends StatelessWidget {
+  final double size;
+  const _AppLogo({required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(2),
+      child: ClipOval(
+        child: Image.asset(
+          'assets/images/logosp.png',
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+}
 
 class _TopLink extends StatelessWidget {
   final String text;
