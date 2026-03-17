@@ -1,6 +1,6 @@
 [
   {
-    "imagen": "",
+    "imagen": "assets/fertilizantes/conpost.png",
     "nombre": "Compost casero",
     "tipo": "Orgánico",
     "identificacion": "Abono obtenido a partir de la descomposición controlada de materia orgánica.",
@@ -14,7 +14,7 @@
   },
   {
     "nombre": "Humus de lombriz",
-    "imagen": "",
+    "imagen": "assets/fertilizantes/humus.png",
     "tipo": "Orgánico",
     "identificacion": "Producto de la digestión de lombrices, altamente nutritivo.",
     "uso": "Aplicar directamente en la base de las plantas o mezclar con el sustrato.",

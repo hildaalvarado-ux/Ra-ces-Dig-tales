@@ -1,6 +1,6 @@
 [
   {
-    "imagen": "",
+    "imagen": "assets/plagas/pulgon.png",
     "nombre": "Pulgón",
     "cientifico": "Aphididae",
     "identificacion": "Pequeños insectos de cuerpo blando, generalmente verdes o negros, que succionan la savia.",
@@ -14,7 +14,7 @@
     }
   },
   {
-    "imagen": "",
+    "imagen": "assets/plagas/mosca_blanca.png",
     "nombre": "Mosca blanca",
     "cientifico": "Aleyrodidae",
     "identificacion": "Diminutos insectos voladores blancos que se encuentran en el envés de las hojas.",
