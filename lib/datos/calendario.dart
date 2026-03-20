@@ -24,6 +24,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   DateTime? _selectedDay;
 
   Map<DateTime, List<CalendarTask>> _tasks = {};
+  Map<int, CropPlan> _plans = {};
   bool _loading = true;
 
   @override
@@ -36,7 +37,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
   Future<void> _loadTasks() async {
     setState(() => _loading = true);
     final list = await appDb.getUserTasks(widget.userId);
+    final plansList = await appDb.getUserCropPlans(widget.userId);
+
     final map = <DateTime, List<CalendarTask>>{};
+    final plansMap = {for (var p in plansList) p.id: p};
 
     for (var task in list) {
       final date = DateTime(task.date.year, task.date.month, task.date.day);
@@ -46,6 +50,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
     setState(() {
       _tasks = map;
+      _plans = plansMap;
       _loading = false;
     });
   }
@@ -111,93 +116,152 @@ class _CalendarioPageState extends State<CalendarioPage> {
           title: const Text('Calendario Inteligente', style: TextStyle(fontWeight: FontWeight.w900)),
         ),
         body: SafeArea(
-          child: Column(
-            children: [
-              _LunarPhaseCard(date: _focusedDay),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.85),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
-                ),
-                child: TableCalendar<CalendarTask>(
-                  firstDay: DateTime.utc(2024, 1, 1),
-                  lastDay: DateTime.utc(2030, 12, 31),
-                  focusedDay: _focusedDay,
-                  calendarFormat: _calendarFormat,
-                  selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                  onDaySelected: (selectedDay, focusedDay) {
-                    setState(() {
-                      _selectedDay = selectedDay;
-                      _focusedDay = focusedDay;
-                    });
-                  },
-                  onFormatChanged: (format) {
-                    setState(() => _calendarFormat = format);
-                  },
-                  eventLoader: _getTasksForDay,
-                  calendarStyle: CalendarStyle(
-                    markerDecoration: const BoxDecoration(color: AppColors.greenAccent, shape: BoxShape.circle),
-                    todayDecoration: BoxDecoration(color: AppColors.greenSoft.withOpacity(0.5), shape: BoxShape.circle),
-                    selectedDecoration: const BoxDecoration(color: AppColors.greenDark, shape: BoxShape.circle),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _LunarPhaseCard(date: _focusedDay),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
                   ),
-                  headerStyle: const HeaderStyle(
-                    formatButtonVisible: false,
-                    titleCentered: true,
-                    titleTextStyle: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _showAddObservationDialog,
-                    icon: const Icon(Icons.note_add_rounded),
-                    label: const Text('AGREGAR OBSERVACIÓN', style: TextStyle(fontWeight: FontWeight.bold)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.greenDark,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: TableCalendar<CalendarTask>(
+                    firstDay: DateTime.utc(2024, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: _focusedDay,
+                    calendarFormat: _calendarFormat,
+                    locale: 'es_ES',
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                      });
+                    },
+                    onFormatChanged: (format) {
+                      setState(() => _calendarFormat = format);
+                    },
+                    eventLoader: _getTasksForDay,
+                    calendarStyle: CalendarStyle(
+                      todayDecoration: BoxDecoration(color: AppColors.greenSoft.withOpacity(0.5), shape: BoxShape.circle),
+                      selectedDecoration: const BoxDecoration(color: AppColors.greenDark, shape: BoxShape.circle),
+                    ),
+                    calendarBuilders: CalendarBuilders(
+                      markerBuilder: (context, day, events) {
+                        if (events.isEmpty) return null;
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: events.take(4).map((event) {
+                            final plan = _plans[event.planId];
+                            final color = plan?.colorValue != null ? Color(plan!.colorValue!) : AppColors.greenAccent;
+                            return Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                              width: 7,
+                              height: 7,
+                              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                            );
+                          }).toList(),
+                        );
+                      },
+                    ),
+                    headerStyle: const HeaderStyle(
+                      formatButtonVisible: false,
+                      titleCentered: true,
+                      titleTextStyle: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Expanded(
-                child: _loading
-                    ? const Center(child: CircularProgressIndicator())
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _showAddObservationDialog,
+                      icon: const Icon(Icons.note_add_rounded),
+                      label: const Text('AGREGAR OBSERVACIÓN', style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.greenDark,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                _loading
+                    ? const Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator())
                     : _getTasksForDay(_selectedDay!).isEmpty
-                        ? const Center(child: Text('No hay tareas para este día', style: TextStyle(fontWeight: FontWeight.w600)))
+                        ? const Padding(padding: EdgeInsets.all(20), child: Text('No hay tareas para este día', style: TextStyle(fontWeight: FontWeight.w600)))
                         : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(horizontal: 14),
                             itemCount: _getTasksForDay(_selectedDay!).length,
                             itemBuilder: (context, index) {
                               final task = _getTasksForDay(_selectedDay!)[index];
+                              final plan = _plans[task.planId];
                               return _TaskTile(
                                 task: task,
+                                plan: plan,
                                 onToggle: () => _toggleTaskStatus(task),
                                 onReport: () => _reportIncident(task),
+                                onDeletePlan: () => _confirmDeletePlan(plan),
                               );
                             },
                           ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  Future<void> _confirmDeletePlan(CropPlan? plan) async {
+    if (plan == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Eliminar cultivo perdido?', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Text('Esta acción borrará el plan "${plan.nickname ?? plan.cropName}" y todas sus tareas. ¿Estás seguro?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('CANCELAR')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('SÍ, ELIMINAR', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await appDb.deactivateCropPlan(plan.id);
+      await appDb.deleteTasksByPlan(plan.id);
+      await _loadTasks();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan eliminado correctamente.')));
+      }
+    }
+  }
 }
 
 class _TaskTile extends StatelessWidget {
   final CalendarTask task;
+  final CropPlan? plan;
   final VoidCallback onToggle;
   final VoidCallback onReport;
+  final VoidCallback onDeletePlan;
 
-  const _TaskTile({required this.task, required this.onToggle, required this.onReport});
+  const _TaskTile({
+    required this.task,
+    this.plan,
+    required this.onToggle,
+    required this.onReport,
+    required this.onDeletePlan,
+  });
 
   IconData _iconForType(String type) {
     switch (type.toLowerCase()) {
@@ -223,25 +287,37 @@ class _TaskTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lunarPhase = _getLunarPhase(task.date);
+    final planColor = plan?.colorValue != null ? Color(plan!.colorValue!) : AppColors.greenDark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.82),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
+        border: Border.all(color: planColor.withOpacity(0.2), width: 2),
       ),
       child: ListTile(
-        leading: Icon(_iconForType(task.type), color: AppColors.greenDark, size: 30),
+        leading: Icon(_iconForType(task.type), color: planColor, size: 30),
         title: Row(
           children: [
             Expanded(
-              child: Text(
-                task.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.greenDarker,
-                  decoration: task.completed ? TextDecoration.lineThrough : null,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (plan?.nickname != null)
+                    Text(
+                      plan!.nickname!,
+                      style: TextStyle(color: planColor, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  Text(
+                    task.title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.greenDarker,
+                      decoration: task.completed ? TextDecoration.lineThrough : null,
+                    ),
+                  ),
+                ],
               ),
             ),
             if (lunarPhase.isNotEmpty)
@@ -262,6 +338,11 @@ class _TaskTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
+              icon: const Icon(Icons.delete_forever_outlined, color: Colors.redAccent),
+              onPressed: onDeletePlan,
+              tooltip: 'Eliminar cultivo perdido',
+            ),
+            IconButton(
               icon: const Icon(Icons.report_problem_outlined, color: Colors.orange),
               onPressed: onReport,
               tooltip: 'Reportar incidente',
@@ -269,7 +350,7 @@ class _TaskTile extends StatelessWidget {
             Checkbox(
               value: task.completed,
               onChanged: (_) => onToggle(),
-              activeColor: AppColors.greenDark,
+              activeColor: planColor,
             ),
           ],
         ),
@@ -657,10 +738,14 @@ class CropPlanGenerator {
     required Cultivo cultivo,
     required DateTime startDate,
     required TimeOfDay preferredTime,
+    String? nickname,
+    int? colorValue,
   }) async {
     final planId = await appDb.insertCropPlan(CropPlansCompanion.insert(
       userId: userId,
       cropName: cultivo.nombre,
+      nickname: drift.Value(nickname),
+      colorValue: drift.Value(colorValue),
       startDate: startDate,
       preferredTime: '${preferredTime.hour.toString().padLeft(2, '0')}:${preferredTime.minute.toString().padLeft(2, '0')}',
       payloadJson: jsonEncode(cultivo.toJson()),

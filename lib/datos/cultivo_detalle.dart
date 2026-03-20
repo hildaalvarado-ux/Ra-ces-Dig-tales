@@ -194,22 +194,11 @@ class CultivoDetallePage extends StatelessWidget {
         final userId = snapshot.data;
         if (userId == null) return const SizedBox.shrink();
 
-        return FutureBuilder<List<CropPlan>>(
-          future: appDb.getUserCropPlans(userId),
-          builder: (context, planSnapshot) {
-            final activePlans = planSnapshot.data ?? [];
-            final hasActivePlan = activePlans.any((p) => p.cropName == cultivo.nombre);
-
-            return Column(
-              children: [
-                if (!hasActivePlan)
-                  _buildStartPlanButton(context)
-                else
-                  _buildDeletePlanButton(context, activePlans.firstWhere((p) => p.cropName == cultivo.nombre)),
-                const SizedBox(height: 12),
-              ],
-            );
-          },
+        return Column(
+          children: [
+            _buildStartPlanButton(context),
+            const SizedBox(height: 12),
+          ],
         );
       },
     );
@@ -243,53 +232,6 @@ class CultivoDetallePage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildDeletePlanButton(BuildContext context, CropPlan plan) {
-    return Container(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton.icon(
-        onPressed: () => _showDeleteConfirmation(context, plan),
-        icon: const Icon(Icons.delete_forever_rounded, color: Colors.white),
-        label: const Text(
-          'ELIMINAR CULTIVO PERDIDO',
-          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.1),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red.shade700,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _showDeleteConfirmation(BuildContext context, CropPlan plan) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('¿Eliminar cultivo perdido?', style: TextStyle(fontWeight: FontWeight.bold)),
-        content: const Text('Esta acción borrará el plan y todas las tareas del calendario. ¿Estás seguro de que la planta no es recuperable?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('CANCELAR')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('SÍ, ELIMINAR', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await appDb.deactivateCropPlan(plan.id);
-      await appDb.deleteTasksByPlan(plan.id);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan eliminado correctamente.')));
-        Navigator.pop(context); // Refresh by going back
-      }
-    }
   }
 
   Future<void> _showQuickGuide(BuildContext context) async {
@@ -371,6 +313,19 @@ class CultivoDetallePage extends StatelessWidget {
   Future<void> _showStartPlanDialog(BuildContext context) async {
     DateTime selectedDate = DateTime.now();
     TimeOfDay selectedTime = const TimeOfDay(hour: 7, minute: 0);
+    final nicknameCtrl = TextEditingController();
+    Color selectedColor = Colors.green;
+
+    final colors = [
+      Colors.green,
+      Colors.blue,
+      Colors.red,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.brown,
+      Colors.pink,
+    ];
 
     final result = await showDialog<bool>(
       context: context,
@@ -379,38 +334,73 @@ class CultivoDetallePage extends StatelessWidget {
           builder: (context, setState) {
             return AlertDialog(
               title: const Text('Programar Cultivo', style: TextStyle(fontWeight: FontWeight.bold)),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Elige cuándo quieres empezar y a qué hora quieres recibir recordatorios:'),
-                  const SizedBox(height: 20),
-                  ListTile(
-                    title: const Text('Fecha de inicio'),
-                    subtitle: Text(DateFormat('dd/MM/yyyy').format(selectedDate)),
-                    trailing: const Icon(Icons.calendar_month),
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: selectedDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 30)),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                      );
-                      if (picked != null) setState(() => selectedDate = picked);
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('Hora de tareas'),
-                    subtitle: Text(selectedTime.format(context)),
-                    trailing: const Icon(Icons.access_time),
-                    onTap: () async {
-                      final picked = await showTimePicker(
-                        context: context,
-                        initialTime: selectedTime,
-                      );
-                      if (picked != null) setState(() => selectedTime = picked);
-                    },
-                  ),
-                ],
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Dale un nombre y color a este cultivo para identificarlo en el calendario:'),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nicknameCtrl,
+                      decoration: InputDecoration(
+                        labelText: 'Apodo (ej: Lechuga de la abuela)',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Color en el calendario:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: colors.map((c) {
+                        return GestureDetector(
+                          onTap: () => setState(() => selectedColor = c),
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: c,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: selectedColor == c ? Colors.black : Colors.transparent,
+                                width: 2.5,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    ListTile(
+                      title: const Text('Fecha de inicio'),
+                      subtitle: Text(DateFormat('dd/MM/yyyy').format(selectedDate)),
+                      trailing: const Icon(Icons.calendar_month),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime.now().subtract(const Duration(days: 30)),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                        );
+                        if (picked != null) setState(() => selectedDate = picked);
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Hora de tareas'),
+                      subtitle: Text(selectedTime.format(context)),
+                      trailing: const Icon(Icons.access_time),
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: context,
+                          initialTime: selectedTime,
+                        );
+                        if (picked != null) setState(() => selectedTime = picked);
+                      },
+                    ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
@@ -435,6 +425,8 @@ class CultivoDetallePage extends StatelessWidget {
         cultivo: cultivo,
         startDate: selectedDate,
         preferredTime: selectedTime,
+        nickname: nicknameCtrl.text.trim().isEmpty ? null : nicknameCtrl.text.trim(),
+        colorValue: selectedColor.value,
       );
 
       if (context.mounted) {
