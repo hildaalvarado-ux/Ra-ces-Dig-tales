@@ -14,6 +14,7 @@ import 'datos/plagas.dart';
 import 'datos/pesticidas.dart';
 import 'datos/calendario.dart';
 import 'datos/notificaciones.dart';
+import 'datos/diario.dart';
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -169,8 +170,15 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         return;
 
-      case 'Favoritos':
       case 'Diario':
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => DiarioPage(userId: widget.userId),
+          ),
+        );
+        return;
+
+      case 'Favoritos':
       case 'Opciones':
       case 'Contacto':
       case 'Créditos':

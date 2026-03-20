@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import '../data/db_instance.dart';
+import '../data/app_database.dart';
 import '../main.dart';
 import 'calendario.dart';
 import 'help_dialogs.dart';
@@ -186,6 +187,34 @@ class CultivoDetallePage extends StatelessWidget {
     );
   }
 
+  Widget _buildActionButtons(BuildContext context) {
+    return FutureBuilder<int?>(
+      future: appDb.getActiveUserId(),
+      builder: (context, snapshot) {
+        final userId = snapshot.data;
+        if (userId == null) return const SizedBox.shrink();
+
+        return FutureBuilder<List<CropPlan>>(
+          future: appDb.getUserCropPlans(userId),
+          builder: (context, planSnapshot) {
+            final activePlans = planSnapshot.data ?? [];
+            final hasActivePlan = activePlans.any((p) => p.cropName == cultivo.nombre);
+
+            return Column(
+              children: [
+                if (!hasActivePlan)
+                  _buildStartPlanButton(context)
+                else
+                  _buildDeletePlanButton(context, activePlans.firstWhere((p) => p.cropName == cultivo.nombre)),
+                const SizedBox(height: 12),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildStartPlanButton(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -200,7 +229,7 @@ class CultivoDetallePage extends StatelessWidget {
         ],
       ),
       child: ElevatedButton.icon(
-        onPressed: () => _showStartPlanDialog(context),
+        onPressed: () => _showQuickGuide(context),
         icon: const Icon(Icons.calendar_today_rounded, color: Colors.white),
         label: const Text(
           'EMPEZAR PLAN DE CULTIVO',
@@ -212,6 +241,129 @@ class CultivoDetallePage extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 0,
         ),
+      ),
+    );
+  }
+
+  Widget _buildDeletePlanButton(BuildContext context, CropPlan plan) {
+    return Container(
+      width: double.infinity,
+      height: 54,
+      child: ElevatedButton.icon(
+        onPressed: () => _showDeleteConfirmation(context, plan),
+        icon: const Icon(Icons.delete_forever_rounded, color: Colors.white),
+        label: const Text(
+          'ELIMINAR CULTIVO PERDIDO',
+          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.1),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red.shade700,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showDeleteConfirmation(BuildContext context, CropPlan plan) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('¿Eliminar cultivo perdido?', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text('Esta acción borrará el plan y todas las tareas del calendario. ¿Estás seguro de que la planta no es recuperable?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('CANCELAR')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('SÍ, ELIMINAR', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await appDb.deactivateCropPlan(plan.id);
+      await appDb.deleteTasksByPlan(plan.id);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan eliminado correctamente.')));
+        Navigator.pop(context); // Refresh by going back
+      }
+    }
+  }
+
+  Future<void> _showQuickGuide(BuildContext context) async {
+    final guia = cultivo.toJson()['guiaRapida'] as Map<String, dynamic>? ?? {};
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.7,
+          minChildSize: 0.5,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: ListView(
+                controller: scrollController,
+                children: [
+                  const Text('Guía Rápida de Siembra', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.greenDarker)),
+                  const SizedBox(height: 16),
+                  _buildGuideItem(Icons.waves, 'Preparación de la tierra', guia['preparacionTierra'] ?? 'No especificado'),
+                  _buildGuideItem(Icons.grass, 'Cómo sembrar correctamente', guia['comoSembrar'] ?? 'No especificado'),
+                  _buildGuideItem(Icons.water_drop, 'Cuidados durante germinación', guia['cuidadosGerminacion'] ?? 'No especificado'),
+                  if (guia['usaAlmacigo'] == true) ...[
+                    _buildGuideItem(Icons.home, 'Tiempo en almácigo', '${guia['tiempoAlmacigo']} días'),
+                    _buildGuideItem(Icons.label_important, 'Señales para trasplante', guia['senalesTrasplante'] ?? 'No especificado'),
+                  ],
+                  _buildGuideItem(Icons.straighten, 'Distancia de trasplante / siembra', guia['distanciaTrasplante'] ?? 'No especificado'),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showStartPlanDialog(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.greenDark,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('ENTENDIDO, PROGRAMAR CULTIVO', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildGuideItem(IconData icon, String title, String description) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.greenDark, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 4),
+                Text(description, style: const TextStyle(color: Colors.black87)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -240,7 +392,7 @@ class CultivoDetallePage extends StatelessWidget {
                       final picked = await showDatePicker(
                         context: context,
                         initialDate: selectedDate,
-                        firstDate: DateTime.now(),
+                        firstDate: DateTime.now().subtract(const Duration(days: 30)),
                         lastDate: DateTime.now().add(const Duration(days: 365)),
                       );
                       if (picked != null) setState(() => selectedDate = picked);
@@ -318,8 +470,7 @@ class CultivoDetallePage extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
             children: [
-              _buildStartPlanButton(context),
-              const SizedBox(height: 12),
+              _buildActionButtons(context),
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(

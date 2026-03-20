@@ -136,6 +136,23 @@ class NotificationLogs extends Table {
   TextColumn get body => text()();
   DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
   BoolColumn get read => boolean().withDefault(const Constant(false))();
+  // unread, read, completed
+  TextColumn get status => text().withDefault(const Constant('unread'))();
+  IntColumn get taskId => integer().nullable()();
+}
+
+class Observations extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get cropName => text()();
+  TextColumn get cropImagePath => text().nullable()();
+  DateTimeColumn get date => dateTime().withDefault(currentDateAndTime)();
+  TextColumn get content => text()();
+  TextColumn get plantStatus => text().nullable()();
+  TextColumn get stage => text().nullable()();
+  BoolColumn get hasIrrigation => boolean().withDefault(const Constant(false))();
+  BoolColumn get hasPest => boolean().withDefault(const Constant(false))();
+  BoolColumn get hasTransplantOrFertilization => boolean().withDefault(const Constant(false))();
 }
 
 @DriftDatabase(tables: [
@@ -151,13 +168,14 @@ class NotificationLogs extends Table {
   SharedPesticidas,
   CropPlans,
   CalendarTasks,
-  NotificationLogs
+  NotificationLogs,
+  Observations
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -199,6 +217,11 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(cropPlans);
             await m.createTable(calendarTasks);
             await m.createTable(notificationLogs);
+          }
+          if (from < 8) {
+            await m.createTable(observations);
+            await m.addColumn(notificationLogs, notificationLogs.status);
+            await m.addColumn(notificationLogs, notificationLogs.taskId);
           }
         },
         beforeOpen: (details) async {
@@ -622,6 +645,49 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> markNotificationAsRead(int id) {
-    return (update(notificationLogs)..where((t) => t.id.equals(id))).write(const NotificationLogsCompanion(read: Value(true)));
+    return (update(notificationLogs)..where((t) => t.id.equals(id))).write(
+      const NotificationLogsCompanion(read: Value(true), status: Value('read')),
+    );
+  }
+
+  Future<void> updateNotificationStatus(int id, String status) {
+    return (update(notificationLogs)..where((t) => t.id.equals(id))).write(
+      NotificationLogsCompanion(status: Value(status), read: Value(status != 'unread')),
+    );
+  }
+
+  Future<void> updateNotificationStatusByTask(int taskId, String status) {
+    return (update(notificationLogs)..where((t) => t.taskId.equals(taskId))).write(
+      NotificationLogsCompanion(status: Value(status), read: Value(status != 'unread')),
+    );
+  }
+
+  Future<void> clearReadNotifications(int userId) {
+    return (delete(notificationLogs)..where((t) => t.userId.equals(userId) & t.read.equals(true))).go();
+  }
+
+  // ---------------------------
+  // OBSERVACIONES / DIARIO
+  // ---------------------------
+  Future<List<Observation>> getUserObservations(int userId) {
+    return (select(observations)
+          ..where((t) => t.userId.equals(userId))
+          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+        .get();
+  }
+
+  Future<int> insertObservation(ObservationsCompanion companion) {
+    return into(observations).insert(companion);
+  }
+
+  // Additional methods for CropPlans
+  Future<void> deactivateCropPlan(int planId) {
+    return (update(cropPlans)..where((t) => t.id.equals(planId))).write(
+      const CropPlansCompanion(active: Value(false)),
+    );
+  }
+
+  Future<void> deleteTasksByPlan(int planId) {
+    return (delete(calendarTasks)..where((t) => t.planId.equals(planId))).go();
   }
 }
