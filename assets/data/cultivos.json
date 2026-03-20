@@ -8,6 +8,15 @@
     "estacion": "Otoño",
     "identificacion": "El ajo es una planta bulbosa con hojas largas y planas que crecen desde el bulbo subterráneo.",
     "siembra": "Se debe sembrar en otoño. Coloca los dientes de ajo a 3-4 cm de profundidad y separados por 10-15 cm.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo suelto, bien drenado y rico en materia orgánica. Evitar suelos muy compactos.",
+      "comoSembrar": "Enterrar los dientes de ajo con la punta hacia arriba a 4 cm de profundidad.",
+      "cuidadosGerminacion": "Mantener la humedad constante pero sin encharcar. Controlar malezas.",
+      "usaAlmacigo": false,
+      "tiempoAlmacigo": 0,
+      "senalesTrasplante": "No aplica (siembra directa)",
+      "distanciaTrasplante": "10-15 cm entre plantas"
+    },
     "ficha": {
       "Temporada de siembra": "Otoño",
       "Época de siembra": "Tardía",
@@ -36,8 +45,17 @@
     "cosechaMeses": 7,
     "tipo": "Raíz",
     "estacion": "Otoño",
-    "identificacion": "La cebolla roja es fácilmente reconocible por su piel de color morado oscuro y su interior de tonos rojizos a violáceos. Es más dulce y suave que otras variedades de cebolla, lo que la hace ideal para consumir en crudo en ensaladas, sándwiches y guarniciones.",
-    "siembra": "Las cebollas rojas se siembran mejor en almácigo y se trasplantan al suelo cuando las plántulas son robustas. Prefieren suelos ligeros y bien drenados. El espacio entre plantas permite el desarrollo adecuado de cada cebolla sin competencia por nutrientes.",
+    "identificacion": "La cebolla roja es fácilmente reconocible por su piel de color morado oscuro y su interior de tonos rojizos a violáceos.",
+    "siembra": "Las cebollas rojas se siembran mejor en almácigo y se trasplantan al suelo cuando las plántulas son robustas.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo ligero, bien drenado y libre de piedras.",
+      "comoSembrar": "En almácigo a 1 cm de profundidad. Trasplantar cuando tenga el grosor de un lápiz.",
+      "cuidadosGerminacion": "Riego fino y frecuente. Proteger del sol intenso inicial.",
+      "usaAlmacigo": true,
+      "tiempoAlmacigo": 60,
+      "senalesTrasplante": "Cuando la planta tiene 3-4 hojas y el tallo es firme.",
+      "distanciaTrasplante": "10-15 cm entre plantas"
+    },
     "ficha": {
       "Temporada de siembra": "Otoño",
       "Época de siembra": "Media",
@@ -55,24 +73,9 @@
       "Temporada de cosecha": "Primavera",
       "Época de cosecha": "Tardía"
     },
-    "plagas": [
-      "Pulgón",
-      "Cochinilla",
-      "Minador",
-      "Arañuela roja",
-      "Hormiga"
-    ],
-    "beneficiosos": [
-      "Zanahoria",
-      "Lechuga",
-      "Tomate",
-      "Remolacha"
-    ],
-    "perjudiciales": [
-      "Poroto",
-      "Arveja",
-      "Espinaca"
-    ]
+    "plagas": ["Pulgón", "Cochinilla", "Minador", "Arañuela roja", "Hormiga"],
+    "beneficiosos": ["Zanahoria", "Lechuga", "Tomate", "Remolacha"],
+    "perjudiciales": ["Poroto", "Arveja", "Espinaca"]
   },
   {
     "imagen": "assets/cultivos/acelga.png",
@@ -81,8 +84,17 @@
     "cosechaMeses": 3,
     "tipo": "Hoja",
     "estacion": "Primavera",
-    "identificacion": "La acelga es una planta de hojas verdes con tallos comestibles. Las hojas son lanceoladas y dentadas, mientras que los tallos pueden ser blancos o rojos.",
-    "siembra": "Se siembra durante la primavera, plantando las semillas directamente en el suelo o en almácigo a una profundidad de 2 cm y dejando un espacio entre plantas de unos 20 cm.",
+    "identificacion": "La acelga es una planta de hojas verdes con tallos comestibles (pencas).",
+    "siembra": "Se siembra durante la primavera, directamente en el suelo o en almácigo.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo profundo, fresco y muy rico en nitrógeno.",
+      "comoSembrar": "Sembrar a 2 cm de profundidad. Si es almácigo, trasplantar con 4-5 hojas.",
+      "cuidadosGerminacion": "Mantener suelo húmedo. Aclarar si crecen muchas juntas.",
+      "usaAlmacigo": true,
+      "tiempoAlmacigo": 30,
+      "senalesTrasplante": "Plántulas de 10-15 cm con hojas bien formadas.",
+      "distanciaTrasplante": "20-30 cm entre plantas"
+    },
     "ficha": {
       "Temporada de siembra": "Primavera",
       "Época de siembra": "Temprana",
@@ -100,24 +112,9 @@
       "Temporada de cosecha": "Verano",
       "Época de cosecha": "Tardía"
     },
-    "plagas": [
-      "Pulgón",
-      "Trips",
-      "Hormiga"
-    ],
-    "beneficiosos": [
-      "Tomate",
-      "Rabanito",
-      "Lechuga",
-      "Cebolla",
-      "Romero"
-    ],
-    "perjudiciales": [
-      "Haba",
-      "Maíz dulce",
-      "Papa",
-      "Pepino"
-    ]
+    "plagas": ["Pulgón", "Trips", "Hormiga"],
+    "beneficiosos": ["Tomate", "Rabanito", "Lechuga", "Cebolla", "Romero"],
+    "perjudiciales": ["Haba", "Maíz dulce", "Papa", "Pepino"]
   },
   {
     "imagen": "assets/cultivos/rabano.jpg",
@@ -126,8 +123,17 @@
     "cosechaMeses": 1,
     "tipo": "Raíz",
     "estacion": "Otoño",
-    "identificacion": "El rabano es una planta de rápido crecimiento con raíces comestible de forma redonda o alargada. Tiene una piel suave y un sabor ligeramente picante.",
-    "siembra": "Se siembra en primavera u otoño. las semillas se siembran directamente en el suelo u almácigo, a una profundidad de 1 cm y dejando un espacio entre plantas de unos 5 cm.",
+    "identificacion": "Planta de rápido crecimiento con raíz comestible picante.",
+    "siembra": "Siembra directa en el suelo a 1 cm de profundidad.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo ligero y suelto. No requiere mucho abono previo.",
+      "comoSembrar": "Siembra directa en surcos a 1-2 cm de profundidad.",
+      "cuidadosGerminacion": "Riego regular para evitar que el rábano se ponga muy picante.",
+      "usaAlmacigo": false,
+      "tiempoAlmacigo": 0,
+      "senalesTrasplante": "No aplica",
+      "distanciaTrasplante": "5-10 cm entre plantas"
+    },
     "ficha": {
       "Temporada de siembra": "Primavera",
       "Época de siembra": "Temprana",
@@ -145,24 +151,9 @@
       "Temporada de cosecha": "Primavera",
       "Época de cosecha": "Media"
     },
-    "plagas": [
-      "Pulgón",
-      "Mosca blanca",
-      "Minador",
-      "Arañuela roja",
-      "trips"
-    ],
-    "beneficiosos": [
-      "pepino",
-      "Lechuga",
-      "Tomate",
-      "morrón"
-    ],
-    "perjudiciales": [
-      "repollo",
-      "coliflor",
-      "Brocoli"
-    ]
+    "plagas": ["Pulgón", "Mosca blanca", "Minador", "Arañuela roja", "trips"],
+    "beneficiosos": ["pepino", "Lechuga", "Tomate", "morrón"],
+    "perjudiciales": ["repollo", "coliflor", "Brocoli"]
   },
   {
     "imagen": "assets/cultivos/pepino.jpg",
@@ -171,8 +162,17 @@
     "cosechaMeses": 4,
     "tipo": "Vegetal",
     "estacion": "Primavera",
-    "identificacion": "El pepino es una planta trepadora con hojas verdes y flores amarillas, con frutos comestibles de forma alargada y color verde brillante.",
-    "siembra": "Las semillas de pepino se siembran en primavera, preferiblemente en almácigo o en macetas, y luego se trasplantan al suelo cuando las plántulas son robustas y brindales soporte para trepar. Prefieren suelos ligeros y bien drenados. El espacio entre plantas permite el desarrollo adecuado de cada pepino sin competencia por nutrientes.",
+    "identificacion": "Planta trepadora con frutos alargados verdes.",
+    "siembra": "Siembra en macetas o almácigo caliente en primavera.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo muy rico en materia orgánica y bien drenado.",
+      "comoSembrar": "Sembrar 2-3 semillas por hueco a 3 cm. Dejar la más fuerte.",
+      "cuidadosGerminacion": "Calor y humedad. Evitar mojar las hojas al regar.",
+      "usaAlmacigo": true,
+      "tiempoAlmacigo": 30,
+      "senalesTrasplante": "Cuando tiene 2-3 hojas definitivas y el clima es cálido.",
+      "distanciaTrasplante": "30-50 cm entre plantas"
+    },
     "ficha": {
       "Temporada de siembra": "Primavera",
       "Época de siembra": "Toda",
@@ -190,23 +190,9 @@
       "Temporada de cosecha": "Verano",
       "Época de cosecha": "Toda"
     },
-    "plagas": [
-      "Pulgón",
-      "Mosca blanca",
-      "Minador",
-      "Arañuela roja",
-      "oruga"
-    ],
-    "beneficiosos": [
-      "Maíz",
-      "Poroto",
-      "Rabanito"
-    ],
-    "perjudiciales": [
-      "Melón",
-      "Papa",
-      "tomate"
-    ]
+    "plagas": ["Pulgón", "Mosca blanca", "Minador", "Arañuela roja", "oruga"],
+    "beneficiosos": ["Maíz", "Poroto", "Rabanito"],
+    "perjudiciales": ["Melón", "Papa", "tomate"]
   },
   {
     "imagen": "assets/cultivos/tomate.jpg",
@@ -215,13 +201,24 @@
     "cosechaMeses": 4,
     "tipo": "Frutal",
     "estacion": "Verano",
-    "identificacion": "Planta herbácea de tallos volubles con frutos globosos rojos. Es uno de los cultivos más populares del huerto, requiriendo tutores para su correcto crecimiento y ventilación.",
-    "siembra": "En almácigo a finales de invierno, trasplante en primavera cuando no haya riesgo de heladas. Requiere suelos profundos y bien abonados.",
+    "identificacion": "Planta de tallos volubles con frutos rojos globosos.",
+    "siembra": "En almácigo a finales de invierno.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo profundo, bien abonado con compost o estiércol.",
+      "comoSembrar": "En almácigo a 0.5 cm. Trasplantar cuando mida 15 cm.",
+      "cuidadosGerminacion": "Necesita calor constante. Riego por goteo preferible.",
+      "usaAlmacigo": true,
+      "tiempoAlmacigo": 45,
+      "senalesTrasplante": "Tallo robusto y unos 15-20 cm de altura.",
+      "distanciaTrasplante": "40-60 cm entre plantas"
+    },
     "ficha": {
       "Riego": "Frecuente",
       "Luz": "Sol pleno",
       "Suelo": "Rico en nutrientes",
-      "Distancia": "40cm"
+      "Distancia": "40cm",
+      "Tipo de siembra": "Almácigo",
+      "Profundidad de semilla": "0.5 cm"
     },
     "plagas": ["Mosca blanca", "Pulgón", "Minador", "Oruga"],
     "beneficiosos": ["Ajo", "Cebolla morada", "Zanahoria", "Albahaca"],
@@ -234,13 +231,24 @@
     "cosechaMeses": 3,
     "tipo": "Raíz",
     "estacion": "Primavera",
-    "identificacion": "Planta con raíz carnosa de color naranja. Sus hojas son finamente divididas y su cultivo requiere un suelo libre de piedras para que la raíz crezca recta.",
-    "siembra": "Siembra directa a 1cm de profundidad. Se recomienda mezclar las semillas con arena fina para una distribución más uniforme.",
+    "identificacion": "Raíz carnosa naranja con hojas plumosas.",
+    "siembra": "Siembra directa a 1 cm de profundidad.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo arenoso, profundo y sin piedras para evitar deformaciones.",
+      "comoSembrar": "Siembra directa en hileras. Mezclar semilla con arena ayuda.",
+      "cuidadosGerminacion": "Mantener superficie húmeda hasta que broten (tardan mucho).",
+      "usaAlmacigo": false,
+      "tiempoAlmacigo": 0,
+      "senalesTrasplante": "No aplica",
+      "distanciaTrasplante": "10 cm entre plantas"
+    },
     "ficha": {
       "Riego": "Moderado",
       "Luz": "Sol pleno",
       "Distancia": "10cm",
-      "Suelo": "Arenoso y profundo"
+      "Suelo": "Arenoso y profundo",
+      "Tipo de siembra": "Directa",
+      "Profundidad de semilla": "1 cm"
     },
     "plagas": ["Pulgón", "Mosca de la zanahoria"],
     "beneficiosos": ["Tomate", "Cebolla morada", "Ajo", "Puerro"],
@@ -253,13 +261,24 @@
     "cosechaMeses": 2,
     "tipo": "Hoja",
     "estacion": "Primavera",
-    "identificacion": "Planta herbácea con hojas que se disponen en roseta. Existen múltiples variedades con diferentes formas, colores y texturas.",
-    "siembra": "Siembra en almácigo y trasplante o siembra directa. Tolera bien el frío pero requiere humedad constante.",
+    "identificacion": "Hojas en roseta, diversas formas y texturas.",
+    "siembra": "Almácigo o siembra directa escalonada.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo mullido y con buen drenaje, rico en humus.",
+      "comoSembrar": "Apenas cubrir la semilla con tierra (0.5 cm).",
+      "cuidadosGerminacion": "Evitar exceso de calor. Mantener humedad constante.",
+      "usaAlmacigo": true,
+      "tiempoAlmacigo": 30,
+      "senalesTrasplante": "Cuando tengan 4-6 hojas verdaderas.",
+      "distanciaTrasplante": "20-30 cm entre plantas"
+    },
     "ficha": {
       "Riego": "Frecuente",
       "Luz": "Media luz",
       "Suelo": "Drenado y rico",
-      "Temporada": "Todo el año"
+      "Temporada": "Todo el año",
+      "Tipo de siembra": "Almácigo o Directa",
+      "Profundidad de semilla": "0.5 cm"
     },
     "plagas": ["Pulgón", "Babosas", "Trips"],
     "beneficiosos": ["Zanahoria", "Rábano", "Cebolla"],
@@ -272,12 +291,23 @@
     "cosechaMeses": 4,
     "tipo": "Tuberculo",
     "estacion": "Primavera",
-    "identificacion": "Planta con tubérculos subterráneos ricos en almidón. Pertenece a la familia de las solanáceas, al igual que el tomate y el morrón.",
-    "siembra": "Siembra de tubérculos a 10cm de profundidad. Es importante realizar el aporcado (arrimar tierra al tallo) para proteger los tubérculos de la luz.",
+    "identificacion": "Planta con tubérculos subterráneos almidonados.",
+    "siembra": "Siembra de tubérculos-semilla a 10 cm.",
+    "guiaRapida": {
+      "preparacionTierra": "Suelo suelto, bien aireado y profundo.",
+      "comoSembrar": "Enterrar el tubérculo con los brotes hacia arriba.",
+      "cuidadosGerminacion": "Aporcar tierra a medida que crece el tallo.",
+      "usaAlmacigo": false,
+      "tiempoAlmacigo": 0,
+      "senalesTrasplante": "No aplica",
+      "distanciaTrasplante": "30-40 cm entre plantas"
+    },
     "ficha": {
       "Riego": "Moderado",
       "Luz": "Sol pleno",
-      "Suelo": "Suelto y profundo"
+      "Suelo": "Suelto y profundo",
+      "Tipo de siembra": "Tubérculo",
+      "Profundidad de semilla": "10 cm"
     },
     "plagas": ["Escarabajo de la papa", "Pulgón", "Polilla de la papa"],
     "beneficiosos": ["Maíz", "Poroto", "Haba"],

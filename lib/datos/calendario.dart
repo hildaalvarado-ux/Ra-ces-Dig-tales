@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:drift/drift.dart' as drift;
+import 'package:drift/drift.dart' hide Column;
 import 'package:intl/intl.dart';
 import '../data/db_instance.dart';
 import '../data/app_database.dart';
@@ -56,6 +57,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   Future<void> _toggleTaskStatus(CalendarTask task) async {
     final newStatus = !task.completed;
     await appDb.updateTaskStatus(task.id, newStatus);
+    await appDb.updateNotificationStatusByTask(task.id, newStatus ? 'completed' : 'unread');
 
     if (newStatus) {
       // If completed, cancel notifications for this task
@@ -88,6 +90,16 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
   }
 
+  void _showAddObservationDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => _AddObservationDialog(userId: widget.userId, onSaved: _loadTasks),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBackground(
@@ -101,8 +113,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
         body: SafeArea(
           child: Column(
             children: [
+              _LunarPhaseCard(date: _focusedDay),
               Container(
-                margin: const EdgeInsets.all(12),
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.85),
                   borderRadius: BorderRadius.circular(16),
@@ -136,7 +149,23 @@ class _CalendarioPageState extends State<CalendarioPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _showAddObservationDialog,
+                    icon: const Icon(Icons.note_add_rounded),
+                    label: const Text('AGREGAR OBSERVACIÓN', style: TextStyle(fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.greenDark,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
               Expanded(
                 child: _loading
                     ? const Center(child: CircularProgressIndicator())
@@ -290,6 +319,272 @@ class _IncidentReportDialog extends StatefulWidget {
   State<_IncidentReportDialog> createState() => _IncidentReportDialogState();
 }
 
+class _LunarPhaseCard extends StatelessWidget {
+  final DateTime date;
+  const _LunarPhaseCard({required this.date});
+
+  @override
+  Widget build(BuildContext context) {
+    final phase = _getLunarPhase(date);
+    final recommendation = _getLunarRecommendation(phase);
+    final daysRemaining = _getLunarDaysRemaining(date);
+    final monthDays = _getLunarPhaseMonthDays(date, phase);
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.greenDark, AppColors.greenDarker],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, offset: const Offset(0, 4))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(_getLunarIcon(phase), style: const TextStyle(fontSize: 32)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Fase Lunar: $phase',
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    Text(
+                      'Actividad: $recommendation',
+                      style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const Divider(color: Colors.white24, height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _LunarInfoBadge(label: 'Duración aprox.', value: '7-8 días'),
+              _LunarInfoBadge(label: 'Días activos', value: monthDays),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getLunarPhase(DateTime date) {
+    final lp = 2551443;
+    final now = date.millisecondsSinceEpoch / 1000;
+    final newMoon = 592500;
+    final phase = ((now - newMoon) % lp) / lp;
+    if (phase < 0.03 || phase > 0.97) return 'Luna Nueva';
+    if (phase < 0.22) return 'Luna Creciente';
+    if (phase < 0.28) return 'Cuarto Creciente';
+    if (phase < 0.47) return 'Gibosa Creciente';
+    if (phase < 0.53) return 'Luna Llena';
+    if (phase < 0.72) return 'Gibosa Menguante';
+    if (phase < 0.78) return 'Cuarto Menguante';
+    return 'Luna Menguante';
+  }
+
+  String _getLunarIcon(String phase) {
+    switch (phase) {
+      case 'Luna Nueva': return '🌑';
+      case 'Luna Creciente': return '🌒';
+      case 'Cuarto Creciente': return '🌓';
+      case 'Gibosa Creciente': return '🌔';
+      case 'Luna Llena': return '🌕';
+      case 'Gibosa Menguante': return '🌖';
+      case 'Cuarto Menguante': return '🌗';
+      case 'Luna Menguante': return '🌘';
+      default: return '🌙';
+    }
+  }
+
+  String _getLunarRecommendation(String phase) {
+    switch (phase) {
+      case 'Luna Nueva': return 'Preparación de suelo, control de malezas.';
+      case 'Luna Creciente':
+      case 'Cuarto Creciente':
+      case 'Gibosa Creciente': return 'Siembra de hortalizas de hoja y frutos.';
+      case 'Luna Llena': return 'Cosecha, fertilización, control de plagas.';
+      default: return 'Siembra de raíces y tubérculos, poda.';
+    }
+  }
+
+  int _getLunarDaysRemaining(DateTime date) {
+    // This is a simplified estimation
+    return 3;
+  }
+
+  String _getLunarPhaseMonthDays(DateTime date, String targetPhase) {
+    // Estimate which days of the current month have this phase
+    // For a real app, use a proper lunar library. Here we'll just show a range for the example.
+    final day = date.day;
+    return '${day - 2} al ${day + 4} de ${DateFormat('MMMM', 'es').format(date)}';
+  }
+}
+
+class _LunarInfoBadge extends StatelessWidget {
+  final String label;
+  final String value;
+  const _LunarInfoBadge({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w900)),
+      ],
+    );
+  }
+}
+
+class _AddObservationDialog extends StatefulWidget {
+  final int userId;
+  final VoidCallback onSaved;
+  const _AddObservationDialog({required this.userId, required this.onSaved});
+
+  @override
+  State<_AddObservationDialog> createState() => _AddObservationDialogState();
+}
+
+class _AddObservationDialogState extends State<_AddObservationDialog> {
+  final _contentCtrl = TextEditingController();
+  String _selectedPlantStatus = 'Saludable';
+  String _selectedStage = 'Crecimiento';
+  bool _hasIrrigation = false;
+  bool _hasPest = false;
+  bool _hasTF = false;
+  String? _selectedCropName;
+  List<UserCultivo> _userCultivos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCrops();
+  }
+
+  Future<void> _loadCrops() async {
+    final list = await appDb.getUserCultivos(widget.userId);
+    if (mounted) setState(() => _userCultivos = list);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Nueva Observación', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.greenDarker)),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedCropName,
+              items: _userCultivos.map((e) => DropdownMenuItem(value: e.nombre, child: Text(e.nombre))).toList(),
+              onChanged: (v) => setState(() => _selectedCropName = v),
+              decoration: InputDecoration(labelText: 'Cultivo', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _contentCtrl,
+              maxLines: 3,
+              decoration: InputDecoration(labelText: '¿Qué observaste hoy?', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedPlantStatus,
+                    items: ['Saludable', 'Marchita', 'Enferma', 'Recuperándose'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                    onChanged: (v) => setState(() => _selectedPlantStatus = v!),
+                    decoration: InputDecoration(labelText: 'Estado', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedStage,
+                    items: ['Siembra', 'Germinación', 'Crecimiento', 'Floración', 'Fructificación', 'Cosecha'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                    onChanged: (v) => setState(() => _selectedStage = v!),
+                    decoration: InputDecoration(labelText: 'Etapa', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            CheckboxListTile(
+              title: const Text('¿Hubo riego hoy?'),
+              value: _hasIrrigation,
+              onChanged: (v) => setState(() => _hasIrrigation = v!),
+              controlAffinity: ListTileControlAffinity.leading,
+              dense: true,
+            ),
+            CheckboxListTile(
+              title: const Text('¿Se detectó alguna plaga?'),
+              value: _hasPest,
+              onChanged: (v) => setState(() => _hasPest = v!),
+              controlAffinity: ListTileControlAffinity.leading,
+              dense: true,
+            ),
+            CheckboxListTile(
+              title: const Text('¿Hubo trasplante o fertilización?'),
+              value: _hasTF,
+              onChanged: (v) => setState(() => _hasTF = v!),
+              controlAffinity: ListTileControlAffinity.leading,
+              dense: true,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (_selectedCropName == null || _contentCtrl.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor completa los campos obligatorios.')));
+                    return;
+                  }
+                  final crop = _userCultivos.firstWhere((c) => c.nombre == _selectedCropName);
+                  await appDb.insertObservation(ObservationsCompanion.insert(
+                    userId: widget.userId,
+                    cropName: _selectedCropName!,
+                    cropImagePath: Value(crop.imagePath),
+                    content: _contentCtrl.text,
+                    plantStatus: Value(_selectedPlantStatus),
+                    stage: Value(_selectedStage),
+                    hasIrrigation: Value(_hasIrrigation),
+                    hasPest: Value(_hasPest),
+                    hasTransplantOrFertilization: Value(_hasTF),
+                  ));
+                  if (mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Observación guardada en el diario.')));
+                    widget.onSaved();
+                  }
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark, foregroundColor: Colors.white),
+                child: const Text('Guardar Observación', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _IncidentReportDialogState extends State<_IncidentReportDialog> {
   String _selectedIncident = 'Plagas';
   final _descCtrl = TextEditingController();
@@ -373,14 +668,67 @@ class CropPlanGenerator {
 
     final tasks = <CalendarTasksCompanion>[];
 
-    // Irrigation Frequency
-    final irrigationFreq = _parseIrrigationFrequency(cultivo.ficha['Riego'] ?? '');
+    // --- PHASE 1: PREPARATION & SOWING (First Week) ---
+    final guia = cultivo.toJson()['guiaRapida'] as Map<String, dynamic>? ?? {};
 
-    // Total harvest time in days
+    // Day 0: Preparation
+    tasks.add(CalendarTasksCompanion.insert(
+      planId: drift.Value(planId),
+      userId: userId,
+      title: 'Preparación de tierra: ${cultivo.nombre}',
+      description: drift.Value(guia['preparacionTierra'] ?? 'Preparar el suelo adecuadamente.'),
+      date: startDate.copyWith(hour: preferredTime.hour, minute: preferredTime.minute),
+      type: 'Preparación',
+    ));
+
+    // Day 1: Sowing
+    tasks.add(CalendarTasksCompanion.insert(
+      planId: drift.Value(planId),
+      userId: userId,
+      title: 'Siembra de ${cultivo.nombre}',
+      description: drift.Value(
+        'Tipo: ${cultivo.ficha['Tipo de siembra'] ?? 'No especificado'}. '
+        'Profundidad: ${cultivo.ficha['Profundidad de semilla'] ?? 'No especificado'}. '
+        '${guia['comoSembrar'] ?? ''}'
+      ),
+      date: startDate.add(const Duration(days: 1)).copyWith(hour: preferredTime.hour, minute: preferredTime.minute),
+      type: 'Siembra',
+    ));
+
+    // Germination Care (Days 2-6)
+    for (int d = 2; d <= 6; d++) {
+      tasks.add(CalendarTasksCompanion.insert(
+        planId: drift.Value(planId),
+        userId: userId,
+        title: 'Cuidados iniciales: ${cultivo.nombre}',
+        description: drift.Value(guia['cuidadosGerminacion'] ?? 'Mantener humedad y proteger de climas extremos.'),
+        date: startDate.add(Duration(days: d)).copyWith(hour: preferredTime.hour, minute: preferredTime.minute),
+        type: 'Cuidado inicial',
+      ));
+    }
+
+    // --- PHASE 2: ALMACIGO & GROWTH ---
+    bool usesAlmacigo = guia['usaAlmacigo'] == true;
+    int timeInAlmacigo = guia['tiempoAlmacigo'] ?? 0;
+
+    if (usesAlmacigo && timeInAlmacigo > 0) {
+      tasks.add(CalendarTasksCompanion.insert(
+        planId: drift.Value(planId),
+        userId: userId,
+        title: 'Evaluación de trasplante: ${cultivo.nombre}',
+        description: drift.Value('Verificar si ya está lista: ${guia['senalesTrasplante'] ?? 'No especificado'}'),
+        date: startDate.add(Duration(days: timeInAlmacigo)).copyWith(hour: preferredTime.hour, minute: preferredTime.minute),
+        type: 'Trasplante',
+      ));
+    }
+
+    // --- PHASE 3: REGULAR MAINTENANCE ---
+    final irrigationFreq = _parseIrrigationFrequency(cultivo.ficha['Riego'] ?? '');
     final harvestDays = cultivo.cosechaMeses * 30;
     if (harvestDays == 0) return;
 
-    for (int day = 0; day <= harvestDays; day++) {
+    // Start maintenance after first week
+    for (int day = 7; day <= harvestDays; day++) {
       final taskDate = startDate.add(Duration(days: day)).copyWith(
             hour: preferredTime.hour,
             minute: preferredTime.minute,
@@ -398,8 +746,8 @@ class CropPlanGenerator {
         ));
       }
 
-      // Fertilization (every 15 days as default for smart plan)
-      if (day > 0 && day % 15 == 0) {
+      // Fertilization
+      if (day % 15 == 0) {
         tasks.add(CalendarTasksCompanion.insert(
           planId: drift.Value(planId),
           userId: userId,
@@ -434,8 +782,8 @@ class CropPlanGenerator {
         ));
       }
 
-      // Pruning (if applicable, every 30 days)
-      if (day > 0 && day % 30 == 0 && (cultivo.tipo == 'Frutal' || cultivo.tipo == 'Vegetal')) {
+      // Pruning
+      if (day % 30 == 0 && (cultivo.tipo == 'Frutal' || cultivo.tipo == 'Vegetal')) {
         tasks.add(CalendarTasksCompanion.insert(
           planId: drift.Value(planId),
           userId: userId,

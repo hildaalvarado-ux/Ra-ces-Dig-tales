@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../data/db_instance.dart';
 import '../data/app_database.dart';
 import '../main.dart';
+import 'calendario.dart';
 
 class NotificacionesPage extends StatefulWidget {
   final int userId;
@@ -31,10 +32,19 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     });
   }
 
-  Future<void> _markAsRead(NotificationLog log) async {
-    if (log.read) return;
-    await appDb.markNotificationAsRead(log.id);
-    _loadLogs();
+  Future<void> _handleNotificationTap(NotificationLog log) async {
+    // If unread, mark as read
+    if (log.status == 'unread') {
+      await appDb.updateNotificationStatus(log.id, 'read');
+    }
+
+    // Navigate to calendar
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => CalendarioPage(userId: widget.userId)),
+      ).then((_) => _loadLogs());
+    }
   }
 
   @override
@@ -46,6 +56,16 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
           title: const Text('Notificaciones', style: TextStyle(fontWeight: FontWeight.w900)),
+          actions: [
+            IconButton(
+              tooltip: 'Limpiar vistas',
+              onPressed: () async {
+                await appDb.clearReadNotifications(widget.userId);
+                _loadLogs();
+              },
+              icon: const Icon(Icons.delete_sweep_rounded),
+            ),
+          ],
         ),
         body: SafeArea(
           child: _loading
@@ -62,26 +82,35 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                       itemCount: _logs.length,
                       itemBuilder: (context, index) {
                         final log = _logs[index];
+                        final isRead = log.status == 'read';
+                        final isCompleted = log.status == 'completed';
+                        final isUnread = log.status == 'unread';
+
                         return Container(
                           margin: const EdgeInsets.only(bottom: 10),
                           decoration: BoxDecoration(
-                            color: log.read ? Colors.white.withOpacity(0.7) : Colors.white.withOpacity(0.9),
+                            color: isUnread ? Colors.white : Colors.white.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: log.read ? Colors.transparent : AppColors.greenDark.withOpacity(0.15),
+                              color: isUnread ? AppColors.greenDark.withOpacity(0.3) : Colors.transparent,
+                              width: 1.5,
                             ),
                           ),
                           child: ListTile(
-                            onTap: () => _markAsRead(log),
-                            leading: Icon(
-                              log.read ? Icons.notifications_none_rounded : Icons.notifications_active_rounded,
-                              color: log.read ? Colors.grey : AppColors.greenDark,
+                            onTap: () => _handleNotificationTap(log),
+                            leading: CircleAvatar(
+                              backgroundColor: isCompleted ? Colors.green.shade100 : (isUnread ? AppColors.greenSoft.withOpacity(0.2) : Colors.grey.shade200),
+                              child: Icon(
+                                isCompleted ? Icons.check_circle_rounded : (isUnread ? Icons.notifications_active_rounded : Icons.notifications_none_rounded),
+                                color: isCompleted ? Colors.green : (isUnread ? AppColors.greenDark : Colors.grey),
+                              ),
                             ),
                             title: Text(
                               log.title,
                               style: TextStyle(
-                                fontWeight: log.read ? FontWeight.w600 : FontWeight.w900,
-                                color: log.read ? Colors.black54 : AppColors.greenDarker,
+                                fontWeight: isUnread ? FontWeight.w900 : FontWeight.w600,
+                                color: isUnread ? AppColors.greenDarker : Colors.black54,
+                                decoration: isCompleted ? TextDecoration.lineThrough : null,
                               ),
                             ),
                             subtitle: Column(
@@ -89,12 +118,22 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
                               children: [
                                 Text(log.body),
                                 const SizedBox(height: 4),
-                                Text(
-                                  DateFormat('dd/MM/yyyy hh:mm a').format(log.timestamp),
-                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      DateFormat('dd/MM/yyyy hh:mm a').format(log.timestamp),
+                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                    ),
+                                    if (isCompleted)
+                                      const Text('COMPLETADA', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.green)),
+                                    if (isRead && !isCompleted)
+                                      const Text('VISTA', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.blueGrey)),
+                                  ],
                                 ),
                               ],
                             ),
+                            trailing: isUnread ? Container(width: 10, height: 10, decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle)) : null,
                           ),
                         );
                       },

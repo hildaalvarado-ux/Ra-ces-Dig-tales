@@ -5172,6 +5172,25 @@ class $NotificationLogsTable extends NotificationLogs
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('unread'),
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<int> taskId = GeneratedColumn<int>(
+    'task_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5180,6 +5199,8 @@ class $NotificationLogsTable extends NotificationLogs
     body,
     timestamp,
     read,
+    status,
+    taskId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5232,6 +5253,18 @@ class $NotificationLogsTable extends NotificationLogs
         read.isAcceptableOrUnknown(data['read']!, _readMeta),
       );
     }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    }
     return context;
   }
 
@@ -5265,6 +5298,14 @@ class $NotificationLogsTable extends NotificationLogs
         DriftSqlType.bool,
         data['${effectivePrefix}read'],
       )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}task_id'],
+      ),
     );
   }
 
@@ -5281,6 +5322,8 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
   final String body;
   final DateTime timestamp;
   final bool read;
+  final String status;
+  final int? taskId;
   const NotificationLog({
     required this.id,
     required this.userId,
@@ -5288,6 +5331,8 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
     required this.body,
     required this.timestamp,
     required this.read,
+    required this.status,
+    this.taskId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5298,6 +5343,10 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
     map['body'] = Variable<String>(body);
     map['timestamp'] = Variable<DateTime>(timestamp);
     map['read'] = Variable<bool>(read);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || taskId != null) {
+      map['task_id'] = Variable<int>(taskId);
+    }
     return map;
   }
 
@@ -5309,6 +5358,10 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
       body: Value(body),
       timestamp: Value(timestamp),
       read: Value(read),
+      status: Value(status),
+      taskId: taskId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taskId),
     );
   }
 
@@ -5324,6 +5377,8 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
       body: serializer.fromJson<String>(json['body']),
       timestamp: serializer.fromJson<DateTime>(json['timestamp']),
       read: serializer.fromJson<bool>(json['read']),
+      status: serializer.fromJson<String>(json['status']),
+      taskId: serializer.fromJson<int?>(json['taskId']),
     );
   }
   @override
@@ -5336,6 +5391,8 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
       'body': serializer.toJson<String>(body),
       'timestamp': serializer.toJson<DateTime>(timestamp),
       'read': serializer.toJson<bool>(read),
+      'status': serializer.toJson<String>(status),
+      'taskId': serializer.toJson<int?>(taskId),
     };
   }
 
@@ -5346,6 +5403,8 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
     String? body,
     DateTime? timestamp,
     bool? read,
+    String? status,
+    Value<int?> taskId = const Value.absent(),
   }) => NotificationLog(
     id: id ?? this.id,
     userId: userId ?? this.userId,
@@ -5353,6 +5412,8 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
     body: body ?? this.body,
     timestamp: timestamp ?? this.timestamp,
     read: read ?? this.read,
+    status: status ?? this.status,
+    taskId: taskId.present ? taskId.value : this.taskId,
   );
   NotificationLog copyWithCompanion(NotificationLogsCompanion data) {
     return NotificationLog(
@@ -5362,6 +5423,8 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
       body: data.body.present ? data.body.value : this.body,
       timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
       read: data.read.present ? data.read.value : this.read,
+      status: data.status.present ? data.status.value : this.status,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
     );
   }
 
@@ -5373,13 +5436,16 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
           ..write('title: $title, ')
           ..write('body: $body, ')
           ..write('timestamp: $timestamp, ')
-          ..write('read: $read')
+          ..write('read: $read, ')
+          ..write('status: $status, ')
+          ..write('taskId: $taskId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, userId, title, body, timestamp, read);
+  int get hashCode =>
+      Object.hash(id, userId, title, body, timestamp, read, status, taskId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5389,7 +5455,9 @@ class NotificationLog extends DataClass implements Insertable<NotificationLog> {
           other.title == this.title &&
           other.body == this.body &&
           other.timestamp == this.timestamp &&
-          other.read == this.read);
+          other.read == this.read &&
+          other.status == this.status &&
+          other.taskId == this.taskId);
 }
 
 class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
@@ -5399,6 +5467,8 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
   final Value<String> body;
   final Value<DateTime> timestamp;
   final Value<bool> read;
+  final Value<String> status;
+  final Value<int?> taskId;
   const NotificationLogsCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
@@ -5406,6 +5476,8 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
     this.body = const Value.absent(),
     this.timestamp = const Value.absent(),
     this.read = const Value.absent(),
+    this.status = const Value.absent(),
+    this.taskId = const Value.absent(),
   });
   NotificationLogsCompanion.insert({
     this.id = const Value.absent(),
@@ -5414,6 +5486,8 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
     required String body,
     this.timestamp = const Value.absent(),
     this.read = const Value.absent(),
+    this.status = const Value.absent(),
+    this.taskId = const Value.absent(),
   }) : userId = Value(userId),
        title = Value(title),
        body = Value(body);
@@ -5424,6 +5498,8 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
     Expression<String>? body,
     Expression<DateTime>? timestamp,
     Expression<bool>? read,
+    Expression<String>? status,
+    Expression<int>? taskId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5432,6 +5508,8 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
       if (body != null) 'body': body,
       if (timestamp != null) 'timestamp': timestamp,
       if (read != null) 'read': read,
+      if (status != null) 'status': status,
+      if (taskId != null) 'task_id': taskId,
     });
   }
 
@@ -5442,6 +5520,8 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
     Value<String>? body,
     Value<DateTime>? timestamp,
     Value<bool>? read,
+    Value<String>? status,
+    Value<int?>? taskId,
   }) {
     return NotificationLogsCompanion(
       id: id ?? this.id,
@@ -5450,6 +5530,8 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
       body: body ?? this.body,
       timestamp: timestamp ?? this.timestamp,
       read: read ?? this.read,
+      status: status ?? this.status,
+      taskId: taskId ?? this.taskId,
     );
   }
 
@@ -5474,6 +5556,12 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
     if (read.present) {
       map['read'] = Variable<bool>(read.value);
     }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<int>(taskId.value);
+    }
     return map;
   }
 
@@ -5485,7 +5573,687 @@ class NotificationLogsCompanion extends UpdateCompanion<NotificationLog> {
           ..write('title: $title, ')
           ..write('body: $body, ')
           ..write('timestamp: $timestamp, ')
-          ..write('read: $read')
+          ..write('read: $read, ')
+          ..write('status: $status, ')
+          ..write('taskId: $taskId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ObservationsTable extends Observations
+    with TableInfo<$ObservationsTable, Observation> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ObservationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cropNameMeta = const VerificationMeta(
+    'cropName',
+  );
+  @override
+  late final GeneratedColumn<String> cropName = GeneratedColumn<String>(
+    'crop_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cropImagePathMeta = const VerificationMeta(
+    'cropImagePath',
+  );
+  @override
+  late final GeneratedColumn<String> cropImagePath = GeneratedColumn<String>(
+    'crop_image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _contentMeta = const VerificationMeta(
+    'content',
+  );
+  @override
+  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+    'content',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _plantStatusMeta = const VerificationMeta(
+    'plantStatus',
+  );
+  @override
+  late final GeneratedColumn<String> plantStatus = GeneratedColumn<String>(
+    'plant_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _stageMeta = const VerificationMeta('stage');
+  @override
+  late final GeneratedColumn<String> stage = GeneratedColumn<String>(
+    'stage',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _hasIrrigationMeta = const VerificationMeta(
+    'hasIrrigation',
+  );
+  @override
+  late final GeneratedColumn<bool> hasIrrigation = GeneratedColumn<bool>(
+    'has_irrigation',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_irrigation" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _hasPestMeta = const VerificationMeta(
+    'hasPest',
+  );
+  @override
+  late final GeneratedColumn<bool> hasPest = GeneratedColumn<bool>(
+    'has_pest',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_pest" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _hasTransplantOrFertilizationMeta =
+      const VerificationMeta('hasTransplantOrFertilization');
+  @override
+  late final GeneratedColumn<bool> hasTransplantOrFertilization =
+      GeneratedColumn<bool>(
+        'has_transplant_or_fertilization',
+        aliasedName,
+        false,
+        type: DriftSqlType.bool,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("has_transplant_or_fertilization" IN (0, 1))',
+        ),
+        defaultValue: const Constant(false),
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    cropName,
+    cropImagePath,
+    date,
+    content,
+    plantStatus,
+    stage,
+    hasIrrigation,
+    hasPest,
+    hasTransplantOrFertilization,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'observations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Observation> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('crop_name')) {
+      context.handle(
+        _cropNameMeta,
+        cropName.isAcceptableOrUnknown(data['crop_name']!, _cropNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cropNameMeta);
+    }
+    if (data.containsKey('crop_image_path')) {
+      context.handle(
+        _cropImagePathMeta,
+        cropImagePath.isAcceptableOrUnknown(
+          data['crop_image_path']!,
+          _cropImagePathMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    }
+    if (data.containsKey('content')) {
+      context.handle(
+        _contentMeta,
+        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contentMeta);
+    }
+    if (data.containsKey('plant_status')) {
+      context.handle(
+        _plantStatusMeta,
+        plantStatus.isAcceptableOrUnknown(
+          data['plant_status']!,
+          _plantStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('stage')) {
+      context.handle(
+        _stageMeta,
+        stage.isAcceptableOrUnknown(data['stage']!, _stageMeta),
+      );
+    }
+    if (data.containsKey('has_irrigation')) {
+      context.handle(
+        _hasIrrigationMeta,
+        hasIrrigation.isAcceptableOrUnknown(
+          data['has_irrigation']!,
+          _hasIrrigationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('has_pest')) {
+      context.handle(
+        _hasPestMeta,
+        hasPest.isAcceptableOrUnknown(data['has_pest']!, _hasPestMeta),
+      );
+    }
+    if (data.containsKey('has_transplant_or_fertilization')) {
+      context.handle(
+        _hasTransplantOrFertilizationMeta,
+        hasTransplantOrFertilization.isAcceptableOrUnknown(
+          data['has_transplant_or_fertilization']!,
+          _hasTransplantOrFertilizationMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Observation map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Observation(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      cropName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}crop_name'],
+      )!,
+      cropImagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}crop_image_path'],
+      ),
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      content: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content'],
+      )!,
+      plantStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plant_status'],
+      ),
+      stage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stage'],
+      ),
+      hasIrrigation: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_irrigation'],
+      )!,
+      hasPest: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_pest'],
+      )!,
+      hasTransplantOrFertilization: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_transplant_or_fertilization'],
+      )!,
+    );
+  }
+
+  @override
+  $ObservationsTable createAlias(String alias) {
+    return $ObservationsTable(attachedDatabase, alias);
+  }
+}
+
+class Observation extends DataClass implements Insertable<Observation> {
+  final int id;
+  final int userId;
+  final String cropName;
+  final String? cropImagePath;
+  final DateTime date;
+  final String content;
+  final String? plantStatus;
+  final String? stage;
+  final bool hasIrrigation;
+  final bool hasPest;
+  final bool hasTransplantOrFertilization;
+  const Observation({
+    required this.id,
+    required this.userId,
+    required this.cropName,
+    this.cropImagePath,
+    required this.date,
+    required this.content,
+    this.plantStatus,
+    this.stage,
+    required this.hasIrrigation,
+    required this.hasPest,
+    required this.hasTransplantOrFertilization,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    map['crop_name'] = Variable<String>(cropName);
+    if (!nullToAbsent || cropImagePath != null) {
+      map['crop_image_path'] = Variable<String>(cropImagePath);
+    }
+    map['date'] = Variable<DateTime>(date);
+    map['content'] = Variable<String>(content);
+    if (!nullToAbsent || plantStatus != null) {
+      map['plant_status'] = Variable<String>(plantStatus);
+    }
+    if (!nullToAbsent || stage != null) {
+      map['stage'] = Variable<String>(stage);
+    }
+    map['has_irrigation'] = Variable<bool>(hasIrrigation);
+    map['has_pest'] = Variable<bool>(hasPest);
+    map['has_transplant_or_fertilization'] = Variable<bool>(
+      hasTransplantOrFertilization,
+    );
+    return map;
+  }
+
+  ObservationsCompanion toCompanion(bool nullToAbsent) {
+    return ObservationsCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      cropName: Value(cropName),
+      cropImagePath: cropImagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cropImagePath),
+      date: Value(date),
+      content: Value(content),
+      plantStatus: plantStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(plantStatus),
+      stage: stage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stage),
+      hasIrrigation: Value(hasIrrigation),
+      hasPest: Value(hasPest),
+      hasTransplantOrFertilization: Value(hasTransplantOrFertilization),
+    );
+  }
+
+  factory Observation.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Observation(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      cropName: serializer.fromJson<String>(json['cropName']),
+      cropImagePath: serializer.fromJson<String?>(json['cropImagePath']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      content: serializer.fromJson<String>(json['content']),
+      plantStatus: serializer.fromJson<String?>(json['plantStatus']),
+      stage: serializer.fromJson<String?>(json['stage']),
+      hasIrrigation: serializer.fromJson<bool>(json['hasIrrigation']),
+      hasPest: serializer.fromJson<bool>(json['hasPest']),
+      hasTransplantOrFertilization: serializer.fromJson<bool>(
+        json['hasTransplantOrFertilization'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'cropName': serializer.toJson<String>(cropName),
+      'cropImagePath': serializer.toJson<String?>(cropImagePath),
+      'date': serializer.toJson<DateTime>(date),
+      'content': serializer.toJson<String>(content),
+      'plantStatus': serializer.toJson<String?>(plantStatus),
+      'stage': serializer.toJson<String?>(stage),
+      'hasIrrigation': serializer.toJson<bool>(hasIrrigation),
+      'hasPest': serializer.toJson<bool>(hasPest),
+      'hasTransplantOrFertilization': serializer.toJson<bool>(
+        hasTransplantOrFertilization,
+      ),
+    };
+  }
+
+  Observation copyWith({
+    int? id,
+    int? userId,
+    String? cropName,
+    Value<String?> cropImagePath = const Value.absent(),
+    DateTime? date,
+    String? content,
+    Value<String?> plantStatus = const Value.absent(),
+    Value<String?> stage = const Value.absent(),
+    bool? hasIrrigation,
+    bool? hasPest,
+    bool? hasTransplantOrFertilization,
+  }) => Observation(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    cropName: cropName ?? this.cropName,
+    cropImagePath: cropImagePath.present
+        ? cropImagePath.value
+        : this.cropImagePath,
+    date: date ?? this.date,
+    content: content ?? this.content,
+    plantStatus: plantStatus.present ? plantStatus.value : this.plantStatus,
+    stage: stage.present ? stage.value : this.stage,
+    hasIrrigation: hasIrrigation ?? this.hasIrrigation,
+    hasPest: hasPest ?? this.hasPest,
+    hasTransplantOrFertilization:
+        hasTransplantOrFertilization ?? this.hasTransplantOrFertilization,
+  );
+  Observation copyWithCompanion(ObservationsCompanion data) {
+    return Observation(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      cropName: data.cropName.present ? data.cropName.value : this.cropName,
+      cropImagePath: data.cropImagePath.present
+          ? data.cropImagePath.value
+          : this.cropImagePath,
+      date: data.date.present ? data.date.value : this.date,
+      content: data.content.present ? data.content.value : this.content,
+      plantStatus: data.plantStatus.present
+          ? data.plantStatus.value
+          : this.plantStatus,
+      stage: data.stage.present ? data.stage.value : this.stage,
+      hasIrrigation: data.hasIrrigation.present
+          ? data.hasIrrigation.value
+          : this.hasIrrigation,
+      hasPest: data.hasPest.present ? data.hasPest.value : this.hasPest,
+      hasTransplantOrFertilization: data.hasTransplantOrFertilization.present
+          ? data.hasTransplantOrFertilization.value
+          : this.hasTransplantOrFertilization,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Observation(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('cropName: $cropName, ')
+          ..write('cropImagePath: $cropImagePath, ')
+          ..write('date: $date, ')
+          ..write('content: $content, ')
+          ..write('plantStatus: $plantStatus, ')
+          ..write('stage: $stage, ')
+          ..write('hasIrrigation: $hasIrrigation, ')
+          ..write('hasPest: $hasPest, ')
+          ..write('hasTransplantOrFertilization: $hasTransplantOrFertilization')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    cropName,
+    cropImagePath,
+    date,
+    content,
+    plantStatus,
+    stage,
+    hasIrrigation,
+    hasPest,
+    hasTransplantOrFertilization,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Observation &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.cropName == this.cropName &&
+          other.cropImagePath == this.cropImagePath &&
+          other.date == this.date &&
+          other.content == this.content &&
+          other.plantStatus == this.plantStatus &&
+          other.stage == this.stage &&
+          other.hasIrrigation == this.hasIrrigation &&
+          other.hasPest == this.hasPest &&
+          other.hasTransplantOrFertilization ==
+              this.hasTransplantOrFertilization);
+}
+
+class ObservationsCompanion extends UpdateCompanion<Observation> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String> cropName;
+  final Value<String?> cropImagePath;
+  final Value<DateTime> date;
+  final Value<String> content;
+  final Value<String?> plantStatus;
+  final Value<String?> stage;
+  final Value<bool> hasIrrigation;
+  final Value<bool> hasPest;
+  final Value<bool> hasTransplantOrFertilization;
+  const ObservationsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.cropName = const Value.absent(),
+    this.cropImagePath = const Value.absent(),
+    this.date = const Value.absent(),
+    this.content = const Value.absent(),
+    this.plantStatus = const Value.absent(),
+    this.stage = const Value.absent(),
+    this.hasIrrigation = const Value.absent(),
+    this.hasPest = const Value.absent(),
+    this.hasTransplantOrFertilization = const Value.absent(),
+  });
+  ObservationsCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    required String cropName,
+    this.cropImagePath = const Value.absent(),
+    this.date = const Value.absent(),
+    required String content,
+    this.plantStatus = const Value.absent(),
+    this.stage = const Value.absent(),
+    this.hasIrrigation = const Value.absent(),
+    this.hasPest = const Value.absent(),
+    this.hasTransplantOrFertilization = const Value.absent(),
+  }) : userId = Value(userId),
+       cropName = Value(cropName),
+       content = Value(content);
+  static Insertable<Observation> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? cropName,
+    Expression<String>? cropImagePath,
+    Expression<DateTime>? date,
+    Expression<String>? content,
+    Expression<String>? plantStatus,
+    Expression<String>? stage,
+    Expression<bool>? hasIrrigation,
+    Expression<bool>? hasPest,
+    Expression<bool>? hasTransplantOrFertilization,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (cropName != null) 'crop_name': cropName,
+      if (cropImagePath != null) 'crop_image_path': cropImagePath,
+      if (date != null) 'date': date,
+      if (content != null) 'content': content,
+      if (plantStatus != null) 'plant_status': plantStatus,
+      if (stage != null) 'stage': stage,
+      if (hasIrrigation != null) 'has_irrigation': hasIrrigation,
+      if (hasPest != null) 'has_pest': hasPest,
+      if (hasTransplantOrFertilization != null)
+        'has_transplant_or_fertilization': hasTransplantOrFertilization,
+    });
+  }
+
+  ObservationsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String>? cropName,
+    Value<String?>? cropImagePath,
+    Value<DateTime>? date,
+    Value<String>? content,
+    Value<String?>? plantStatus,
+    Value<String?>? stage,
+    Value<bool>? hasIrrigation,
+    Value<bool>? hasPest,
+    Value<bool>? hasTransplantOrFertilization,
+  }) {
+    return ObservationsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      cropName: cropName ?? this.cropName,
+      cropImagePath: cropImagePath ?? this.cropImagePath,
+      date: date ?? this.date,
+      content: content ?? this.content,
+      plantStatus: plantStatus ?? this.plantStatus,
+      stage: stage ?? this.stage,
+      hasIrrigation: hasIrrigation ?? this.hasIrrigation,
+      hasPest: hasPest ?? this.hasPest,
+      hasTransplantOrFertilization:
+          hasTransplantOrFertilization ?? this.hasTransplantOrFertilization,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (cropName.present) {
+      map['crop_name'] = Variable<String>(cropName.value);
+    }
+    if (cropImagePath.present) {
+      map['crop_image_path'] = Variable<String>(cropImagePath.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (content.present) {
+      map['content'] = Variable<String>(content.value);
+    }
+    if (plantStatus.present) {
+      map['plant_status'] = Variable<String>(plantStatus.value);
+    }
+    if (stage.present) {
+      map['stage'] = Variable<String>(stage.value);
+    }
+    if (hasIrrigation.present) {
+      map['has_irrigation'] = Variable<bool>(hasIrrigation.value);
+    }
+    if (hasPest.present) {
+      map['has_pest'] = Variable<bool>(hasPest.value);
+    }
+    if (hasTransplantOrFertilization.present) {
+      map['has_transplant_or_fertilization'] = Variable<bool>(
+        hasTransplantOrFertilization.value,
+      );
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ObservationsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('cropName: $cropName, ')
+          ..write('cropImagePath: $cropImagePath, ')
+          ..write('date: $date, ')
+          ..write('content: $content, ')
+          ..write('plantStatus: $plantStatus, ')
+          ..write('stage: $stage, ')
+          ..write('hasIrrigation: $hasIrrigation, ')
+          ..write('hasPest: $hasPest, ')
+          ..write('hasTransplantOrFertilization: $hasTransplantOrFertilization')
           ..write(')'))
         .toString();
   }
@@ -5513,6 +6281,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $NotificationLogsTable notificationLogs = $NotificationLogsTable(
     this,
   );
+  late final $ObservationsTable observations = $ObservationsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5531,6 +6300,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cropPlans,
     calendarTasks,
     notificationLogs,
+    observations,
   ];
 }
 
@@ -8263,6 +9033,8 @@ typedef $$NotificationLogsTableCreateCompanionBuilder =
       required String body,
       Value<DateTime> timestamp,
       Value<bool> read,
+      Value<String> status,
+      Value<int?> taskId,
     });
 typedef $$NotificationLogsTableUpdateCompanionBuilder =
     NotificationLogsCompanion Function({
@@ -8272,6 +9044,8 @@ typedef $$NotificationLogsTableUpdateCompanionBuilder =
       Value<String> body,
       Value<DateTime> timestamp,
       Value<bool> read,
+      Value<String> status,
+      Value<int?> taskId,
     });
 
 class $$NotificationLogsTableFilterComposer
@@ -8310,6 +9084,16 @@ class $$NotificationLogsTableFilterComposer
 
   ColumnFilters<bool> get read => $composableBuilder(
     column: $table.read,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get taskId => $composableBuilder(
+    column: $table.taskId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -8352,6 +9136,16 @@ class $$NotificationLogsTableOrderingComposer
     column: $table.read,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$NotificationLogsTableAnnotationComposer
@@ -8380,6 +9174,12 @@ class $$NotificationLogsTableAnnotationComposer
 
   GeneratedColumn<bool> get read =>
       $composableBuilder(column: $table.read, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get taskId =>
+      $composableBuilder(column: $table.taskId, builder: (column) => column);
 }
 
 class $$NotificationLogsTableTableManager
@@ -8425,6 +9225,8 @@ class $$NotificationLogsTableTableManager
                 Value<String> body = const Value.absent(),
                 Value<DateTime> timestamp = const Value.absent(),
                 Value<bool> read = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int?> taskId = const Value.absent(),
               }) => NotificationLogsCompanion(
                 id: id,
                 userId: userId,
@@ -8432,6 +9234,8 @@ class $$NotificationLogsTableTableManager
                 body: body,
                 timestamp: timestamp,
                 read: read,
+                status: status,
+                taskId: taskId,
               ),
           createCompanionCallback:
               ({
@@ -8441,6 +9245,8 @@ class $$NotificationLogsTableTableManager
                 required String body,
                 Value<DateTime> timestamp = const Value.absent(),
                 Value<bool> read = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int?> taskId = const Value.absent(),
               }) => NotificationLogsCompanion.insert(
                 id: id,
                 userId: userId,
@@ -8448,6 +9254,8 @@ class $$NotificationLogsTableTableManager
                 body: body,
                 timestamp: timestamp,
                 read: read,
+                status: status,
+                taskId: taskId,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -8472,6 +9280,322 @@ typedef $$NotificationLogsTableProcessedTableManager =
         BaseReferences<_$AppDatabase, $NotificationLogsTable, NotificationLog>,
       ),
       NotificationLog,
+      PrefetchHooks Function()
+    >;
+typedef $$ObservationsTableCreateCompanionBuilder =
+    ObservationsCompanion Function({
+      Value<int> id,
+      required int userId,
+      required String cropName,
+      Value<String?> cropImagePath,
+      Value<DateTime> date,
+      required String content,
+      Value<String?> plantStatus,
+      Value<String?> stage,
+      Value<bool> hasIrrigation,
+      Value<bool> hasPest,
+      Value<bool> hasTransplantOrFertilization,
+    });
+typedef $$ObservationsTableUpdateCompanionBuilder =
+    ObservationsCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String> cropName,
+      Value<String?> cropImagePath,
+      Value<DateTime> date,
+      Value<String> content,
+      Value<String?> plantStatus,
+      Value<String?> stage,
+      Value<bool> hasIrrigation,
+      Value<bool> hasPest,
+      Value<bool> hasTransplantOrFertilization,
+    });
+
+class $$ObservationsTableFilterComposer
+    extends Composer<_$AppDatabase, $ObservationsTable> {
+  $$ObservationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cropName => $composableBuilder(
+    column: $table.cropName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cropImagePath => $composableBuilder(
+    column: $table.cropImagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get plantStatus => $composableBuilder(
+    column: $table.plantStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stage => $composableBuilder(
+    column: $table.stage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasIrrigation => $composableBuilder(
+    column: $table.hasIrrigation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasPest => $composableBuilder(
+    column: $table.hasPest,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasTransplantOrFertilization => $composableBuilder(
+    column: $table.hasTransplantOrFertilization,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ObservationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ObservationsTable> {
+  $$ObservationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cropName => $composableBuilder(
+    column: $table.cropName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cropImagePath => $composableBuilder(
+    column: $table.cropImagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get content => $composableBuilder(
+    column: $table.content,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get plantStatus => $composableBuilder(
+    column: $table.plantStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stage => $composableBuilder(
+    column: $table.stage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasIrrigation => $composableBuilder(
+    column: $table.hasIrrigation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasPest => $composableBuilder(
+    column: $table.hasPest,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasTransplantOrFertilization => $composableBuilder(
+    column: $table.hasTransplantOrFertilization,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ObservationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ObservationsTable> {
+  $$ObservationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get cropName =>
+      $composableBuilder(column: $table.cropName, builder: (column) => column);
+
+  GeneratedColumn<String> get cropImagePath => $composableBuilder(
+    column: $table.cropImagePath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+
+  GeneratedColumn<String> get plantStatus => $composableBuilder(
+    column: $table.plantStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get stage =>
+      $composableBuilder(column: $table.stage, builder: (column) => column);
+
+  GeneratedColumn<bool> get hasIrrigation => $composableBuilder(
+    column: $table.hasIrrigation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hasPest =>
+      $composableBuilder(column: $table.hasPest, builder: (column) => column);
+
+  GeneratedColumn<bool> get hasTransplantOrFertilization => $composableBuilder(
+    column: $table.hasTransplantOrFertilization,
+    builder: (column) => column,
+  );
+}
+
+class $$ObservationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ObservationsTable,
+          Observation,
+          $$ObservationsTableFilterComposer,
+          $$ObservationsTableOrderingComposer,
+          $$ObservationsTableAnnotationComposer,
+          $$ObservationsTableCreateCompanionBuilder,
+          $$ObservationsTableUpdateCompanionBuilder,
+          (
+            Observation,
+            BaseReferences<_$AppDatabase, $ObservationsTable, Observation>,
+          ),
+          Observation,
+          PrefetchHooks Function()
+        > {
+  $$ObservationsTableTableManager(_$AppDatabase db, $ObservationsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ObservationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ObservationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ObservationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String> cropName = const Value.absent(),
+                Value<String?> cropImagePath = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> content = const Value.absent(),
+                Value<String?> plantStatus = const Value.absent(),
+                Value<String?> stage = const Value.absent(),
+                Value<bool> hasIrrigation = const Value.absent(),
+                Value<bool> hasPest = const Value.absent(),
+                Value<bool> hasTransplantOrFertilization = const Value.absent(),
+              }) => ObservationsCompanion(
+                id: id,
+                userId: userId,
+                cropName: cropName,
+                cropImagePath: cropImagePath,
+                date: date,
+                content: content,
+                plantStatus: plantStatus,
+                stage: stage,
+                hasIrrigation: hasIrrigation,
+                hasPest: hasPest,
+                hasTransplantOrFertilization: hasTransplantOrFertilization,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                required String cropName,
+                Value<String?> cropImagePath = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                required String content,
+                Value<String?> plantStatus = const Value.absent(),
+                Value<String?> stage = const Value.absent(),
+                Value<bool> hasIrrigation = const Value.absent(),
+                Value<bool> hasPest = const Value.absent(),
+                Value<bool> hasTransplantOrFertilization = const Value.absent(),
+              }) => ObservationsCompanion.insert(
+                id: id,
+                userId: userId,
+                cropName: cropName,
+                cropImagePath: cropImagePath,
+                date: date,
+                content: content,
+                plantStatus: plantStatus,
+                stage: stage,
+                hasIrrigation: hasIrrigation,
+                hasPest: hasPest,
+                hasTransplantOrFertilization: hasTransplantOrFertilization,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ObservationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ObservationsTable,
+      Observation,
+      $$ObservationsTableFilterComposer,
+      $$ObservationsTableOrderingComposer,
+      $$ObservationsTableAnnotationComposer,
+      $$ObservationsTableCreateCompanionBuilder,
+      $$ObservationsTableUpdateCompanionBuilder,
+      (
+        Observation,
+        BaseReferences<_$AppDatabase, $ObservationsTable, Observation>,
+      ),
+      Observation,
       PrefetchHooks Function()
     >;
 
@@ -8504,4 +9628,6 @@ class $AppDatabaseManager {
       $$CalendarTasksTableTableManager(_db, _db.calendarTasks);
   $$NotificationLogsTableTableManager get notificationLogs =>
       $$NotificationLogsTableTableManager(_db, _db.notificationLogs);
+  $$ObservationsTableTableManager get observations =>
+      $$ObservationsTableTableManager(_db, _db.observations);
 }

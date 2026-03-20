@@ -37,7 +37,15 @@ class NotificationService {
   }
 
   void _onDidReceiveNotificationResponse(fln.NotificationResponse response) {
-    // Handle notification click if needed
+    final payload = response.payload;
+    if (payload != null && !payload.startsWith('reminder_')) {
+      final taskId = int.tryParse(payload);
+      if (taskId != null) {
+        // Navigation logic is usually handled in the main app or via a navigator key
+        // For this prototype, we'll assume the app will handle it if we store the state
+        appDb.updateNotificationStatusByTask(taskId, 'read');
+      }
+    }
   }
 
   Future<void> scheduleTaskNotification({
@@ -75,6 +83,8 @@ class NotificationService {
       title: title,
       body: body,
       timestamp: Value(scheduledDate),
+      taskId: Value(taskId),
+      status: const Value('unread'),
     ));
 
     // Schedule 2-hour reminder
