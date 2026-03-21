@@ -114,70 +114,60 @@ class _DashboardPageState extends State<DashboardPage> {
     switch (feature) {
       // ✅ YA IMPLEMENTADO (archivo real):
       case 'Cultivos':
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => CultivosPage(userId: widget.userId),
           ),
         );
-        return;
-
-      // -------------------------------
-      // ⬇️ AQUI irás conectando pantallas reales después
-      // cuando crees archivos nuevos.
-      //
-      // Ejemplo cuando hagas fertilizantes.dart:
-      // case 'Fertilizantes':
-      //   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FertilizantesPage()));
-      //   return;
-      // -------------------------------
+        break;
 
       case 'Fertilizantes':
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => FertilizantesPage(userId: widget.userId),
           ),
         );
-        return;
+        break;
 
       case 'Plagas':
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => PlagasPage(userId: widget.userId),
           ),
         );
-        return;
+        break;
 
       case 'Pesticidas':
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => PesticidasPage(userId: widget.userId),
           ),
         );
-        return;
+        break;
 
       case 'Calendario':
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => CalendarioPage(userId: widget.userId),
           ),
         );
-        return;
+        break;
 
       case 'Notificaciones':
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => NotificacionesPage(userId: widget.userId),
           ),
         );
-        return;
+        break;
 
       case 'Diario':
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => DiarioPage(userId: widget.userId),
           ),
         );
-        return;
+        break;
 
       case 'Favoritos':
       case 'Opciones':
@@ -185,12 +175,16 @@ class _DashboardPageState extends State<DashboardPage> {
       case 'Créditos':
       default:
         // ✅ placeholder temporal para que no se rompa la navegación
-        Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => FeaturePlaceholderPage(title: feature),
           ),
         );
-        return;
+        break;
+    }
+    // Refresh the dashboard to ensure the active crop plans are updated
+    if (mounted) {
+      setState(() {});
     }
   }
 

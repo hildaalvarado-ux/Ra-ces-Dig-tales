@@ -535,23 +535,31 @@ class CultivoDetallePage extends StatelessWidget {
       final userId = await appDb.getActiveUserId();
       if (userId == null) return;
 
-      await CropPlanGenerator.generate(
-        userId: userId,
-        cultivo: cultivo,
-        startDate: selectedDate,
-        preferredTime: selectedTime,
-        nickname: nicknameCtrl.text.trim().isEmpty ? null : nicknameCtrl.text.trim(),
-        colorValue: selectedColor.value,
-      );
+      try {
+        await CropPlanGenerator.generate(
+          userId: userId,
+          cultivo: cultivo,
+          startDate: selectedDate,
+          preferredTime: selectedTime,
+          nickname: nicknameCtrl.text.trim().isEmpty ? null : nicknameCtrl.text.trim(),
+          colorValue: selectedColor.value,
+        );
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Plan para ${cultivo.nombre} generado con éxito.')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId)),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Plan para ${cultivo.nombre} generado con éxito.')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error al generar el plan: $e')),
+          );
+        }
       }
     }
   }

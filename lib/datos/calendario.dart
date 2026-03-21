@@ -755,7 +755,8 @@ class CropPlanGenerator {
     String? nickname,
     int? colorValue,
   }) async {
-    final planId = await appDb.insertCropPlan(CropPlansCompanion.insert(
+    try {
+      final planId = await appDb.insertCropPlan(CropPlansCompanion.insert(
       userId: userId,
       cropName: cultivo.nombre,
       nickname: drift.Value(nickname),
@@ -823,8 +824,11 @@ class CropPlanGenerator {
 
     // --- PHASE 3: REGULAR MAINTENANCE ---
     final irrigationFreq = _parseIrrigationFrequency(cultivo.ficha['Riego'] ?? '');
-    final harvestDays = cultivo.cosechaMeses * 30;
-    if (harvestDays == 0) return;
+    int harvestDays = cultivo.cosechaMeses * 30;
+    if (harvestDays <= 0) {
+      debugPrint('Advertencia: Cosecha en 0 meses para ${cultivo.nombre}. Usando 3 meses por defecto.');
+      harvestDays = 90;
+    }
 
     // Start maintenance after first week
     for (int day = 7; day <= harvestDays; day++) {
@@ -927,16 +931,24 @@ class CropPlanGenerator {
     final allTasks = await appDb.getUserTasks(userId);
     final newTasks = allTasks.where((t) => t.planId == planId).toList();
 
-    for (final t in newTasks) {
-      if (t.date.isAfter(DateTime.now()) && t.date.isBefore(DateTime.now().add(const Duration(days: 7)))) {
-        await notificationService.scheduleTaskNotification(
-          taskId: t.id,
-          userId: userId,
-          title: t.title,
-          body: t.description ?? '',
-          scheduledDate: t.date,
-        );
+      for (final t in newTasks) {
+        if (t.date.isAfter(DateTime.now()) && t.date.isBefore(DateTime.now().add(const Duration(days: 7)))) {
+          try {
+            await notificationService.scheduleTaskNotification(
+              taskId: t.id,
+              userId: userId,
+              title: t.title,
+              body: t.description ?? '',
+              scheduledDate: t.date,
+            );
+          } catch (e) {
+            debugPrint('Error al programar notificación para tarea ${t.id}: $e');
+          }
+        }
       }
+    } catch (e) {
+      debugPrint('Error crítico en CropPlanGenerator.generate: $e');
+      rethrow;
     }
   }
 
