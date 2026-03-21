@@ -111,6 +111,8 @@ class CropPlans extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get userId => integer()();
   TextColumn get cropName => text()();
+  TextColumn get nickname => text().nullable()();
+  IntColumn get colorValue => integer().nullable()();
   DateTimeColumn get startDate => dateTime()();
   TextColumn get preferredTime => text()(); // HH:mm
   TextColumn get payloadJson => text()();
@@ -175,7 +177,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -222,6 +224,10 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(observations);
             await m.addColumn(notificationLogs, notificationLogs.status);
             await m.addColumn(notificationLogs, notificationLogs.taskId);
+          }
+          if (from < 9) {
+            await m.addColumn(cropPlans, cropPlans.nickname);
+            await m.addColumn(cropPlans, cropPlans.colorValue);
           }
         },
         beforeOpen: (details) async {

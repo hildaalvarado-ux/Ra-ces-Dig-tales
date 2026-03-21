@@ -4125,6 +4125,28 @@ class $CropPlansTable extends CropPlans
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _nicknameMeta = const VerificationMeta(
+    'nickname',
+  );
+  @override
+  late final GeneratedColumn<String> nickname = GeneratedColumn<String>(
+    'nickname',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _colorValueMeta = const VerificationMeta(
+    'colorValue',
+  );
+  @override
+  late final GeneratedColumn<int> colorValue = GeneratedColumn<int>(
+    'color_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _startDateMeta = const VerificationMeta(
     'startDate',
   );
@@ -4176,6 +4198,8 @@ class $CropPlansTable extends CropPlans
     id,
     userId,
     cropName,
+    nickname,
+    colorValue,
     startDate,
     preferredTime,
     payloadJson,
@@ -4211,6 +4235,18 @@ class $CropPlansTable extends CropPlans
       );
     } else if (isInserting) {
       context.missing(_cropNameMeta);
+    }
+    if (data.containsKey('nickname')) {
+      context.handle(
+        _nicknameMeta,
+        nickname.isAcceptableOrUnknown(data['nickname']!, _nicknameMeta),
+      );
+    }
+    if (data.containsKey('color_value')) {
+      context.handle(
+        _colorValueMeta,
+        colorValue.isAcceptableOrUnknown(data['color_value']!, _colorValueMeta),
+      );
     }
     if (data.containsKey('start_date')) {
       context.handle(
@@ -4269,6 +4305,14 @@ class $CropPlansTable extends CropPlans
         DriftSqlType.string,
         data['${effectivePrefix}crop_name'],
       )!,
+      nickname: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nickname'],
+      ),
+      colorValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}color_value'],
+      ),
       startDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}start_date'],
@@ -4298,6 +4342,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
   final int id;
   final int userId;
   final String cropName;
+  final String? nickname;
+  final int? colorValue;
   final DateTime startDate;
   final String preferredTime;
   final String payloadJson;
@@ -4306,6 +4352,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     required this.id,
     required this.userId,
     required this.cropName,
+    this.nickname,
+    this.colorValue,
     required this.startDate,
     required this.preferredTime,
     required this.payloadJson,
@@ -4317,6 +4365,12 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     map['id'] = Variable<int>(id);
     map['user_id'] = Variable<int>(userId);
     map['crop_name'] = Variable<String>(cropName);
+    if (!nullToAbsent || nickname != null) {
+      map['nickname'] = Variable<String>(nickname);
+    }
+    if (!nullToAbsent || colorValue != null) {
+      map['color_value'] = Variable<int>(colorValue);
+    }
     map['start_date'] = Variable<DateTime>(startDate);
     map['preferred_time'] = Variable<String>(preferredTime);
     map['payload_json'] = Variable<String>(payloadJson);
@@ -4329,6 +4383,12 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
       id: Value(id),
       userId: Value(userId),
       cropName: Value(cropName),
+      nickname: nickname == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nickname),
+      colorValue: colorValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(colorValue),
       startDate: Value(startDate),
       preferredTime: Value(preferredTime),
       payloadJson: Value(payloadJson),
@@ -4345,6 +4405,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
       id: serializer.fromJson<int>(json['id']),
       userId: serializer.fromJson<int>(json['userId']),
       cropName: serializer.fromJson<String>(json['cropName']),
+      nickname: serializer.fromJson<String?>(json['nickname']),
+      colorValue: serializer.fromJson<int?>(json['colorValue']),
       startDate: serializer.fromJson<DateTime>(json['startDate']),
       preferredTime: serializer.fromJson<String>(json['preferredTime']),
       payloadJson: serializer.fromJson<String>(json['payloadJson']),
@@ -4358,6 +4420,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
       'id': serializer.toJson<int>(id),
       'userId': serializer.toJson<int>(userId),
       'cropName': serializer.toJson<String>(cropName),
+      'nickname': serializer.toJson<String?>(nickname),
+      'colorValue': serializer.toJson<int?>(colorValue),
       'startDate': serializer.toJson<DateTime>(startDate),
       'preferredTime': serializer.toJson<String>(preferredTime),
       'payloadJson': serializer.toJson<String>(payloadJson),
@@ -4369,6 +4433,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     int? id,
     int? userId,
     String? cropName,
+    Value<String?> nickname = const Value.absent(),
+    Value<int?> colorValue = const Value.absent(),
     DateTime? startDate,
     String? preferredTime,
     String? payloadJson,
@@ -4377,6 +4443,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     id: id ?? this.id,
     userId: userId ?? this.userId,
     cropName: cropName ?? this.cropName,
+    nickname: nickname.present ? nickname.value : this.nickname,
+    colorValue: colorValue.present ? colorValue.value : this.colorValue,
     startDate: startDate ?? this.startDate,
     preferredTime: preferredTime ?? this.preferredTime,
     payloadJson: payloadJson ?? this.payloadJson,
@@ -4387,6 +4455,10 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
       cropName: data.cropName.present ? data.cropName.value : this.cropName,
+      nickname: data.nickname.present ? data.nickname.value : this.nickname,
+      colorValue: data.colorValue.present
+          ? data.colorValue.value
+          : this.colorValue,
       startDate: data.startDate.present ? data.startDate.value : this.startDate,
       preferredTime: data.preferredTime.present
           ? data.preferredTime.value
@@ -4404,6 +4476,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('cropName: $cropName, ')
+          ..write('nickname: $nickname, ')
+          ..write('colorValue: $colorValue, ')
           ..write('startDate: $startDate, ')
           ..write('preferredTime: $preferredTime, ')
           ..write('payloadJson: $payloadJson, ')
@@ -4417,6 +4491,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     id,
     userId,
     cropName,
+    nickname,
+    colorValue,
     startDate,
     preferredTime,
     payloadJson,
@@ -4429,6 +4505,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
           other.id == this.id &&
           other.userId == this.userId &&
           other.cropName == this.cropName &&
+          other.nickname == this.nickname &&
+          other.colorValue == this.colorValue &&
           other.startDate == this.startDate &&
           other.preferredTime == this.preferredTime &&
           other.payloadJson == this.payloadJson &&
@@ -4439,6 +4517,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
   final Value<int> id;
   final Value<int> userId;
   final Value<String> cropName;
+  final Value<String?> nickname;
+  final Value<int?> colorValue;
   final Value<DateTime> startDate;
   final Value<String> preferredTime;
   final Value<String> payloadJson;
@@ -4447,6 +4527,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
     this.cropName = const Value.absent(),
+    this.nickname = const Value.absent(),
+    this.colorValue = const Value.absent(),
     this.startDate = const Value.absent(),
     this.preferredTime = const Value.absent(),
     this.payloadJson = const Value.absent(),
@@ -4456,6 +4538,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     this.id = const Value.absent(),
     required int userId,
     required String cropName,
+    this.nickname = const Value.absent(),
+    this.colorValue = const Value.absent(),
     required DateTime startDate,
     required String preferredTime,
     required String payloadJson,
@@ -4469,6 +4553,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     Expression<int>? id,
     Expression<int>? userId,
     Expression<String>? cropName,
+    Expression<String>? nickname,
+    Expression<int>? colorValue,
     Expression<DateTime>? startDate,
     Expression<String>? preferredTime,
     Expression<String>? payloadJson,
@@ -4478,6 +4564,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
       if (id != null) 'id': id,
       if (userId != null) 'user_id': userId,
       if (cropName != null) 'crop_name': cropName,
+      if (nickname != null) 'nickname': nickname,
+      if (colorValue != null) 'color_value': colorValue,
       if (startDate != null) 'start_date': startDate,
       if (preferredTime != null) 'preferred_time': preferredTime,
       if (payloadJson != null) 'payload_json': payloadJson,
@@ -4489,6 +4577,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     Value<int>? id,
     Value<int>? userId,
     Value<String>? cropName,
+    Value<String?>? nickname,
+    Value<int?>? colorValue,
     Value<DateTime>? startDate,
     Value<String>? preferredTime,
     Value<String>? payloadJson,
@@ -4498,6 +4588,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
       id: id ?? this.id,
       userId: userId ?? this.userId,
       cropName: cropName ?? this.cropName,
+      nickname: nickname ?? this.nickname,
+      colorValue: colorValue ?? this.colorValue,
       startDate: startDate ?? this.startDate,
       preferredTime: preferredTime ?? this.preferredTime,
       payloadJson: payloadJson ?? this.payloadJson,
@@ -4516,6 +4608,12 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     }
     if (cropName.present) {
       map['crop_name'] = Variable<String>(cropName.value);
+    }
+    if (nickname.present) {
+      map['nickname'] = Variable<String>(nickname.value);
+    }
+    if (colorValue.present) {
+      map['color_value'] = Variable<int>(colorValue.value);
     }
     if (startDate.present) {
       map['start_date'] = Variable<DateTime>(startDate.value);
@@ -4538,6 +4636,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('cropName: $cropName, ')
+          ..write('nickname: $nickname, ')
+          ..write('colorValue: $colorValue, ')
           ..write('startDate: $startDate, ')
           ..write('preferredTime: $preferredTime, ')
           ..write('payloadJson: $payloadJson, ')
@@ -8526,6 +8626,8 @@ typedef $$CropPlansTableCreateCompanionBuilder =
       Value<int> id,
       required int userId,
       required String cropName,
+      Value<String?> nickname,
+      Value<int?> colorValue,
       required DateTime startDate,
       required String preferredTime,
       required String payloadJson,
@@ -8536,6 +8638,8 @@ typedef $$CropPlansTableUpdateCompanionBuilder =
       Value<int> id,
       Value<int> userId,
       Value<String> cropName,
+      Value<String?> nickname,
+      Value<int?> colorValue,
       Value<DateTime> startDate,
       Value<String> preferredTime,
       Value<String> payloadJson,
@@ -8563,6 +8667,16 @@ class $$CropPlansTableFilterComposer
 
   ColumnFilters<String> get cropName => $composableBuilder(
     column: $table.cropName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nickname => $composableBuilder(
+    column: $table.nickname,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get colorValue => $composableBuilder(
+    column: $table.colorValue,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8611,6 +8725,16 @@ class $$CropPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get nickname => $composableBuilder(
+    column: $table.nickname,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get colorValue => $composableBuilder(
+    column: $table.colorValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get startDate => $composableBuilder(
     column: $table.startDate,
     builder: (column) => ColumnOrderings(column),
@@ -8649,6 +8773,14 @@ class $$CropPlansTableAnnotationComposer
 
   GeneratedColumn<String> get cropName =>
       $composableBuilder(column: $table.cropName, builder: (column) => column);
+
+  GeneratedColumn<String> get nickname =>
+      $composableBuilder(column: $table.nickname, builder: (column) => column);
+
+  GeneratedColumn<int> get colorValue => $composableBuilder(
+    column: $table.colorValue,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get startDate =>
       $composableBuilder(column: $table.startDate, builder: (column) => column);
@@ -8698,6 +8830,8 @@ class $$CropPlansTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<int> userId = const Value.absent(),
                 Value<String> cropName = const Value.absent(),
+                Value<String?> nickname = const Value.absent(),
+                Value<int?> colorValue = const Value.absent(),
                 Value<DateTime> startDate = const Value.absent(),
                 Value<String> preferredTime = const Value.absent(),
                 Value<String> payloadJson = const Value.absent(),
@@ -8706,6 +8840,8 @@ class $$CropPlansTableTableManager
                 id: id,
                 userId: userId,
                 cropName: cropName,
+                nickname: nickname,
+                colorValue: colorValue,
                 startDate: startDate,
                 preferredTime: preferredTime,
                 payloadJson: payloadJson,
@@ -8716,6 +8852,8 @@ class $$CropPlansTableTableManager
                 Value<int> id = const Value.absent(),
                 required int userId,
                 required String cropName,
+                Value<String?> nickname = const Value.absent(),
+                Value<int?> colorValue = const Value.absent(),
                 required DateTime startDate,
                 required String preferredTime,
                 required String payloadJson,
@@ -8724,6 +8862,8 @@ class $$CropPlansTableTableManager
                 id: id,
                 userId: userId,
                 cropName: cropName,
+                nickname: nickname,
+                colorValue: colorValue,
                 startDate: startDate,
                 preferredTime: preferredTime,
                 payloadJson: payloadJson,
