@@ -547,7 +547,7 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
   bool _hasPest = false;
   bool _hasTF = false;
   String? _selectedCropName;
-  List<UserCultivo> _userCultivos = [];
+  List<CropPlan> _activePlans = [];
 
   @override
   void initState() {
@@ -556,8 +556,15 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
   }
 
   Future<void> _loadCrops() async {
-    final list = await appDb.getUserCultivos(widget.userId);
-    if (mounted) setState(() => _userCultivos = list);
+    final list = await appDb.getUserCropPlans(widget.userId);
+    if (mounted) {
+      setState(() {
+        _activePlans = list;
+        if (_activePlans.length == 1) {
+          _selectedCropName = _activePlans.first.nickname ?? _activePlans.first.cropName;
+        }
+      });
+    }
   }
 
   @override
@@ -573,9 +580,12 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: _selectedCropName,
-              items: _userCultivos.map((e) => DropdownMenuItem(value: e.nombre, child: Text(e.nombre))).toList(),
+              items: _activePlans.map((e) {
+                final name = e.nickname ?? e.cropName;
+                return DropdownMenuItem(value: name, child: Text(name));
+              }).toList(),
               onChanged: (v) => setState(() => _selectedCropName = v),
-              decoration: InputDecoration(labelText: 'Cultivo', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+              decoration: InputDecoration(labelText: 'Selecciona tu cultivo activo', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -637,11 +647,15 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor completa los campos obligatorios.')));
                     return;
                   }
-                  final crop = _userCultivos.firstWhere((c) => c.nombre == _selectedCropName);
+
+                  final plan = _activePlans.firstWhere((p) => (p.nickname ?? p.cropName) == _selectedCropName);
+                  final cultivoData = jsonDecode(plan.payloadJson);
+                  final imagePath = plan.id > 0 ? plan.payloadJson.contains('imagePath') ? cultivoData['imagePath'] : null : null;
+
                   await appDb.insertObservation(ObservationsCompanion.insert(
                     userId: widget.userId,
                     cropName: _selectedCropName!,
-                    cropImagePath: Value(crop.imagePath),
+                    cropImagePath: Value(imagePath),
                     content: _contentCtrl.text,
                     plantStatus: Value(_selectedPlantStatus),
                     stage: Value(_selectedStage),

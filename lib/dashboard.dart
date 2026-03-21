@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'data/db_instance.dart'; // conexión a tu BD (Drift)
+import 'data/app_database.dart';
 import 'data/image_utils.dart';
 import 'data/notification_service.dart';
 import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
@@ -415,75 +416,101 @@ class _DashboardPageState extends State<DashboardPage> {
             childAspectRatio: aspect,
           ),
           children: [
-            // ✅ Cultivos: navega a la pantalla real
-            _DashboardTile(
-              label: 'Cultivos',
-              icon: Icons.local_florist_rounded,
-              onTap: () => _openFeature('Cultivos'),
-            ),
-
-            // ⬇️ Estos por ahora son placeholders
-            _DashboardTile(
-              label: 'Fertilizantes',
-              icon: Icons.science_rounded,
-              onTap: () => _openFeature('Fertilizantes'),
-            ),
-            _DashboardTile(
-              label: 'Pesticidas',
-              icon: Icons.sanitizer_rounded,
-              onTap: () => _openFeature('Pesticidas'),
-            ),
-            _DashboardTile(
-              label: 'Plagas',
-              icon: Icons.bug_report_rounded,
-              onTap: () => _openFeature('Plagas'),
-            ),
-            _DashboardTile(
-              label: 'Calendario',
-              icon: Icons.calendar_month_rounded,
-              onTap: () => _openFeature('Calendario'),
-            ),
-            _DashboardTile(
-              label: 'Diario',
-              icon: Icons.menu_book_rounded,
-              onTap: () => _openFeature('Diario'),
-            ),
+            _DashboardTile(label: 'Cultivos', icon: Icons.local_florist_rounded, onTap: () => _openFeature('Cultivos')),
+            _DashboardTile(label: 'Fertilizantes', icon: Icons.science_rounded, onTap: () => _openFeature('Fertilizantes')),
+            _DashboardTile(label: 'Pesticidas', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Pesticidas')),
+            _DashboardTile(label: 'Plagas', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Plagas')),
+            _DashboardTile(label: 'Calendario', icon: Icons.calendar_month_rounded, onTap: () => _openFeature('Calendario')),
+            _DashboardTile(label: 'Diario', icon: Icons.menu_book_rounded, onTap: () => _openFeature('Diario')),
           ],
         ),
+        const SizedBox(height: 24),
+        Text('Cultivos en tu huerta', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 18)),
+        const SizedBox(height: 12),
+        FutureBuilder<List<CropPlan>>(
+          future: appDb.getUserCropPlans(widget.userId),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.7), borderRadius: BorderRadius.circular(18), border: Border.all(color: AppColors.greenDark.withOpacity(0.1))),
+                child: const Text('No tienes cultivos programados.\nVe a la sección de cultivos para iniciar tu plan.', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600)),
+              );
+            }
+            final plans = snapshot.data!;
+            return Column(
+              children: plans.map((plan) {
+                final start = plan.startDate;
+                final now = DateTime.now();
+                final daysSince = now.difference(start).inDays;
+                final cultivoData = jsonDecode(plan.payloadJson);
+                final harvestMonths = (cultivoData['cosechaMeses'] ?? 0) as int;
+                final totalDays = harvestMonths * 30;
+                final daysRemaining = totalDays - daysSince;
+                final progress = totalDays > 0 ? (daysSince / totalDays).clamp(0.0, 1.0) : 0.0;
 
-        const SizedBox(height: 18),
-
-        // Contenedor reservado para resumen/gráfica futura
-        Text(
-          'Cultivos sembrados en tu huerta',
-          style: TextStyle(
-            color: AppColors.greenDarker,
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-          ),
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: (plan.colorValue != null ? Color(plan.colorValue!) : AppColors.greenDark).withOpacity(0.3), width: 2),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: (plan.colorValue != null ? Color(plan.colorValue!) : AppColors.greenDark).withOpacity(0.2),
+                            child: Icon(Icons.eco_rounded, color: plan.colorValue != null ? Color(plan.colorValue!) : AppColors.greenDark),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(plan.nickname ?? plan.cropName, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.greenDarker)),
+                                Text('Sembrado hace $daysSince días', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.greenSoft)),
+                              ],
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () => _openFeature('Calendario'),
+                            icon: const Icon(Icons.calendar_month_rounded, size: 16),
+                            label: const Text('Ver calendario', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                            style: TextButton.styleFrom(foregroundColor: AppColors.greenDark),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          backgroundColor: Colors.grey.shade200,
+                          color: plan.colorValue != null ? Color(plan.colorValue!) : AppColors.greenDark,
+                          minHeight: 8,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('${(progress * 100).toInt()}% del ciclo', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                          Text(daysRemaining > 0 ? 'Faltan $daysRemaining días para cosecha' : '¡Listo para cosechar!', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: AppColors.greenDark)),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            );
+          },
         ),
-        const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.70),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
-          ),
-          child: Text(
-            'Aún no hay datos para mostrar.\nAquí irá un resumen/gráfica cuando registremos información.',
-            style: TextStyle(
-              color: AppColors.greenDarker.withOpacity(0.85),
-              fontWeight: FontWeight.w700,
-              height: 1.35,
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 18),
-
-        // Notificación de ejemplo
+        const SizedBox(height: 24),
         Text(
           'Notificaciones',
           style: TextStyle(

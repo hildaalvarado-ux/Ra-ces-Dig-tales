@@ -29,6 +29,7 @@ class Cultivo {
   final List<String> plagas;
   final List<String> beneficiosos;
   final List<String> perjudiciales;
+  final Map<String, dynamic>? guiaRapida;
 
   const Cultivo({
     this.id,
@@ -45,6 +46,7 @@ class Cultivo {
     required this.plagas,
     this.beneficiosos = const [],
     this.perjudiciales = const [],
+    this.guiaRapida,
   });
 
   Map<String, dynamic> toJson() => {
@@ -62,6 +64,7 @@ class Cultivo {
         'plagas': plagas,
         'beneficiosos': beneficiosos,
         'perjudiciales': perjudiciales,
+        if (guiaRapida != null) 'guiaRapida': guiaRapida,
       };
 
   static Cultivo fromJson(Map<String, dynamic> j) {
@@ -73,6 +76,7 @@ class Cultivo {
     final plagas = (j['plagas'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
     final ben = (j['beneficiosos'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
     final per = (j['perjudiciales'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
+    final guia = j['guiaRapida'] as Map<String, dynamic>?;
 
     return Cultivo(
       id: j['id'] as int?,
@@ -91,8 +95,16 @@ class Cultivo {
       plagas: plagas,
       beneficiosos: ben,
       perjudiciales: per,
+      guiaRapida: guia,
     );
   }
+}
+
+class _GuideDetail {
+  final IconData icon;
+  final String title;
+  final String description;
+  _GuideDetail(this.icon, this.title, this.description);
 }
 
 class CultivoDetallePage extends StatelessWidget {
@@ -235,48 +247,114 @@ class CultivoDetallePage extends StatelessWidget {
   }
 
   Future<void> _showQuickGuide(BuildContext context) async {
-    final guia = cultivo.toJson()['guiaRapida'] as Map<String, dynamic>? ?? {};
+    final guia = cultivo.guiaRapida ?? {};
 
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.7,
+          initialChildSize: 0.8,
           minChildSize: 0.5,
-          maxChildSize: 0.9,
+          maxChildSize: 0.95,
           expand: false,
           builder: (context, scrollController) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: ListView(
-                controller: scrollController,
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Column(
                 children: [
-                  const Text('Guía Rápida de Siembra', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.greenDarker)),
-                  const SizedBox(height: 16),
-                  _buildGuideItem(Icons.waves, 'Preparación de la tierra', guia['preparacionTierra'] ?? 'No especificado'),
-                  _buildGuideItem(Icons.grass, 'Cómo sembrar correctamente', guia['comoSembrar'] ?? 'No especificado'),
-                  _buildGuideItem(Icons.water_drop, 'Cuidados durante germinación', guia['cuidadosGerminacion'] ?? 'No especificado'),
-                  if (guia['usaAlmacigo'] == true) ...[
-                    _buildGuideItem(Icons.home, 'Tiempo en almácigo', '${guia['tiempoAlmacigo']} días'),
-                    _buildGuideItem(Icons.label_important, 'Señales para trasplante', guia['senalesTrasplante'] ?? 'No especificado'),
-                  ],
-                  _buildGuideItem(Icons.straighten, 'Distancia de trasplante / siembra', guia['distanciaTrasplante'] ?? 'No especificado'),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showStartPlanDialog(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.greenDark,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    child: const Text('ENTENDIDO, PROGRAMAR CULTIVO', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  Expanded(
+                    child: ListView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: AppColors.greenDark.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.auto_stories_rounded, color: AppColors.greenDark),
+                            ),
+                            const SizedBox(width: 14),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Guía Interactiva', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.greenDarker)),
+                                  Text('Primeros pasos para tu cultivo', style: TextStyle(fontSize: 14, color: AppColors.greenSoft, fontWeight: FontWeight.w600)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        _buildInteractiveSection(
+                          title: 'FASE 1: PRIMERA SEMANA',
+                          subtitle: 'Preparación y Siembra',
+                          color: Colors.orange.shade800,
+                          icon: Icons.looks_one_rounded,
+                          items: [
+                            _GuideDetail(Icons.waves, 'Preparación de la tierra', guia['preparacionTierra'] ?? 'No especificado'),
+                            _GuideDetail(Icons.grass, 'Siembra paso a paso', guia['comoSembrar'] ?? 'No especificado'),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _buildInteractiveSection(
+                          title: 'FASE 2: GERMINACIÓN',
+                          subtitle: 'Cuidados críticos',
+                          color: Colors.blue.shade800,
+                          icon: Icons.looks_two_rounded,
+                          items: [
+                            _GuideDetail(Icons.water_drop, 'Riego y humedad', guia['cuidadosGerminacion'] ?? 'No especificado'),
+                            if (guia['usaAlmacigo'] == true) ...[
+                              _GuideDetail(Icons.home_work_rounded, 'Tiempo en almácigo', '${guia['tiempoAlmacigo']} días'),
+                              _GuideDetail(Icons.label_important_rounded, 'Cuándo trasplantar', guia['senalesTrasplante'] ?? 'No especificado'),
+                            ],
+                            _GuideDetail(Icons.straighten_rounded, 'Espaciado final', guia['distanciaTrasplante'] ?? 'No especificado'),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _showStartPlanDialog(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.greenDark,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            elevation: 4,
+                            shadowColor: AppColors.greenDark.withOpacity(0.4),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('LISTO, PROGRAMAR CULTIVO', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 0.5)),
+                              SizedBox(width: 8),
+                              Icon(Icons.arrow_forward_rounded, size: 20),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -287,28 +365,65 @@ class CultivoDetallePage extends StatelessWidget {
     );
   }
 
-  Widget _buildGuideItem(IconData icon, String title, String description) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
+  Widget _buildInteractiveSection({
+    required String title,
+    required String subtitle,
+    required Color color,
+    required IconData icon,
+    required List<_GuideDetail> items,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.greenDark, size: 28),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                const SizedBox(height: 4),
-                Text(description, style: const TextStyle(color: Colors.black87)),
-              ],
-            ),
+          Row(
+            children: [
+              Icon(icon, color: color, size: 24),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.1)),
+                  Text(subtitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ],
+              ),
+            ],
           ),
+          const SizedBox(height: 16),
+          ...items.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade200)),
+                      child: Icon(item.icon, size: 18, color: AppColors.greenDark),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                          Text(item.description, style: TextStyle(color: Colors.grey.shade700, fontSize: 13, height: 1.4)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )),
         ],
       ),
     );
   }
+
 
   Future<void> _showStartPlanDialog(BuildContext context) async {
     DateTime selectedDate = DateTime.now();
