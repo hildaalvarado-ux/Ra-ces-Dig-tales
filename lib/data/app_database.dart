@@ -198,11 +198,15 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 4) {
             await m.addColumn(users, users.avatarPath);
-            await m.addColumn(userCultivos, userCultivos.nombre);
-            await m.addColumn(userCultivos, userCultivos.tipo);
-            await m.addColumn(userCultivos, userCultivos.cosechaMeses);
-            await m.addColumn(userCultivos, userCultivos.estacion);
-            await m.addColumn(userCultivos, userCultivos.imagePath);
+            // Guard: If from < 3, userCultivos was created in the block above
+            // with the current schema (including these columns).
+            if (from >= 3) {
+              await m.addColumn(userCultivos, userCultivos.nombre);
+              await m.addColumn(userCultivos, userCultivos.tipo);
+              await m.addColumn(userCultivos, userCultivos.cosechaMeses);
+              await m.addColumn(userCultivos, userCultivos.estacion);
+              await m.addColumn(userCultivos, userCultivos.imagePath);
+            }
             await m.createTable(sharedCultivos);
           }
           if (from < 5) {
@@ -222,12 +226,20 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 8) {
             await m.createTable(observations);
-            await m.addColumn(notificationLogs, notificationLogs.status);
-            await m.addColumn(notificationLogs, notificationLogs.taskId);
+            // Guard: If from < 7, notificationLogs was created in the block above
+            // with the current schema (including these columns).
+            if (from >= 7) {
+              await m.addColumn(notificationLogs, notificationLogs.status);
+              await m.addColumn(notificationLogs, notificationLogs.taskId);
+            }
           }
           if (from < 9) {
-            await m.addColumn(cropPlans, cropPlans.nickname);
-            await m.addColumn(cropPlans, cropPlans.colorValue);
+            // Guard: If from < 7, cropPlans was created in the block above
+            // with the current schema (including these columns).
+            if (from >= 7) {
+              await m.addColumn(cropPlans, cropPlans.nickname);
+              await m.addColumn(cropPlans, cropPlans.colorValue);
+            }
           }
         },
         beforeOpen: (details) async {
