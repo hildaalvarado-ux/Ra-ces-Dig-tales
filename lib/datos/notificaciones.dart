@@ -27,9 +27,14 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     setState(() => _loading = true);
     final list = await appDb.getNotificationLogs(widget.userId);
     final now = DateTime.now();
-    // Filter to only show notifications from today or the past, preventing "future" tasks from appearing.
-    final filtered = list.where((log) => log.timestamp.isBefore(now) ||
-      (log.timestamp.year == now.year && log.timestamp.month == now.month && log.timestamp.day == now.day)).toList();
+    // Filter to only show notifications from today or the past.
+    // We include all notifications where the day is today or in the past,
+    // ensuring today's tasks appear regardless of whether their scheduled time has passed.
+    final filtered = list.where((log) {
+      final logDate = DateTime(log.timestamp.year, log.timestamp.month, log.timestamp.day);
+      final nowDate = DateTime(now.year, now.month, now.day);
+      return logDate.isBefore(nowDate) || logDate.isAtSameMomentAs(nowDate);
+    }).toList();
 
     setState(() {
       _logs = filtered;

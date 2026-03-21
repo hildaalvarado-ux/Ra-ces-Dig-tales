@@ -195,7 +195,7 @@
     "perjudiciales": ["Melón", "Papa", "tomate"]
   },
   {
-    "imagen": "assets/cultivos/tomate.jpg",
+    "imagen": "assets/cultivos/pepino.jpg",
     "nombre": "Tomate",
     "cientifico": "Solanum lycopersicum",
     "cosechaMeses": 4,
@@ -285,7 +285,7 @@
     "perjudiciales": ["Perejil"]
   },
   {
-    "imagen": "assets/cultivos/papa.png",
+    "imagen": "assets/cultivos/ajo.png",
     "nombre": "Papa",
     "cientifico": "Solanum tuberosum",
     "cosechaMeses": 4,
