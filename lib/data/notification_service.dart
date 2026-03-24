@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' as fln;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -54,6 +55,7 @@ class NotificationService {
     required String title,
     required String body,
     required DateTime scheduledDate,
+    int? colorValue,
   }) async {
     final tzDate = tz.TZDateTime.from(scheduledDate, tz.local);
 
@@ -64,13 +66,14 @@ class NotificationService {
       title: title,
       body: body,
       scheduledDate: tzDate,
-      notificationDetails: const fln.NotificationDetails(
+      notificationDetails: fln.NotificationDetails(
         android: fln.AndroidNotificationDetails(
           'cultivo_tasks',
           'Tareas de Cultivo',
           channelDescription: 'Notificaciones para riego, fertilización, etc.',
           importance: fln.Importance.max,
           priority: fln.Priority.high,
+          color: colorValue != null ? Color(colorValue) : null,
         ),
       ),
       androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
@@ -96,13 +99,14 @@ class NotificationService {
       title: 'Pendiente: $title',
       body: 'No has marcado como completada la tarea: $title',
       scheduledDate: tzReminderDate,
-      notificationDetails: const fln.NotificationDetails(
+      notificationDetails: fln.NotificationDetails(
         android: fln.AndroidNotificationDetails(
           'cultivo_reminders',
           'Recordatorios de Tareas',
           channelDescription: 'Recordatorios si no se completa la tarea en 2 horas',
           importance: fln.Importance.high,
           priority: fln.Priority.high,
+          color: colorValue != null ? Color(colorValue) : null,
         ),
       ),
       androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,

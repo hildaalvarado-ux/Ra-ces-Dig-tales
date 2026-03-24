@@ -44,14 +44,19 @@ class _DashboardPageState extends State<DashboardPage> {
     final now = DateTime.now();
     final sevenDaysFromNow = now.add(const Duration(days: 7));
 
+    final plans = await appDb.getUserCropPlans(widget.userId);
+    final plansMap = {for (var p in plans) p.id: p};
+
     for (final task in tasks) {
       if (!task.completed && task.date.isAfter(now) && task.date.isBefore(sevenDaysFromNow)) {
+        final plan = plansMap[task.planId];
         await notificationService.scheduleTaskNotification(
           taskId: task.id,
           userId: widget.userId,
           title: task.title,
           body: task.description ?? '',
           scheduledDate: task.date,
+          colorValue: plan?.colorValue,
         );
       }
     }
@@ -459,7 +464,13 @@ class _DashboardPageState extends State<DashboardPage> {
                         children: [
                           CircleAvatar(
                             backgroundColor: (plan.colorValue != null ? Color(plan.colorValue!) : AppColors.greenDark).withOpacity(0.2),
-                            child: Icon(Icons.eco_rounded, color: plan.colorValue != null ? Color(plan.colorValue!) : AppColors.greenDark),
+                            child: ClipOval(
+                              child: SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: _buildCropImage(cultivoData['imagePath'], cultivoData['imagen'] ?? ''),
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -739,6 +750,45 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCropImage(String? imagePath, String assetImagen) {
+    if (imagePath != null && imagePath.isNotEmpty) {
+      if (imagePath.startsWith('data:image')) {
+        return Image.memory(
+          base64Decode(imagePath.split(',').last),
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+        );
+      } else {
+        if (kIsWeb) {
+          return Image.network(
+            imagePath,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        } else {
+          return Image.file(
+            File(imagePath),
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        }
+      }
+    }
+
+    if (assetImagen.isNotEmpty) {
+      return Image.asset(
+        assetImagen,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.local_florist_rounded),
+      );
+    }
+
+    return const Icon(
+      Icons.local_florist_rounded,
+      color: AppColors.greenDarker,
     );
   }
 
