@@ -70,12 +70,14 @@ class _CalendarioPageState extends State<CalendarioPage> {
     } else {
       // If uncompleted, reschedule if it's in the future
       if (task.date.isAfter(DateTime.now())) {
+        final plan = _plans[task.planId];
         await notificationService.scheduleTaskNotification(
           taskId: task.id,
           userId: widget.userId,
           title: task.title,
           body: task.description ?? '',
           scheduledDate: task.date,
+          colorValue: plan?.colorValue,
         );
       }
     }
@@ -940,6 +942,7 @@ class CropPlanGenerator {
               title: t.title,
               body: t.description ?? '',
               scheduledDate: t.date,
+              colorValue: colorValue,
             );
           } catch (e) {
             debugPrint('Error al programar notificación para tarea ${t.id}: $e');
