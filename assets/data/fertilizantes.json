@@ -5,11 +5,19 @@
     "tipo": "Orgánico",
     "identificacion": "Abono obtenido a partir de la descomposición controlada de materia orgánica.",
     "uso": "Se mezcla con la tierra antes de la siembra o se aplica como cobertura.",
+    "ingredientes": "Residuos vegetales (peladuras de frutas, verduras), restos de poda, hojas secas, cartón sin tinta.",
+    "elaboracion": "1. Alternar capas de materiales secos (hojas, cartón) y húmedos (restos de cocina). 2. Mantener la humedad adecuada (como una esponja escurrida). 3. Voltear periódicamente para oxigenar. 4. Esperar de 3 a 6 meses hasta que tenga olor a tierra de bosque y color oscuro.",
+    "precauciones": "Evitar incluir restos de carne, lácteos, grasas o excrementos de mascotas para evitar malos olores y patógenos.",
+    "esCasero": true,
+    "dificultad": "Media",
+    "faseAplicacion": "Preparación del suelo, Crecimiento",
     "ficha": {
       "Origen": "Residuos vegetales",
       "Frecuencia": "Cada 6 meses",
       "Beneficios": "Mejora la estructura del suelo",
-      "Nutrientes": "Nitrógeno, Fósforo, Potasio"
+      "Nutrientes": "Nitrógeno, Fósforo, Potasio",
+      "Efectividad": "Alta",
+      "Aplicación": "Directa al suelo"
     }
   },
   {
@@ -18,11 +26,19 @@
     "tipo": "Orgánico",
     "identificacion": "Producto de la digestión de lombrices, altamente nutritivo.",
     "uso": "Aplicar directamente en la base de las plantas o mezclar con el sustrato.",
+    "ingredientes": "Materia orgánica pre-compostada, lombrices rojas californianas (Eisenia fetida).",
+    "elaboracion": "1. Disponer de una vermicompostera. 2. Añadir la materia orgánica gradualmente. 3. Las lombrices procesan los restos convirtiéndolos en humus. 4. Cosechar el humus cuando esté oscuro y granulado.",
+    "precauciones": "Controlar el exceso de humedad y evitar alimentos muy ácidos (cítricos en exceso).",
+    "esCasero": true,
+    "dificultad": "Alta",
+    "faseAplicacion": "Transplante, Crecimiento, Floración",
     "ficha": {
       "Origen": "Vermicompostaje",
       "Frecuencia": "Cada 3-4 meses",
       "Beneficios": "Aporta microorganismos benéficos",
-      "Nutrientes": "Alto en nitrógeno"
+      "Nutrientes": "Alto en nitrógeno",
+      "Efectividad": "Muy Alta",
+      "Aplicación": "Base de la planta"
     }
   },
   {
@@ -31,11 +47,19 @@
     "tipo": "Orgánico",
     "identificacion": "Deyecciones animales procesadas y estabilizadas para uso agrícola.",
     "uso": "Incorporar al suelo varias semanas antes de la siembra.",
+    "ingredientes": "Excrementos de animales herbívoros (vaca, oveja, caballo) y paja.",
+    "elaboracion": "1. Amontonar el estiércol fresco. 2. Dejar fermentar y madurar durante al menos 6 meses para eliminar semillas de malezas y patógenos. 3. El producto final debe estar seco y sin olor fuerte a amoníaco.",
+    "precauciones": "No usar estiércol fresco directamente, ya que puede quemar las raíces y transmitir enfermedades.",
+    "esCasero": false,
+    "dificultad": "Media",
+    "faseAplicacion": "Preparación del suelo",
     "ficha": {
       "Origen": "Animal (vaca, oveja, caballo)",
       "Frecuencia": "Anual",
       "Beneficios": "Aporta gran cantidad de materia orgánica",
-      "Nutrientes": "NPK equilibrado"
+      "Nutrientes": "NPK equilibrado",
+      "Efectividad": "Alta",
+      "Aplicación": "Incorporado al suelo"
     }
   },
   {
@@ -44,11 +68,19 @@
     "tipo": "Casero",
     "identificacion": "Líquido rico en potasio elaborado hirviendo cáscaras de plátano.",
     "uso": "Regar las plantas durante la fase de floración y fructificación.",
+    "ingredientes": "4-5 cáscaras de plátano, 1 litro de agua, 2 cucharadas de azúcar (opcional).",
+    "elaboracion": "1. Cortar las cáscaras de plátano en trozos pequeños. 2. Hervirlas en el litro de agua durante 15 minutos. 3. Dejar enfriar y colar. 4. Diluir una parte de este té en cinco partes de agua antes de aplicar.",
+    "precauciones": "No abusar de su uso para no desequilibrar otros nutrientes. Usar preferiblemente en el momento.",
+    "esCasero": true,
+    "dificultad": "Fácil",
+    "faseAplicacion": "Floración, Fructificación",
     "ficha": {
       "Origen": "Cáscaras de plátano",
       "Frecuencia": "Cada 15 días en floración",
       "Beneficios": "Promueve el desarrollo de frutos",
-      "Nutrientes": "Potasio"
+      "Nutrientes": "Potasio",
+      "Efectividad": "Alta",
+      "Aplicación": "Riego"
     }
   },
   {
@@ -57,11 +89,19 @@
     "tipo": "Orgánico",
     "identificacion": "Huesos animales triturados, excelente fuente de fósforo de liberación lenta.",
     "uso": "Mezclar con el sustrato cerca de las raíces.",
+    "ingredientes": "Huesos de animales limpios.",
+    "elaboracion": "1. Hervir los huesos para eliminar restos de carne y grasa. 2. Hornearlos hasta que estén quebradizos. 3. Triturarlos hasta convertirlos en polvo fino.",
+    "precauciones": "Su uso puede atraer a mascotas o animales silvestres. Aplicar bajo tierra.",
+    "esCasero": true,
+    "dificultad": "Alta",
+    "faseAplicacion": "Siembra, Transplante, Floración",
     "ficha": {
       "Origen": "Huesos triturados",
       "Frecuencia": "Cada 4-6 meses",
       "Beneficios": "Fortalece las raíces y flores",
-      "Nutrientes": "Fósforo y Calcio"
+      "Nutrientes": "Fósforo y Calcio",
+      "Efectividad": "Media-Alta",
+      "Aplicación": "Mezclado con sustrato"
     }
   },
   {
@@ -70,11 +110,19 @@
     "tipo": "Orgánico",
     "identificacion": "Residuo de la combustión de madera no tratada.",
     "uso": "Espolvorear ligeramente sobre el suelo (evitar exceso).",
+    "ingredientes": "Madera natural quemada (sin restos de pinturas ni químicos).",
+    "elaboracion": "1. Recolectar la ceniza de la chimenea o barbacoa (solo de madera natural). 2. Tamizar para eliminar trozos grandes de carbón.",
+    "precauciones": "No usar en plantas que prefieren suelos ácidos. Evitar el contacto directo con las hojas.",
+    "esCasero": true,
+    "dificultad": "Muy Fácil",
+    "faseAplicacion": "Crecimiento, Floración",
     "ficha": {
       "Origen": "Madera quemada",
       "Frecuencia": "Puntual",
       "Beneficios": "Neutraliza la acidez del suelo",
-      "Nutrientes": "Potasio y Magnesio"
+      "Nutrientes": "Potasio y Magnesio",
+      "Efectividad": "Media",
+      "Aplicación": "Espolvoreado"
     }
   }
 ]

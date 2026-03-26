@@ -38,6 +38,14 @@ class HelpDialogs {
         return 'Ventajas que aporta al suelo o a la planta.';
       case 'Nutrientes':
         return 'Elementos químicos principales que aporta (N-P-K, etc.).';
+      case 'Efectividad':
+        return 'Nivel de respuesta esperado en el cultivo tras su aplicación.';
+      case 'Aplicación':
+        return 'Método específico para suministrar el fertilizante a la planta o suelo.';
+      case 'Elaboración':
+        return 'Pasos detallados para fabricar el fertilizante de manera artesanal.';
+      case 'Precauciones':
+        return 'Medidas de seguridad y advertencias para evitar daños o malos resultados.';
       case 'Gravedad':
         return 'Nivel de daño que puede causar al cultivo si no se controla.';
       case 'Detección':
