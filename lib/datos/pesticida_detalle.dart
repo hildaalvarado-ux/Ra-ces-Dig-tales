@@ -683,7 +683,7 @@ class _RelatedPestChip extends StatelessWidget {
       onTap: () async {
         try {
           final raw = await rootBundle.loadString('assets/data/plagas.json');
-          final cleanJson = raw.replaceAll(RegExp(r'/\\*[\\s\\S]*?\\*/'), '');
+          final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
           final decoded = jsonDecode(cleanJson) as List;
           final catalog = decoded
               .map((e) => Plaga.fromJson(Map<String, dynamic>.from(e)))
