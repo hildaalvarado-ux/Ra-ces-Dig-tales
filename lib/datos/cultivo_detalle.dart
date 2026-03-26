@@ -549,9 +549,11 @@ class CultivoDetallePage extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Plan para ${cultivo.nombre} generado con éxito.')),
           );
-          Navigator.pushReplacement(
-            context,
+
+          // Using rootNavigator: true to ensure we jump out of any modal bottom sheets if they exist
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId)),
+            (route) => route.isFirst, // Goes back to Dashboard or whatever is the first route below this
           );
         }
       } catch (e) {

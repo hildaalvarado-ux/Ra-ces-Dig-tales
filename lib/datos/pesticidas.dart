@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/db_instance.dart';
+import '../data/catalog_manager.dart';
 import '../main.dart';
 import 'pesticida_detalle.dart';
 
@@ -42,11 +43,9 @@ class _PesticidasPageState extends State<PesticidasPage> {
   }
 
   Future<void> _loadCatalog() async {
-    final raw = await rootBundle.loadString('assets/data/pesticidas.json');
-    final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
-    final decoded = jsonDecode(cleanJson) as List;
+    final list = await catalogManager.getPesticides();
     _catalogo.clear();
-    _catalogo.addAll(decoded.map((e) => Pesticida.fromJson(Map<String, dynamic>.from(e))));
+    _catalogo.addAll(list);
   }
 
   Future<void> _loadUserPesticidas() async {

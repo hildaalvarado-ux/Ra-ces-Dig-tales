@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 
 import '../data/db_instance.dart';
 import '../data/image_utils.dart';
+import '../data/catalog_manager.dart';
+import '../data/notification_service.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
 import 'cultivo_form.dart';
@@ -39,6 +41,10 @@ class _CultivosPageState extends State<CultivosPage> {
 
   /// Cultivos compartidos/importados
   final List<Cultivo> _compartidos = [];
+
+  List<Cultivo> _filteredCatalogo = [];
+  List<Cultivo> _filteredAgregados = [];
+  List<Cultivo> _filteredCompartidos = [];
 
   @override
   void initState() {
@@ -80,6 +86,8 @@ class _CultivosPageState extends State<CultivosPage> {
       } catch (e) {
         debugPrint('Error loading shared crops: $e');
       }
+
+      _refreshFilteredLists();
     } catch (e) {
       debugPrint('Unexpected error in _loadData: $e');
     } finally {
@@ -89,23 +97,17 @@ class _CultivosPageState extends State<CultivosPage> {
     }
   }
 
+  void _refreshFilteredLists() {
+    _filteredCatalogo = _applyFilters(_catalogo);
+    _filteredAgregados = _applyFilters(_agregados);
+    _filteredCompartidos = _applyFilters(_compartidos);
+  }
+
   Future<void> _loadCatalogFromAssets() async {
-    final raw = await rootBundle.loadString('assets/data/cultivos.json');
-
-    // Remove multi-line comments /* ... */
-    final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
-
-    final decoded = jsonDecode(cleanJson);
-
-    if (decoded is! List) {
-      throw Exception('El archivo cultivos.json no contiene una lista válida');
-    }
-
+    final list = await catalogManager.getCrops();
     _catalogo
       ..clear()
-      ..addAll(
-        decoded.map((e) => Cultivo.fromJson(Map<String, dynamic>.from(e))),
-      );
+      ..addAll(list);
   }
 
   Future<void> _loadUserCultivos() async {
@@ -179,10 +181,6 @@ class _CultivosPageState extends State<CultivosPage> {
 
     return list;
   }
-
-  List<Cultivo> get _filteredCatalogo => _applyFilters(_catalogo);
-  List<Cultivo> get _filteredAgregados => _applyFilters(_agregados);
-  List<Cultivo> get _filteredCompartidos => _applyFilters(_compartidos);
 
   Future<void> _importFromJsonPaste() async {
     final ctrl = TextEditingController();
@@ -393,6 +391,21 @@ class _CultivosPageState extends State<CultivosPage> {
 
     if (!ok) return;
 
+    // First, find and deactivate associated crop plans and cancel their notifications
+    final allPlans = await appDb.getUserCropPlans(widget.userId);
+    final matchingPlans = allPlans.where((p) => p.cropName == c.nombre);
+
+    final allTasks = await appDb.getUserTasks(widget.userId);
+
+    for (final plan in matchingPlans) {
+      final tasks = allTasks.where((t) => t.planId == plan.id);
+      for (final t in tasks) {
+        await notificationService.cancelNotification(t.id);
+      }
+      await appDb.deactivateCropPlan(plan.id);
+      await appDb.deleteTasksByPlan(plan.id);
+    }
+
     if (shared) {
       await appDb.deleteSharedCultivo(c.id!);
       await _loadSharedCultivos();
@@ -444,7 +457,9 @@ class _CultivosPageState extends State<CultivosPage> {
               children: [
                 TextField(
                   controller: _searchCtrl,
-                  onChanged: (_) => setState(() {}),
+                  onChanged: (_) => setState(() {
+                    _refreshFilteredLists();
+                  }),
                   decoration: InputDecoration(
                     hintText: 'Nombre común o científico',
                     filled: true,
@@ -480,12 +495,18 @@ class _CultivosPageState extends State<CultivosPage> {
                     _Drop(
                       value: _orden,
                       items: const ['Nombre', 'Cosecha', 'Tipo', 'Estación'],
-                      onChanged: (v) => setState(() => _orden = v),
+                      onChanged: (v) => setState(() {
+                        _orden = v;
+                        _refreshFilteredLists();
+                      }),
                     ),
                     _Drop(
                       value: _filtroCosecha,
                       items: const ['Todas', '1-3', '4-6', '7+'],
-                      onChanged: (v) => setState(() => _filtroCosecha = v),
+                      onChanged: (v) => setState(() {
+                        _filtroCosecha = v;
+                        _refreshFilteredLists();
+                      }),
                     ),
                     _Drop(
                       value: _filtroTipo,
@@ -498,7 +519,10 @@ class _CultivosPageState extends State<CultivosPage> {
                         'Aromáticas',
                         'Vegetal',
                       ],
-                      onChanged: (v) => setState(() => _filtroTipo = v),
+                      onChanged: (v) => setState(() {
+                        _filtroTipo = v;
+                        _refreshFilteredLists();
+                      }),
                     ),
                     _Drop(
                       value: _filtroEstacion,
@@ -509,7 +533,10 @@ class _CultivosPageState extends State<CultivosPage> {
                         'Primavera',
                         'Verano',
                       ],
-                      onChanged: (v) => setState(() => _filtroEstacion = v),
+                      onChanged: (v) => setState(() {
+                        _filtroEstacion = v;
+                        _refreshFilteredLists();
+                      }),
                     ),
                   ],
                 ),
