@@ -5,6 +5,7 @@
     "cientifico": "Aphididae",
     "identificacion": "Pequeños insectos de cuerpo blando, generalmente verdes o negros, que succionan la savia.",
     "sintomas": "Hojas enrolladas, presencia de melaza pegajosa y hormigas.",
+    "causas": "Exceso de nitrógeno en el suelo, falta de enemigos naturales y climas templados.",
     "control": "Jabón potásico o aceite de neem.",
     "ficha": {
       "Gravedad": "Media",
@@ -19,6 +20,7 @@
     "cientifico": "Aleyrodidae",
     "identificacion": "Diminutos insectos voladores blancos que se encuentran en el envés de las hojas.",
     "sintomas": "Amarillamiento de hojas y debilitamiento de la planta.",
+    "causas": "Ambientes cálidos y húmedos, falta de ventilación y exceso de malezas cercanas.",
     "control": "Trampas cromáticas amarillas o infusión de ajo.",
     "ficha": {
       "Gravedad": "Alta",
@@ -34,6 +36,7 @@
     "cientifico": "Formicidae",
     "identificacion": "Insectos sociales que pueden defoliar plantas rápidamente o proteger pulgones.",
     "sintomas": "Caminos de hormigas y hojas cortadas.",
+    "causas": "Suelos muy secos, presencia de pulgones o cochinillas (que segregan melaza) y falta de materia orgánica.",
     "control": "Arroz partido o barreras físicas.",
     "ficha": {
       "Gravedad": "Media",
@@ -48,6 +51,7 @@
     "cientifico": "Coccoidea",
     "identificacion": "Insectos con cubierta cerosa blanca o parda que se pegan a los tallos y hojas.",
     "sintomas": "Manchas blancas algodonosas y debilitamiento.",
+    "causas": "Falta de riego, ambientes muy secos y plantas con estrés hídrico.",
     "control": "Alcohol diluido o jabón potásico.",
     "ficha": {
       "Gravedad": "Media",
@@ -62,6 +66,7 @@
     "cientifico": "Liriomyza spp.",
     "identificacion": "Larvas de pequeñas moscas que viven dentro del tejido de las hojas.",
     "sintomas": "Galerías blancas o transparentes en las hojas.",
+    "causas": "Climas cálidos, falta de depredadores naturales y presencia de plantas hospederas silvestres.",
     "control": "Aceite de neem o retirar hojas afectadas.",
     "ficha": {
       "Gravedad": "Baja",
@@ -76,6 +81,7 @@
     "cientifico": "Tetranychus urticae",
     "identificacion": "Ácaros diminutos que forman finas telarañas en el envés de las hojas.",
     "sintomas": "Puntos amarillos en hojas y telarañas finas.",
+    "causas": "Ambientes muy cálidos y secos, baja humedad relativa y exceso de abono nitrogenado.",
     "control": "Humedad alta o azufre.",
     "ficha": {
       "Gravedad": "Alta",
@@ -90,6 +96,7 @@
     "cientifico": "Thysanoptera",
     "identificacion": "Pequeños insectos alargados que raspan la superficie de las hojas y flores.",
     "sintomas": "Manchas plateadas y puntos negros (excrementos).",
+    "causas": "Temperaturas elevadas, falta de humedad y presencia de flores donde se refugian.",
     "control": "Jabón potásico o trampas azules.",
     "ficha": {
       "Gravedad": "Media",

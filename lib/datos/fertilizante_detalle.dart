@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../main.dart';
 import 'help_dialogs.dart';
+import 'plaga_detalle.dart';
 
 class Fertilizante {
   final int? id;
@@ -24,6 +25,7 @@ class Fertilizante {
   final bool esCasero;
   final String dificultad;
   final String faseAplicacion;
+  final List<String> plagas;
 
   const Fertilizante({
     this.id,
@@ -40,6 +42,7 @@ class Fertilizante {
     this.esCasero = false,
     this.dificultad = '',
     this.faseAplicacion = '',
+    this.plagas = const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -57,6 +60,7 @@ class Fertilizante {
         'esCasero': esCasero,
         'dificultad': dificultad,
         'faseAplicacion': faseAplicacion,
+        'plagas': plagas,
       };
 
   static Fertilizante fromJson(Map<String, dynamic> j) {
@@ -64,6 +68,8 @@ class Fertilizante {
           (k, v) => MapEntry(k.toString(), v.toString()),
         ) ??
         <String, String>{};
+
+    final plagas = (j['plagas'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
 
     return Fertilizante(
       id: j['id'] as int?,
@@ -80,6 +86,53 @@ class Fertilizante {
       esCasero: j['esCasero'] ?? false,
       dificultad: (j['dificultad'] ?? '').toString(),
       faseAplicacion: (j['faseAplicacion'] ?? '').toString(),
+      plagas: plagas,
+    );
+  }
+}
+
+class _RelatedPestChip extends StatelessWidget {
+  final String pestName;
+  const _RelatedPestChip({required this.pestName});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () async {
+        try {
+          final raw = await rootBundle.loadString('assets/data/plagas.json');
+          final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
+          final decoded = jsonDecode(cleanJson) as List;
+          final catalog = decoded.map((e) => Plaga.fromJson(Map<String, dynamic>.from(e))).toList();
+
+          final plaga = catalog.firstWhere((p) => p.nombre.toLowerCase() == pestName.toLowerCase());
+
+          if (context.mounted) {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: plaga)));
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No se encontró detalle para: $pestName')));
+          }
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.greenDark.withOpacity(0.18)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.bug_report_rounded, size: 16, color: AppColors.greenDarker),
+            const SizedBox(width: 6),
+            Text(pestName, style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.greenDarker)),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -226,6 +279,19 @@ class FertilizanteDetallePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              if (fertilizante.plagas.isNotEmpty) ...[
+                _DetailCard(
+                  icon: 'assets/iconos/id.png',
+                  title: 'Plagas que combate o repele',
+                  onHelp: () => HelpDialogs.show(context, title: 'Plagas', text: 'Plagas que este fertilizante ayuda a controlar.'),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: fertilizante.plagas.map((p) => _RelatedPestChip(pestName: p)).toList(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               if (fertilizante.esCasero) ...[
                 _DetailCard(
                   icon: 'assets/iconos/id.png',

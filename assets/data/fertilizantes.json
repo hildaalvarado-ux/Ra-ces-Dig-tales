@@ -123,6 +123,7 @@
       "Nutrientes": "Potasio y Magnesio",
       "Efectividad": "Media",
       "Aplicación": "Espolvoreado"
-    }
+    },
+    "plagas": ["Hormiga", "Caracoles", "Babosas"]
   }
 ]

@@ -6,8 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import '../data/db_instance.dart';
+import '../data/catalog_manager.dart';
 import '../main.dart';
 import 'help_dialogs.dart';
+import 'cultivo_detalle.dart';
+import 'pesticida_detalle.dart';
+import 'fertilizante_detalle.dart';
 
 class Plaga {
   final int? id;
@@ -17,6 +22,7 @@ class Plaga {
   final String? imagePath;
   final String identificacion;
   final String sintomas;
+  final String causas;
   final String control;
   final Map<String, String> ficha;
 
@@ -28,6 +34,7 @@ class Plaga {
     this.imagePath,
     required this.identificacion,
     required this.sintomas,
+    required this.causas,
     required this.control,
     required this.ficha,
   });
@@ -40,6 +47,7 @@ class Plaga {
         if (imagePath != null) 'imagePath': imagePath,
         'identificacion': identificacion,
         'sintomas': sintomas,
+        'causas': causas,
         'control': control,
         'ficha': ficha,
       };
@@ -58,32 +66,173 @@ class Plaga {
       imagePath: (j['imagePath'] ?? j['image_path'])?.toString(),
       identificacion: (j['identificacion'] ?? '').toString(),
       sintomas: (j['sintomas'] ?? '').toString(),
+      causas: (j['causas'] ?? '').toString(),
       control: (j['control'] ?? '').toString(),
       ficha: ficha,
     );
   }
 }
 
-class PlagaDetallePage extends StatelessWidget {
+class _RelatedItemLink extends StatelessWidget {
+  final String nombre;
+  final String imagen;
+  final String? imagePath;
+  final VoidCallback onTap;
+
+  const _RelatedItemLink({
+    required this.nombre,
+    required this.imagen,
+    this.imagePath,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 130,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.greenDark.withOpacity(0.1)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                child: _buildImage(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                nombre,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 12,
+                  color: AppColors.greenDarker,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    if (imagePath != null && imagePath!.isNotEmpty) {
+      if (imagePath!.startsWith('data:image')) {
+        return Image.memory(
+          base64Decode(imagePath!.split(',').last),
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+        );
+      } else {
+        if (kIsWeb) {
+          return Image.network(
+            imagePath!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        } else {
+          return Image.file(
+            File(imagePath!),
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        }
+      }
+    }
+    if (imagen.isNotEmpty) {
+      return Image.asset(
+        imagen,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_rounded),
+      );
+    }
+    return const Icon(Icons.image_not_supported_rounded, color: AppColors.greenDarker);
+  }
+}
+
+class PlagaDetallePage extends StatefulWidget {
   final Plaga plaga;
   const PlagaDetallePage({super.key, required this.plaga});
+
+  @override
+  State<PlagaDetallePage> createState() => _PlagaDetallePageState();
+}
+
+class _PlagaDetallePageState extends State<PlagaDetallePage> {
+  int? _userId;
+  List<dynamic> _affectedCrops = [];
+  List<dynamic> _relatedControls = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRelatedData();
+  }
+
+  Future<void> _loadRelatedData() async {
+    try {
+      _userId = await appDb.getActiveUserId();
+
+      final crops = await catalogManager.getCrops();
+      final pesticides = await catalogManager.getPesticides();
+      final fertilizers = await catalogManager.getFertilizers();
+
+      List<dynamic> userCrops = [];
+      if (_userId != null) {
+        final rows = await appDb.getUserCultivos(_userId!);
+        userCrops = rows.map((r) {
+          final data = jsonDecode(r.payloadJson) as Map<String, dynamic>;
+          data['id'] = r.id;
+          data['imagePath'] = r.imagePath;
+          return Cultivo.fromJson(data);
+        }).toList();
+      }
+
+      final allCrops = [...crops, ...userCrops];
+      _affectedCrops = allCrops.where((c) => c.plagas.any((p) => p.toLowerCase() == widget.plaga.nombre.toLowerCase())).toList();
+
+      final relatedPesticides = pesticides.where((p) => p.plagas.any((pest) => pest.toLowerCase() == widget.plaga.nombre.toLowerCase())).toList();
+      final relatedFertilizers = fertilizers.where((f) => f.plagas.any((pest) => pest.toLowerCase() == widget.plaga.nombre.toLowerCase())).toList();
+
+      _relatedControls = [...relatedPesticides, ...relatedFertilizers];
+
+    } catch (e) {
+      debugPrint('Error loading related data: $e');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   Future<void> _share(BuildContext context) async {
     try {
       final encoder = ZipEncoder();
       final archive = Archive();
 
-      final jsonStr = jsonEncode(plaga.toJson());
+      final jsonStr = jsonEncode(widget.plaga.toJson());
       archive.addFile(ArchiveFile('plaga.json', jsonStr.length, utf8.encode(jsonStr)));
 
-      if (plaga.imagePath != null && plaga.imagePath!.isNotEmpty) {
-        if (plaga.imagePath!.startsWith('data:image')) {
-          final parts = plaga.imagePath!.split(',');
+      if (widget.plaga.imagePath != null && widget.plaga.imagePath!.isNotEmpty) {
+        if (widget.plaga.imagePath!.startsWith('data:image')) {
+          final parts = widget.plaga.imagePath!.split(',');
           final bytes = base64Decode(parts.last);
           final ext = parts.first.split('/').last.split(';').first;
           archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
         } else {
-          final file = File(plaga.imagePath!);
+          final file = File(widget.plaga.imagePath!);
           if (await file.exists()) {
             final bytes = await file.readAsBytes();
             final ext = file.path.split('.').last;
@@ -97,13 +246,13 @@ class PlagaDetallePage extends StatelessWidget {
 
       if (kIsWeb) {
         final blob = XFile.fromData(Uint8List.fromList(zipData),
-            name: '${plaga.nombre}.rdc', mimeType: 'application/zip');
+            name: '${widget.plaga.nombre}.rdc', mimeType: 'application/zip');
         await Share.shareXFiles([blob]);
       } else {
         final tempDir = await getTemporaryDirectory();
-        final zipFile = File('${tempDir.path}/${plaga.nombre}.rdc');
+        final zipFile = File('${tempDir.path}/${widget.plaga.nombre}.rdc');
         await zipFile.writeAsBytes(zipData);
-        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira esta plaga: ${plaga.nombre}');
+        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira esta plaga: ${widget.plaga.nombre}');
       }
     } catch (e) {
       if (!context.mounted) return;
@@ -112,32 +261,32 @@ class PlagaDetallePage extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    if (plaga.imagePath != null && plaga.imagePath!.isNotEmpty) {
-      if (plaga.imagePath!.startsWith('data:image')) {
+    if (widget.plaga.imagePath != null && widget.plaga.imagePath!.isNotEmpty) {
+      if (widget.plaga.imagePath!.startsWith('data:image')) {
         return Image.memory(
-          base64Decode(plaga.imagePath!.split(',').last),
+          base64Decode(widget.plaga.imagePath!.split(',').last),
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
-            plaga.imagePath!,
+            widget.plaga.imagePath!,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
           );
         } else {
           return Image.file(
-            File(plaga.imagePath!),
+            File(widget.plaga.imagePath!),
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
           );
         }
       }
     }
-    if (plaga.imagen.isNotEmpty) {
+    if (widget.plaga.imagen.isNotEmpty) {
       return Image.asset(
-        plaga.imagen,
+        widget.plaga.imagen,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded),
       );
@@ -153,7 +302,7 @@ class PlagaDetallePage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
-          title: Text(plaga.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(widget.plaga.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
             IconButton(
               tooltip: 'Compartir',
@@ -189,10 +338,10 @@ class PlagaDetallePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(plaga.identificacion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
-                    if (plaga.cientifico.isNotEmpty) ...[
+                    Text(widget.plaga.identificacion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                    if (widget.plaga.cientifico.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text(plaga.cientifico, style: const TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w500)),
+                      Text(widget.plaga.cientifico, style: const TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w500)),
                     ],
                   ],
                 ),
@@ -202,14 +351,81 @@ class PlagaDetallePage extends StatelessWidget {
                 icon: 'assets/iconos/verano.png', // Reusing icons
                 title: 'Síntomas',
                 onHelp: () => HelpDialogs.show(context, title: 'Síntomas', text: 'Daños que causa en el cultivo.'),
-                child: Text(plaga.sintomas, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                child: Text(widget.plaga.sintomas, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 12),
               _DetailCard(
+                icon: 'assets/iconos/id.png',
+                title: 'Causas',
+                onHelp: () => HelpDialogs.show(context, title: 'Causas', text: 'Por qué aparece esta plaga.'),
+                child: Text(widget.plaga.causas.isEmpty ? 'Información no disponible.' : widget.plaga.causas, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+              ),
+              const SizedBox(height: 12),
+              if (_affectedCrops.isNotEmpty) ...[
+                _DetailCard(
+                  icon: 'assets/iconos/siembra.png',
+                  title: 'Cultivos que afecta',
+                  onHelp: () => HelpDialogs.show(context, title: 'Cultivos', text: 'Plantas sensibles a esta plaga.'),
+                  child: SizedBox(
+                    height: 160,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _affectedCrops.length,
+                      itemBuilder: (context, index) {
+                        final c = _affectedCrops[index] as Cultivo;
+                        return _RelatedItemLink(
+                          nombre: c.nombre,
+                          imagen: c.imagen,
+                          imagePath: c.imagePath,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CultivoDetallePage(cultivo: c))),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+              _DetailCard(
                 icon: 'assets/iconos/siembra.png', // Reusing icons
-                title: 'Control',
+                title: 'Cómo controlar',
                 onHelp: () => HelpDialogs.show(context, title: 'Control', text: 'Cómo combatir esta plaga.'),
-                child: Text(plaga.control, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.plaga.control, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                    if (_relatedControls.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      const Text('Soluciones recomendadas:', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker, fontSize: 13)),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 160,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _relatedControls.length,
+                          itemBuilder: (context, index) {
+                            final item = _relatedControls[index];
+                            if (item is Pesticida) {
+                              return _RelatedItemLink(
+                                nombre: item.nombre,
+                                imagen: item.imagen,
+                                imagePath: item.imagePath,
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PesticidaDetallePage(pesticida: item))),
+                              );
+                            } else if (item is Fertilizante) {
+                              return _RelatedItemLink(
+                                nombre: item.nombre,
+                                imagen: item.imagen,
+                                imagePath: item.imagePath,
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FertilizanteDetallePage(fertilizante: item))),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
               const SizedBox(height: 12),
               _DetailCard(
@@ -217,7 +433,7 @@ class PlagaDetallePage extends StatelessWidget {
                 title: 'Ficha rápida',
                 onHelp: () => HelpDialogs.show(context, title: 'Ficha rápida', text: 'Datos clave.'),
                 child: Column(
-                  children: plaga.ficha.entries.map((e) => _InfoRow(label: e.key, value: e.value)).toList(),
+                  children: widget.plaga.ficha.entries.map((e) => _InfoRow(label: e.key, value: e.value)).toList(),
                 ),
               ),
             ],
