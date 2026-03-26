@@ -240,6 +240,12 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
 
     if (confirmed == true) {
+      final tasks = await appDb.getUserTasks(widget.userId);
+      for (final t in tasks) {
+        if (t.planId == plan.id) {
+          await notificationService.cancelNotification(t.id);
+        }
+      }
       await appDb.deactivateCropPlan(plan.id);
       await appDb.deleteTasksByPlan(plan.id);
       await _loadTasks();

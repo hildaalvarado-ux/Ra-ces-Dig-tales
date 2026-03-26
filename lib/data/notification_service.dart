@@ -6,6 +6,8 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:drift/drift.dart';
 import 'app_database.dart';
 import 'db_instance.dart';
+import '../main.dart';
+import '../datos/calendario.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -37,14 +39,26 @@ class NotificationService {
     }
   }
 
-  void _onDidReceiveNotificationResponse(fln.NotificationResponse response) {
+  void _onDidReceiveNotificationResponse(fln.NotificationResponse response) async {
     final payload = response.payload;
     if (payload != null && !payload.startsWith('reminder_')) {
       final taskId = int.tryParse(payload);
       if (taskId != null) {
-        // Navigation logic is usually handled in the main app or via a navigator key
-        // For this prototype, we'll assume the app will handle it if we store the state
         appDb.updateNotificationStatusByTask(taskId, 'read');
+
+        final userId = await appDb.getActiveUserId();
+        if (userId != null) {
+          navigatorKey.currentState?.pushReplacement(
+            MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId)),
+          );
+        }
+      }
+    } else if (payload != null && payload.startsWith('reminder_')) {
+      final userId = await appDb.getActiveUserId();
+      if (userId != null) {
+        navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId)),
+        );
       }
     }
   }
@@ -80,15 +94,18 @@ class NotificationService {
       payload: taskId.toString(),
     );
 
-    // Save to logs
-    await appDb.insertNotificationLog(NotificationLogsCompanion.insert(
-      userId: userId,
-      title: title,
-      body: body,
-      timestamp: Value(scheduledDate),
-      taskId: Value(taskId),
-      status: const Value('unread'),
-    ));
+    // Save to logs if not already exists
+    final existing = await appDb.getUnreadLogByTask(taskId);
+    if (existing == null) {
+      await appDb.insertNotificationLog(NotificationLogsCompanion.insert(
+        userId: userId,
+        title: title,
+        body: body,
+        timestamp: Value(scheduledDate),
+        taskId: Value(taskId),
+        status: const Value('unread'),
+      ));
+    }
 
     // Schedule 2-hour reminder
     final reminderDate = scheduledDate.add(const Duration(hours: 2));

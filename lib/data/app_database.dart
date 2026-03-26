@@ -680,6 +680,12 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
+  Future<NotificationLog?> getUnreadLogByTask(int taskId) {
+    return (select(notificationLogs)
+          ..where((t) => t.taskId.equals(taskId) & t.status.equals('unread')))
+        .getSingleOrNull();
+  }
+
   Future<void> clearReadNotifications(int userId) {
     return (delete(notificationLogs)..where((t) => t.userId.equals(userId) & t.read.equals(true))).go();
   }
