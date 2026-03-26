@@ -18,6 +18,12 @@ class Fertilizante {
   final String identificacion;
   final String uso;
   final Map<String, String> ficha;
+  final String ingredientes;
+  final String elaboracion;
+  final String precauciones;
+  final bool esCasero;
+  final String dificultad;
+  final String faseAplicacion;
 
   const Fertilizante({
     this.id,
@@ -28,6 +34,12 @@ class Fertilizante {
     required this.identificacion,
     required this.uso,
     required this.ficha,
+    this.ingredientes = '',
+    this.elaboracion = '',
+    this.precauciones = '',
+    this.esCasero = false,
+    this.dificultad = '',
+    this.faseAplicacion = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +51,12 @@ class Fertilizante {
         'identificacion': identificacion,
         'uso': uso,
         'ficha': ficha,
+        'ingredientes': ingredientes,
+        'elaboracion': elaboracion,
+        'precauciones': precauciones,
+        'esCasero': esCasero,
+        'dificultad': dificultad,
+        'faseAplicacion': faseAplicacion,
       };
 
   static Fertilizante fromJson(Map<String, dynamic> j) {
@@ -56,6 +74,12 @@ class Fertilizante {
       identificacion: (j['identificacion'] ?? '').toString(),
       uso: (j['uso'] ?? '').toString(),
       ficha: ficha,
+      ingredientes: (j['ingredientes'] ?? '').toString(),
+      elaboracion: (j['elaboracion'] ?? '').toString(),
+      precauciones: (j['precauciones'] ?? '').toString(),
+      esCasero: j['esCasero'] ?? false,
+      dificultad: (j['dificultad'] ?? '').toString(),
+      faseAplicacion: (j['faseAplicacion'] ?? '').toString(),
     );
   }
 }
@@ -188,10 +212,53 @@ class FertilizanteDetallePage extends StatelessWidget {
               _DetailCard(
                 icon: 'assets/iconos/siembra.png',
                 title: 'Modo de Uso',
-                onHelp: () => HelpDialogs.show(context, title: 'Modo de Uso', text: 'Cómo aplicar este fertilizante.'),
-                child: Text(fertilizante.uso, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                onHelp: () => HelpDialogs.show(context, title: 'Modo de Uso', text: 'Cómo aplicar este fertilizante y en qué fase.'),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(fertilizante.uso, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                    if (fertilizante.faseAplicacion.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text('Fase de aplicación:', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 13)),
+                      Text(fertilizante.faseAplicacion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.8), fontWeight: FontWeight.w700)),
+                    ],
+                  ],
+                ),
               ),
               const SizedBox(height: 12),
+              if (fertilizante.esCasero) ...[
+                _DetailCard(
+                  icon: 'assets/iconos/id.png',
+                  title: 'Elaboración Casera',
+                  onHelp: () => HelpDialogs.show(context, title: 'Elaboración', text: 'Instrucciones para crear este fertilizante en casa.'),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (fertilizante.dificultad.isNotEmpty)
+                        _InfoRow(label: 'Dificultad', value: fertilizante.dificultad),
+                      if (fertilizante.ingredientes.isNotEmpty) ...[
+                        Text('Ingredientes:', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 13)),
+                        Text(fertilizante.ingredientes, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.8), fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 10),
+                      ],
+                      if (fertilizante.elaboracion.isNotEmpty) ...[
+                        Text('Instrucciones:', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 13)),
+                        Text(fertilizante.elaboracion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.8), fontWeight: FontWeight.w700)),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+              if (fertilizante.precauciones.isNotEmpty) ...[
+                _DetailCard(
+                  icon: 'assets/iconos/id.png',
+                  title: 'Precauciones',
+                  onHelp: () => HelpDialogs.show(context, title: 'Precauciones', text: 'Advertencias importantes.'),
+                  child: Text(fertilizante.precauciones, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                ),
+                const SizedBox(height: 12),
+              ],
               _DetailCard(
                 icon: 'assets/iconos/indirecta.png',
                 title: 'Ficha rápida',
