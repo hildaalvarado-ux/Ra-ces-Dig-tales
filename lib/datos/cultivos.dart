@@ -391,20 +391,17 @@ class _CultivosPageState extends State<CultivosPage> {
 
     if (!ok) return;
 
-    // First, find and deactivate associated crop plans and cancel their notifications
-    final allPlans = await appDb.getUserCropPlans(widget.userId);
-    final matchingPlans = allPlans.where((p) => p.cropName == c.nombre);
+    // Deep cleanup: find all plans (active or inactive) and wipe everything
+    final allPlans = await appDb.getAllPlansByCropName(widget.userId, c.nombre);
 
-    final allTasks = await appDb.getUserTasks(widget.userId);
-
-    for (final plan in matchingPlans) {
-      final tasks = allTasks.where((t) => t.planId == plan.id);
-      for (final t in tasks) {
-        await notificationService.cancelNotification(t.id);
-      }
-      await appDb.deactivateCropPlan(plan.id);
+    for (final plan in allPlans) {
+      await notificationService.cancelAllNotificationsForPlan(plan.id);
       await appDb.deleteTasksByPlan(plan.id);
+      await appDb.hardDeleteCropPlan(plan.id);
     }
+
+    // Also delete any observations related to this crop name
+    await appDb.deleteObservationsByCropName(widget.userId, c.nombre);
 
     if (shared) {
       await appDb.deleteSharedCultivo(c.id!);
