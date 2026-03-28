@@ -107,33 +107,47 @@ class NotificationService {
       ));
     }
 
-    // Schedule 2-hour reminder
-    final reminderDate = scheduledDate.add(const Duration(hours: 2));
-    final tzReminderDate = tz.TZDateTime.from(reminderDate, tz.local);
+    // Schedule follow-up reminders
+    final reminders = [
+      {'offset': 2, 'id': 1000000},
+      {'offset': 6, 'id': 2000000},
+      {'offset': 10, 'id': 3000000},
+    ];
 
-    await _notificationsPlugin.zonedSchedule(
-      id: taskId + 1000000, // Unique ID for reminder
-      title: 'Pendiente: $title',
-      body: 'No has marcado como completada la tarea: $title',
-      scheduledDate: tzReminderDate,
-      notificationDetails: fln.NotificationDetails(
-        android: fln.AndroidNotificationDetails(
-          'cultivo_reminders',
-          'Recordatorios de Tareas',
-          channelDescription: 'Recordatorios si no se completa la tarea en 2 horas',
-          importance: fln.Importance.high,
-          priority: fln.Priority.high,
-          color: colorValue != null ? Color(colorValue) : null,
-        ),
-      ),
-      androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
-      payload: 'reminder_$taskId',
-    );
+    for (final r in reminders) {
+      final reminderDate = scheduledDate.add(Duration(hours: r['offset'] as int));
+      // Only schedule if it's still the same day as the original task
+      if (reminderDate.day == scheduledDate.day) {
+        final tzReminderDate = tz.TZDateTime.from(reminderDate, tz.local);
+        if (tzReminderDate.isAfter(tz.TZDateTime.now(tz.local))) {
+          await _notificationsPlugin.zonedSchedule(
+            id: taskId + (r['id'] as int),
+            title: 'Pendiente: $title',
+            body: 'No has marcado como completada la tarea: $title',
+            scheduledDate: tzReminderDate,
+            notificationDetails: fln.NotificationDetails(
+              android: fln.AndroidNotificationDetails(
+                'cultivo_reminders',
+                'Recordatorios de Tareas',
+                channelDescription: 'Recordatorios si no se completa la tarea durante el día',
+                importance: fln.Importance.high,
+                priority: fln.Priority.high,
+                color: colorValue != null ? Color(colorValue) : null,
+              ),
+            ),
+            androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
+            payload: 'reminder_$taskId',
+          );
+        }
+      }
+    }
   }
 
   Future<void> cancelNotification(int id) async {
     await _notificationsPlugin.cancel(id: id);
-    await _notificationsPlugin.cancel(id: id + 1000000); // Also cancel reminder
+    await _notificationsPlugin.cancel(id: id + 1000000); // 2h reminder
+    await _notificationsPlugin.cancel(id: id + 2000000); // 6h reminder
+    await _notificationsPlugin.cancel(id: id + 3000000); // 10h reminder
   }
 }
 

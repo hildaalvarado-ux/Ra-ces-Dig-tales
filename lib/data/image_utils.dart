@@ -109,4 +109,22 @@ class ImageUtils {
       return null;
     }
   }
+
+  static Future<void> deleteImage(String? path) async {
+    if (path == null || path.isEmpty) return;
+    if (kIsWeb) return; // Images are stored as base64 in the database on Web
+
+    try {
+      // Don't try to delete data URIs (base64)
+      if (path.startsWith('data:image')) return;
+
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+        debugPrint('Image deleted: $path');
+      }
+    } catch (e) {
+      debugPrint('Error deleting image at $path: $e');
+    }
+  }
 }
