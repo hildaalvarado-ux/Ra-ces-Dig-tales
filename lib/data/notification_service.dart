@@ -71,28 +71,30 @@ class NotificationService {
     required DateTime scheduledDate,
     int? colorValue,
   }) async {
+    final now = tz.TZDateTime.now(tz.local);
     final tzDate = tz.TZDateTime.from(scheduledDate, tz.local);
 
-    if (tzDate.isBefore(tz.TZDateTime.now(tz.local))) return;
-
-    await _notificationsPlugin.zonedSchedule(
-      id: taskId,
-      title: title,
-      body: body,
-      scheduledDate: tzDate,
-      notificationDetails: fln.NotificationDetails(
-        android: fln.AndroidNotificationDetails(
-          'cultivo_tasks',
-          'Tareas de Cultivo',
-          channelDescription: 'Notificaciones para riego, fertilización, etc.',
-          importance: fln.Importance.max,
-          priority: fln.Priority.high,
-          color: colorValue != null ? Color(colorValue) : null,
+    // 1. Primary Notification
+    if (tzDate.isAfter(now)) {
+      await _notificationsPlugin.zonedSchedule(
+        id: taskId,
+        title: title,
+        body: body,
+        scheduledDate: tzDate,
+        notificationDetails: fln.NotificationDetails(
+          android: fln.AndroidNotificationDetails(
+            'cultivo_tasks',
+            'Tareas de Cultivo',
+            channelDescription: 'Notificaciones para riego, fertilización, etc.',
+            importance: fln.Importance.max,
+            priority: fln.Priority.high,
+            color: colorValue != null ? Color(colorValue) : null,
+          ),
         ),
-      ),
-      androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
-      payload: taskId.toString(),
-    );
+        androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
+        payload: taskId.toString(),
+      );
+    }
 
     // Save to logs if not already exists
     final existing = await appDb.getUnreadLogByTask(taskId);
@@ -107,47 +109,69 @@ class NotificationService {
       ));
     }
 
-    // Schedule follow-up reminders
-    final reminders = [
-      {'offset': 2, 'id': 1000000},
-      {'offset': 6, 'id': 2000000},
-      {'offset': 10, 'id': 3000000},
-    ];
+    // 2. 2-Hour Reminder
+    final reminderDate = scheduledDate.add(const Duration(hours: 2));
+    final tzReminderDate = tz.TZDateTime.from(reminderDate, tz.local);
 
-    for (final r in reminders) {
-      final reminderDate = scheduledDate.add(Duration(hours: r['offset'] as int));
-      // Only schedule if it's still the same day as the original task
-      if (reminderDate.day == scheduledDate.day) {
-        final tzReminderDate = tz.TZDateTime.from(reminderDate, tz.local);
-        if (tzReminderDate.isAfter(tz.TZDateTime.now(tz.local))) {
-          await _notificationsPlugin.zonedSchedule(
-            id: taskId + (r['id'] as int),
-            title: 'Pendiente: $title',
-            body: 'No has marcado como completada la tarea: $title',
-            scheduledDate: tzReminderDate,
-            notificationDetails: fln.NotificationDetails(
-              android: fln.AndroidNotificationDetails(
-                'cultivo_reminders',
-                'Recordatorios de Tareas',
-                channelDescription: 'Recordatorios si no se completa la tarea durante el día',
-                importance: fln.Importance.high,
-                priority: fln.Priority.high,
-                color: colorValue != null ? Color(colorValue) : null,
-              ),
-            ),
-            androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
-            payload: 'reminder_$taskId',
-          );
-        }
-      }
+    if (tzReminderDate.isAfter(now)) {
+      await _notificationsPlugin.zonedSchedule(
+        id: taskId + 1000000,
+        title: 'Pendiente: $title',
+        body: 'No has marcado como completada la tarea: $title',
+        scheduledDate: tzReminderDate,
+        notificationDetails: fln.NotificationDetails(
+          android: fln.AndroidNotificationDetails(
+            'cultivo_reminders',
+            'Recordatorios de Tareas',
+            channelDescription: 'Recordatorios si no se completa la tarea en 2 horas',
+            importance: fln.Importance.high,
+            priority: fln.Priority.high,
+            color: colorValue != null ? Color(colorValue) : null,
+          ),
+        ),
+        androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
+        payload: 'reminder_$taskId',
+      );
+    }
+
+    // 3. Nightly Reminder (8:00 PM)
+    final nightlyDate = DateTime(scheduledDate.year, scheduledDate.month, scheduledDate.day, 20, 0);
+    final tzNightlyDate = tz.TZDateTime.from(nightlyDate, tz.local);
+
+    if (tzNightlyDate.isAfter(now) && tzNightlyDate.isAfter(tzDate)) {
+      await _notificationsPlugin.zonedSchedule(
+        id: taskId + 2000000,
+        title: 'Gestión Pendiente: $title',
+        body: 'Aún tienes esta tarea pendiente para hoy. ¡No la olvides!',
+        scheduledDate: tzNightlyDate,
+        notificationDetails: fln.NotificationDetails(
+          android: fln.AndroidNotificationDetails(
+            'cultivo_nightly',
+            'Recordatorios Nocturnos',
+            channelDescription: 'Aviso de tareas no realizadas al final del día',
+            importance: fln.Importance.high,
+            priority: fln.Priority.high,
+            color: colorValue != null ? Color(colorValue) : null,
+          ),
+        ),
+        androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
+        payload: 'reminder_$taskId',
+      );
     }
   }
 
   Future<void> cancelNotification(int id) async {
     await _notificationsPlugin.cancel(id: id);
-    await _notificationsPlugin.cancel(id: id + 1000000); // 2h reminder
-    await _notificationsPlugin.cancel(id: id + 2000000); // 6h reminder
-    await _notificationsPlugin.cancel(id: id + 3000000); // 10h reminder
+    await _notificationsPlugin.cancel(id: id + 1000000);
+    await _notificationsPlugin.cancel(id: id + 2000000);
+  }
+
+  Future<void> cancelAllNotificationsForPlan(int planId) async {
+    final tasks = await appDb.getTasksByPlan(planId);
+    for (final t in tasks) {
+      await cancelNotification(t.id);
+      await appDb.deleteLogsByTaskId(t.id);
+    }
   }
 }
 

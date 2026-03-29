@@ -739,4 +739,28 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteTasksByPlan(int planId) {
     return (delete(calendarTasks)..where((t) => t.planId.equals(planId))).go();
   }
+
+  Future<void> hardDeleteCropPlan(int planId) {
+    return (delete(cropPlans)..where((t) => t.id.equals(planId))).go();
+  }
+
+  Future<void> deleteLogsByTaskId(int taskId) {
+    return (delete(notificationLogs)..where((t) => t.taskId.equals(taskId))).go();
+  }
+
+  Future<List<CalendarTask>> getTasksByPlan(int planId) {
+    return (select(calendarTasks)..where((t) => t.planId.equals(planId))).get();
+  }
+
+  Future<List<CropPlan>> getAllPlansByCropName(int userId, String cropName) {
+    return (select(cropPlans)
+          ..where((t) => t.userId.equals(userId) & t.cropName.equals(cropName)))
+        .get();
+  }
+
+  Future<void> deleteObservationsByCropName(int userId, String cropName) {
+    return (delete(observations)
+          ..where((t) => t.userId.equals(userId) & t.cropName.equals(cropName)))
+        .go();
+  }
 }

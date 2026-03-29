@@ -391,29 +391,18 @@ class _CultivosPageState extends State<CultivosPage> {
 
     if (!ok) return;
 
-    // 1. Deep cleanup: find all plans (even deactivated ones) associated with this crop
-    final allPlans = await appDb.getAllUserCropPlans(widget.userId);
-    final matchingPlans = allPlans.where((p) => p.cropName == c.nombre);
+    // Deep cleanup: find all plans (active or inactive) and wipe everything
+    final allPlans = await appDb.getAllPlansByCropName(widget.userId, c.nombre);
 
-    final allTasks = await appDb.getUserTasks(widget.userId);
-
-    for (final plan in matchingPlans) {
-      final tasks = allTasks.where((t) => t.planId == plan.id);
-      for (final t in tasks) {
-        // Cancel all notifications including follow-up reminders
-        await notificationService.cancelNotification(t.id);
-      }
-      // Permanently delete the plan, its tasks, and notification logs
-      await appDb.deleteCropPlanPermanently(plan.id);
+    for (final plan in allPlans) {
+      await notificationService.cancelAllNotificationsForPlan(plan.id);
+      await appDb.deleteTasksByPlan(plan.id);
+      await appDb.hardDeleteCropPlan(plan.id);
     }
 
-    // 2. Delete related diary entries
+    // Also delete any observations related to this crop name
     await appDb.deleteObservationsByCropName(widget.userId, c.nombre);
 
-    // 3. Delete crop image from filesystem
-    await ImageUtils.deleteImage(c.imagePath);
-
-    // 4. Delete the crop record
     if (shared) {
       await appDb.deleteSharedCultivo(c.id!);
       await _loadSharedCultivos();
