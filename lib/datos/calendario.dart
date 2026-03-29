@@ -243,11 +243,12 @@ class _CalendarioPageState extends State<CalendarioPage> {
       final tasks = await appDb.getUserTasks(widget.userId);
       for (final t in tasks) {
         if (t.planId == plan.id) {
+          // Cancel all scheduled notifications and reminders
           await notificationService.cancelNotification(t.id);
         }
       }
-      await appDb.deactivateCropPlan(plan.id);
-      await appDb.deleteTasksByPlan(plan.id);
+      // Thorough cleanup: delete plan, tasks, and logs
+      await appDb.deleteCropPlanPermanently(plan.id);
       await _loadTasks();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan eliminado correctamente.')));
