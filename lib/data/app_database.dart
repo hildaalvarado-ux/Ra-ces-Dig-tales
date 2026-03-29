@@ -617,12 +617,33 @@ class AppDatabase extends _$AppDatabase {
     return (select(cropPlans)..where((t) => t.userId.equals(userId) & t.active.equals(true))).get();
   }
 
+  Future<List<CropPlan>> getAllUserCropPlans(int userId) {
+    return (select(cropPlans)..where((t) => t.userId.equals(userId))).get();
+  }
+
   Future<int> insertCropPlan(CropPlansCompanion companion) {
     return into(cropPlans).insert(companion);
   }
 
   Future<void> deleteCropPlan(int id) {
     return (update(cropPlans)..where((t) => t.id.equals(id))).write(const CropPlansCompanion(active: Value(false)));
+  }
+
+  Future<void> deleteCropPlanPermanently(int planId) async {
+    // 1. Find all tasks for this plan
+    final tasks = await (select(calendarTasks)..where((t) => t.planId.equals(planId))).get();
+    final taskIds = tasks.map((t) => t.id).toList();
+
+    // 2. Delete all notification logs for these tasks
+    if (taskIds.isNotEmpty) {
+      await (delete(notificationLogs)..where((t) => t.taskId.isIn(taskIds))).go();
+    }
+
+    // 3. Delete all tasks for this plan
+    await (delete(calendarTasks)..where((t) => t.planId.equals(planId))).go();
+
+    // 4. Delete the plan itself
+    await (delete(cropPlans)..where((t) => t.id.equals(planId))).go();
   }
 
   Future<List<CalendarTask>> getUserTasks(int userId) {
@@ -702,6 +723,10 @@ class AppDatabase extends _$AppDatabase {
 
   Future<int> insertObservation(ObservationsCompanion companion) {
     return into(observations).insert(companion);
+  }
+
+  Future<void> deleteObservationsByCropName(int userId, String cropName) {
+    return (delete(observations)..where((t) => t.userId.equals(userId) & t.cropName.equals(cropName))).go();
   }
 
   // Additional methods for CropPlans
