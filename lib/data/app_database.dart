@@ -725,8 +725,10 @@ class AppDatabase extends _$AppDatabase {
     return into(observations).insert(companion);
   }
 
-  Future<void> deleteObservationsByCropName(int userId, String cropName) {
-    return (delete(observations)..where((t) => t.userId.equals(userId) & t.cropName.equals(cropName))).go();
+  Future<int> deleteObservationsByCropName(int userId, String cropName) {
+    return (delete(observations)
+          ..where((t) => t.userId.equals(userId) & t.cropName.equals(cropName)))
+        .go();
   }
 
   // Additional methods for CropPlans
@@ -758,9 +760,4 @@ class AppDatabase extends _$AppDatabase {
         .get();
   }
 
-  Future<void> deleteObservationsByCropName(int userId, String cropName) {
-    return (delete(observations)
-          ..where((t) => t.userId.equals(userId) & t.cropName.equals(cropName)))
-        .go();
-  }
 }
