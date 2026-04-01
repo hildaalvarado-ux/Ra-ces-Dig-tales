@@ -26,6 +26,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   Map<DateTime, List<CalendarTask>> _tasks = {};
   Map<int, CropPlan> _plans = {};
   bool _loading = true;
+  int? _deletingPlanId;
 
   @override
   void initState() {
@@ -204,12 +205,17 @@ class _CalendarioPageState extends State<CalendarioPage> {
                             itemBuilder: (context, index) {
                               final task = _getTasksForDay(_selectedDay!)[index];
                               final plan = _plans[task.planId];
+                              final isDeleting = _deletingPlanId == task.planId;
+                              final isDisabled = _deletingPlanId != null;
+
                               return _TaskTile(
                                 task: task,
                                 plan: plan,
                                 onToggle: () => _toggleTaskStatus(task),
                                 onReport: () => _reportIncident(task),
                                 onDeletePlan: () => _confirmDeletePlan(plan),
+                                isDeleting: isDeleting,
+                                isDisabled: isDisabled,
                               );
                             },
                           ),
@@ -222,7 +228,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   }
 
   Future<void> _confirmDeletePlan(CropPlan? plan) async {
-    if (plan == null) return;
+    if (plan == null || _deletingPlanId != null) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -240,15 +246,39 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
 
     if (confirmed == true) {
-      // Cancel notifications and cleanup logs
-      await notificationService.cancelAllNotificationsForPlan(plan.id);
-      // Hard delete from database
-      await appDb.deleteTasksByPlan(plan.id);
-      await appDb.hardDeleteCropPlan(plan.id);
+      setState(() {
+        _deletingPlanId = plan.id;
+        // Optimistic UI Update: Remove from local maps
+        _plans.remove(plan.id);
+        _tasks.forEach((date, tasks) {
+          tasks.removeWhere((t) => t.planId == plan.id);
+        });
+      });
 
-      await _loadTasks();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan eliminado correctamente.')));
+      try {
+        // Background operations
+        // 1. Cancel notifications (parallelized in service)
+        await notificationService.cancelAllNotificationsForPlan(plan.id);
+
+        // 2. Database Cleanup (bulk)
+        await appDb.deleteCropPlanPermanently(plan.id);
+
+        // 3. Delete associated observations
+        await appDb.deleteObservationsByCropName(widget.userId, plan.cropName);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan eliminado correctamente.')));
+        }
+      } catch (e) {
+        debugPrint('Error al eliminar plan: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al eliminar el plan. Reintentando sincronizar...')));
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _deletingPlanId = null);
+          await _loadTasks(); // Final sync
+        }
       }
     }
   }
@@ -260,6 +290,8 @@ class _TaskTile extends StatelessWidget {
   final VoidCallback onToggle;
   final VoidCallback onReport;
   final VoidCallback onDeletePlan;
+  final bool isDeleting;
+  final bool isDisabled;
 
   const _TaskTile({
     required this.task,
@@ -267,6 +299,8 @@ class _TaskTile extends StatelessWidget {
     required this.onToggle,
     required this.onReport,
     required this.onDeletePlan,
+    this.isDeleting = false,
+    this.isDisabled = false,
   });
 
   IconData _iconForType(String type) {
@@ -343,19 +377,24 @@ class _TaskTile extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              icon: const Icon(Icons.delete_forever_outlined, color: Colors.redAccent),
-              onPressed: onDeletePlan,
-              tooltip: 'Eliminar cultivo perdido',
-            ),
+            isDeleting
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.redAccent)),
+                  )
+                : IconButton(
+                    icon: const Icon(Icons.delete_forever_outlined, color: Colors.redAccent),
+                    onPressed: isDisabled ? null : onDeletePlan,
+                    tooltip: 'Eliminar cultivo perdido',
+                  ),
             IconButton(
               icon: const Icon(Icons.report_problem_outlined, color: Colors.orange),
-              onPressed: onReport,
+              onPressed: isDisabled ? null : onReport,
               tooltip: 'Reportar incidente',
             ),
             Checkbox(
               value: task.completed,
-              onChanged: (_) => onToggle(),
+              onChanged: isDisabled ? null : (_) => onToggle(),
               activeColor: planColor,
             ),
           ],
