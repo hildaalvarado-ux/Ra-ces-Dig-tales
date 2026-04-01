@@ -161,17 +161,17 @@ class NotificationService {
   }
 
   Future<void> cancelNotification(int id) async {
-    await _notificationsPlugin.cancel(id: id);
-    await _notificationsPlugin.cancel(id: id + 1000000);
-    await _notificationsPlugin.cancel(id: id + 2000000);
+    await Future.wait([
+      _notificationsPlugin.cancel(id: id),
+      _notificationsPlugin.cancel(id: id + 1000000),
+      _notificationsPlugin.cancel(id: id + 2000000),
+    ]);
   }
 
   Future<void> cancelAllNotificationsForPlan(int planId) async {
     final tasks = await appDb.getTasksByPlan(planId);
-    for (final t in tasks) {
-      await cancelNotification(t.id);
-      await appDb.deleteLogsByTaskId(t.id);
-    }
+    // Parallelize cancellation for all tasks in the plan
+    await Future.wait(tasks.map((t) => cancelNotification(t.id)));
   }
 }
 
