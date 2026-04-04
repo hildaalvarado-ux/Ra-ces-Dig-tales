@@ -63,6 +63,24 @@ class NotificationService {
     }
   }
 
+  fln.AndroidNotificationSound? _getSound(String? soundPref) {
+    if (soundPref == null || soundPref == 'default') return null;
+    if (soundPref == 'silent') return null; // Or something to indicate silence
+    if (soundPref.contains('|')) {
+      final uri = soundPref.split('|')[0];
+      return fln.UriAndroidNotificationSound(uri);
+    }
+    return fln.RawResourceAndroidNotificationSound(soundPref);
+  }
+
+  String _getChannelId(String base, String? soundPref) {
+    if (soundPref == null || soundPref == 'default') return base;
+    // Android caches channel settings like sound. To change the sound, we need a new channel.
+    // We create a hash of the sound name/uri to distinguish channels.
+    final hash = soundPref.hashCode.abs().toString().padLeft(8, '0');
+    return '${base}_$hash';
+  }
+
   Future<void> scheduleTaskNotification({
     required int taskId,
     required int userId,
@@ -73,6 +91,7 @@ class NotificationService {
   }) async {
     final user = await appDb.getUserById(userId);
     final notificationsEnabled = user?.notificationsEnabled ?? true;
+    final soundPref = user?.notificationSound;
 
     final now = tz.TZDateTime.now(tz.local);
     final tzDate = tz.TZDateTime.from(scheduledDate, tz.local);
@@ -86,17 +105,14 @@ class NotificationService {
         scheduledDate: tzDate,
         notificationDetails: fln.NotificationDetails(
           android: fln.AndroidNotificationDetails(
-            'cultivo_tasks',
+            _getChannelId('cultivo_tasks', soundPref),
             'Tareas de Cultivo',
             channelDescription: 'Notificaciones para riego, fertilización, etc.',
-            importance: fln.Importance.max,
-            priority: fln.Priority.high,
+            importance: soundPref == 'silent' ? fln.Importance.low : fln.Importance.max,
+            priority: soundPref == 'silent' ? fln.Priority.low : fln.Priority.high,
+            playSound: soundPref != 'silent',
             color: colorValue != null ? Color(colorValue) : null,
-            sound: (user?.notificationSound != null &&
-                    user?.notificationSound != 'default')
-                ? fln.RawResourceAndroidNotificationSound(
-                    user!.notificationSound)
-                : null,
+            sound: _getSound(soundPref),
           ),
         ),
         androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
@@ -129,18 +145,15 @@ class NotificationService {
         scheduledDate: tzReminderDate,
         notificationDetails: fln.NotificationDetails(
           android: fln.AndroidNotificationDetails(
-            'cultivo_reminders',
+            _getChannelId('cultivo_reminders', soundPref),
             'Recordatorios de Tareas',
             channelDescription:
                 'Recordatorios si no se completa la tarea en 2 horas',
-            importance: fln.Importance.high,
-            priority: fln.Priority.high,
+            importance: soundPref == 'silent' ? fln.Importance.low : fln.Importance.high,
+            priority: soundPref == 'silent' ? fln.Priority.low : fln.Priority.high,
+            playSound: soundPref != 'silent',
             color: colorValue != null ? Color(colorValue) : null,
-            sound: (user?.notificationSound != null &&
-                    user?.notificationSound != 'default')
-                ? fln.RawResourceAndroidNotificationSound(
-                    user!.notificationSound)
-                : null,
+            sound: _getSound(soundPref),
           ),
         ),
         androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
@@ -163,17 +176,14 @@ class NotificationService {
         scheduledDate: tzNightlyDate,
         notificationDetails: fln.NotificationDetails(
           android: fln.AndroidNotificationDetails(
-            'cultivo_nightly',
+            _getChannelId('cultivo_nightly', soundPref),
             'Recordatorios Nocturnos',
             channelDescription: 'Aviso de tareas no realizadas al final del día',
-            importance: fln.Importance.high,
-            priority: fln.Priority.high,
+            importance: soundPref == 'silent' ? fln.Importance.low : fln.Importance.high,
+            priority: soundPref == 'silent' ? fln.Priority.low : fln.Priority.high,
+            playSound: soundPref != 'silent',
             color: colorValue != null ? Color(colorValue) : null,
-            sound: (user?.notificationSound != null &&
-                    user?.notificationSound != 'default')
-                ? fln.RawResourceAndroidNotificationSound(
-                    user!.notificationSound)
-                : null,
+            sound: _getSound(soundPref),
           ),
         ),
         androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
