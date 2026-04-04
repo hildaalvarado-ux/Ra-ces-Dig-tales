@@ -19,15 +19,17 @@ class AyudaPage extends StatelessWidget {
               'Ayuda',
               style: TextStyle(fontWeight: FontWeight.w900),
             ),
-            bottom: const TabBar(
-              indicatorColor: Colors.white,
-              indicatorWeight: 4,
-              labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-              unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w700),
-              tabs: [
-                Tab(text: 'Tutorial'),
-                Tab(text: 'FAQ'),
-              ],
+bottom: const TabBar(
+  indicatorColor: Colors.white,
+  indicatorWeight: 4,
+  labelColor: Colors.white, // 👈 texto seleccionado
+  unselectedLabelColor: Colors.white70, // 👈 texto no seleccionado (más suave)
+  labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+  unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w700),
+  tabs: [
+    Tab(text: 'Tutorial'),
+    Tab(text: 'FAQ'),
+  ],
             ),
           ),
           body: const TabBarView(
