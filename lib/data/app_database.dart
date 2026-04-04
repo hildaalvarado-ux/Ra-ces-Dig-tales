@@ -794,4 +794,127 @@ class AppDatabase extends _$AppDatabase {
         .get();
   }
 
+  // ---------------------------
+  // OPTIMIZACIÓN Y LIMPIEZA
+  // ---------------------------
+
+  Future<int> optimizeData(int userId) async {
+    int deletedCount = 0;
+
+    // 1. Eliminar notificaciones leídas de más de 7 días
+    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7));
+    deletedCount += await (delete(notificationLogs)
+          ..where((t) =>
+              t.userId.equals(userId) &
+              t.read.equals(true) &
+              t.timestamp.isSmallerThanValue(sevenDaysAgo)))
+        .go();
+
+    // 2. Eliminar planes de cultivo inactivos y sus tareas/logs asociados
+    final inactivePlans = await (select(cropPlans)
+          ..where((t) => t.userId.equals(userId) & t.active.equals(false)))
+        .get();
+
+    for (final plan in inactivePlans) {
+      final tasks = await (select(calendarTasks)
+            ..where((t) => t.planId.equals(plan.id)))
+          .get();
+      final taskIds = tasks.map((t) => t.id).toList();
+      if (taskIds.isNotEmpty) {
+        await (delete(notificationLogs)..where((t) => t.taskId.isIn(taskIds)))
+            .go();
+      }
+      await (delete(calendarTasks)..where((t) => t.planId.equals(plan.id))).go();
+      await (delete(cropPlans)..where((t) => t.id.equals(plan.id))).go();
+      deletedCount++;
+    }
+
+    // 3. Eliminar tareas huérfanas (con planId que ya no existe)
+    final allPlanIds = (await select(cropPlans).get()).map((p) => p.id).toSet();
+    final potentialOrphans = await (select(calendarTasks)
+          ..where((t) => t.userId.equals(userId) & t.planId.isNotNull()))
+        .get();
+
+    for (final task in potentialOrphans) {
+      if (!allPlanIds.contains(task.planId)) {
+        await (delete(notificationLogs)..where((t) => t.taskId.equals(task.id)))
+            .go();
+        await (delete(calendarTasks)..where((t) => t.id.equals(task.id))).go();
+        deletedCount++;
+      }
+    }
+
+    return deletedCount;
+  }
+
+  Future<List<String>> getAllUserImagePaths(int userId) async {
+    final paths = <String>[];
+
+    final cultivos =
+        await (select(userCultivos)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(cultivos.map((e) => e.imagePath).whereType<String>());
+
+    final sharedCultivosList =
+        await (select(sharedCultivos)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(sharedCultivosList.map((e) => e.imagePath).whereType<String>());
+
+    final ferts =
+        await (select(userFertilizantes)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(ferts.map((e) => e.imagePath).whereType<String>());
+
+    final sharedFerts = await (select(sharedFertilizantes)
+          ..where((t) => t.userId.equals(userId)))
+        .get();
+    paths.addAll(sharedFerts.map((e) => e.imagePath).whereType<String>());
+
+    final plagas =
+        await (select(userPlagas)..where((t) => t.userId.equals(userId))).get();
+    paths.addAll(plagas.map((e) => e.imagePath).whereType<String>());
+
+    final sharedPlagasList =
+        await (select(sharedPlagas)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(sharedPlagasList.map((e) => e.imagePath).whereType<String>());
+
+    final pests =
+        await (select(userPesticidas)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(pests.map((e) => e.imagePath).whereType<String>());
+
+    final sharedPests =
+        await (select(sharedPesticidas)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(sharedPests.map((e) => e.imagePath).whereType<String>());
+
+    final obs =
+        await (select(observations)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(obs.map((e) => e.cropImagePath).whereType<String>());
+
+    return paths.toSet().toList();
+  }
+
+  Future<void> deleteAllUserData(int userId) async {
+    await transaction(() async {
+      await (delete(userCultivos)..where((t) => t.userId.equals(userId))).go();
+      await (delete(sharedCultivos)..where((t) => t.userId.equals(userId))).go();
+      await (delete(userFertilizantes)..where((t) => t.userId.equals(userId)))
+          .go();
+      await (delete(sharedFertilizantes)..where((t) => t.userId.equals(userId)))
+          .go();
+      await (delete(userPlagas)..where((t) => t.userId.equals(userId))).go();
+      await (delete(sharedPlagas)..where((t) => t.userId.equals(userId))).go();
+      await (delete(userPesticidas)..where((t) => t.userId.equals(userId))).go();
+      await (delete(sharedPesticidas)..where((t) => t.userId.equals(userId)))
+          .go();
+      await (delete(notificationLogs)..where((t) => t.userId.equals(userId)))
+          .go();
+      await (delete(calendarTasks)..where((t) => t.userId.equals(userId))).go();
+      await (delete(cropPlans)..where((t) => t.userId.equals(userId))).go();
+      await (delete(observations)..where((t) => t.userId.equals(userId))).go();
+    });
+  }
 }

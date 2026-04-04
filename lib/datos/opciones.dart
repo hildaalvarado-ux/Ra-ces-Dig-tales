@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import 'perfil.dart';
 import 'notificaciones_config.dart';
+import 'rendimiento.dart';
 
 class OpcionesPage extends StatelessWidget {
   final int userId;
@@ -75,7 +76,14 @@ class OpcionesPage extends StatelessWidget {
                 _OptionButton(
                   icon: Icons.speed_rounded,
                   label: 'Rendimiento',
-                  onTap: () => _showPlaceholder(context, 'Rendimiento'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => RendimientoPage(userId: userId),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 _OptionButton(
