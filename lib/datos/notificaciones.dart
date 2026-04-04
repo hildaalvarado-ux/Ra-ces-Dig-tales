@@ -4,6 +4,7 @@ import '../data/db_instance.dart';
 import '../data/app_database.dart';
 import '../main.dart';
 import 'calendario.dart';
+import 'notificaciones_config.dart';
 
 class NotificacionesPage extends StatefulWidget {
   final int userId;
@@ -67,6 +68,18 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
           foregroundColor: Colors.white,
           title: const Text('Notificaciones', style: TextStyle(fontWeight: FontWeight.w900)),
           actions: [
+            IconButton(
+              tooltip: 'Configuración',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => NotificacionesConfigPage(userId: widget.userId),
+                  ),
+                ).then((_) => _loadLogs());
+              },
+              icon: const Icon(Icons.settings_rounded),
+            ),
             IconButton(
               tooltip: 'Limpiar vistas',
               onPressed: () async {

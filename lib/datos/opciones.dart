@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
-import 'notificaciones.dart';
+import 'perfil.dart';
+import 'notificaciones_config.dart';
 
 class OpcionesPage extends StatelessWidget {
   final int userId;
@@ -48,7 +49,14 @@ class OpcionesPage extends StatelessWidget {
                 _OptionButton(
                   icon: Icons.person_rounded,
                   label: 'Perfil',
-                  onTap: () => _showPlaceholder(context, 'Perfil'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PerfilPage(userId: userId),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 _OptionButton(
@@ -58,7 +66,7 @@ class OpcionesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => NotificacionesPage(userId: userId),
+                        builder: (_) => NotificacionesConfigPage(userId: userId),
                       ),
                     );
                   },

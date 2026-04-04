@@ -12,6 +12,10 @@ class Users extends Table {
 
   TextColumn get password => text()();
   TextColumn get avatarPath => text().nullable()();
+  BoolColumn get notificationsEnabled =>
+      boolean().withDefault(const Constant(true))();
+  TextColumn get notificationSound =>
+      text().withDefault(const Constant('default'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -177,7 +181,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -241,6 +245,10 @@ class AppDatabase extends _$AppDatabase {
               await m.addColumn(cropPlans, cropPlans.colorValue);
             }
           }
+          if (from < 10) {
+            await m.addColumn(users, users.notificationsEnabled);
+            await m.addColumn(users, users.notificationSound);
+          }
         },
         beforeOpen: (details) async {
           // Opcional: puedes activar foreign_keys si luego lo ocupas
@@ -284,9 +292,35 @@ class AppDatabase extends _$AppDatabase {
     return q.getSingleOrNull();
   }
 
+  Future<User?> getUserById(int userId) {
+    return (select(users)..where((u) => u.id.equals(userId))).getSingleOrNull();
+  }
+
   Future<void> updateUserAvatar(int userId, String? path) {
     return (update(users)..where((t) => t.id.equals(userId))).write(
       UsersCompanion(avatarPath: Value(path)),
+    );
+  }
+
+  Future<void> updateUserName(int userId, String fullName) {
+    return (update(users)..where((t) => t.id.equals(userId))).write(
+      UsersCompanion(fullName: Value(fullName)),
+    );
+  }
+
+  Future<void> updateUserPassword(int userId, String password) {
+    return (update(users)..where((t) => t.id.equals(userId))).write(
+      UsersCompanion(password: Value(password)),
+    );
+  }
+
+  Future<void> updateUserNotificationSettings(
+      int userId, bool enabled, String sound) {
+    return (update(users)..where((t) => t.id.equals(userId))).write(
+      UsersCompanion(
+        notificationsEnabled: Value(enabled),
+        notificationSound: Value(sound),
+      ),
     );
   }
 

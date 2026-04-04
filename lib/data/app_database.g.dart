@@ -74,6 +74,33 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _notificationsEnabledMeta =
+      const VerificationMeta('notificationsEnabled');
+  @override
+  late final GeneratedColumn<bool> notificationsEnabled = GeneratedColumn<bool>(
+    'notifications_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("notifications_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _notificationSoundMeta = const VerificationMeta(
+    'notificationSound',
+  );
+  @override
+  late final GeneratedColumn<String> notificationSound =
+      GeneratedColumn<String>(
+        'notification_sound',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('default'),
+      );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -94,6 +121,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     email,
     password,
     avatarPath,
+    notificationsEnabled,
+    notificationSound,
     createdAt,
   ];
   @override
@@ -149,6 +178,24 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         avatarPath.isAcceptableOrUnknown(data['avatar_path']!, _avatarPathMeta),
       );
     }
+    if (data.containsKey('notifications_enabled')) {
+      context.handle(
+        _notificationsEnabledMeta,
+        notificationsEnabled.isAcceptableOrUnknown(
+          data['notifications_enabled']!,
+          _notificationsEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notification_sound')) {
+      context.handle(
+        _notificationSoundMeta,
+        notificationSound.isAcceptableOrUnknown(
+          data['notification_sound']!,
+          _notificationSoundMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -193,6 +240,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}avatar_path'],
       ),
+      notificationsEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}notifications_enabled'],
+      )!,
+      notificationSound: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notification_sound'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -213,6 +268,8 @@ class User extends DataClass implements Insertable<User> {
   final String email;
   final String password;
   final String? avatarPath;
+  final bool notificationsEnabled;
+  final String notificationSound;
   final DateTime createdAt;
   const User({
     required this.id,
@@ -221,6 +278,8 @@ class User extends DataClass implements Insertable<User> {
     required this.email,
     required this.password,
     this.avatarPath,
+    required this.notificationsEnabled,
+    required this.notificationSound,
     required this.createdAt,
   });
   @override
@@ -234,6 +293,8 @@ class User extends DataClass implements Insertable<User> {
     if (!nullToAbsent || avatarPath != null) {
       map['avatar_path'] = Variable<String>(avatarPath);
     }
+    map['notifications_enabled'] = Variable<bool>(notificationsEnabled);
+    map['notification_sound'] = Variable<String>(notificationSound);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -248,6 +309,8 @@ class User extends DataClass implements Insertable<User> {
       avatarPath: avatarPath == null && nullToAbsent
           ? const Value.absent()
           : Value(avatarPath),
+      notificationsEnabled: Value(notificationsEnabled),
+      notificationSound: Value(notificationSound),
       createdAt: Value(createdAt),
     );
   }
@@ -264,6 +327,10 @@ class User extends DataClass implements Insertable<User> {
       email: serializer.fromJson<String>(json['email']),
       password: serializer.fromJson<String>(json['password']),
       avatarPath: serializer.fromJson<String?>(json['avatarPath']),
+      notificationsEnabled: serializer.fromJson<bool>(
+        json['notificationsEnabled'],
+      ),
+      notificationSound: serializer.fromJson<String>(json['notificationSound']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -277,6 +344,8 @@ class User extends DataClass implements Insertable<User> {
       'email': serializer.toJson<String>(email),
       'password': serializer.toJson<String>(password),
       'avatarPath': serializer.toJson<String?>(avatarPath),
+      'notificationsEnabled': serializer.toJson<bool>(notificationsEnabled),
+      'notificationSound': serializer.toJson<String>(notificationSound),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -288,6 +357,8 @@ class User extends DataClass implements Insertable<User> {
     String? email,
     String? password,
     Value<String?> avatarPath = const Value.absent(),
+    bool? notificationsEnabled,
+    String? notificationSound,
     DateTime? createdAt,
   }) => User(
     id: id ?? this.id,
@@ -296,6 +367,8 @@ class User extends DataClass implements Insertable<User> {
     email: email ?? this.email,
     password: password ?? this.password,
     avatarPath: avatarPath.present ? avatarPath.value : this.avatarPath,
+    notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+    notificationSound: notificationSound ?? this.notificationSound,
     createdAt: createdAt ?? this.createdAt,
   );
   User copyWithCompanion(UsersCompanion data) {
@@ -308,6 +381,12 @@ class User extends DataClass implements Insertable<User> {
       avatarPath: data.avatarPath.present
           ? data.avatarPath.value
           : this.avatarPath,
+      notificationsEnabled: data.notificationsEnabled.present
+          ? data.notificationsEnabled.value
+          : this.notificationsEnabled,
+      notificationSound: data.notificationSound.present
+          ? data.notificationSound.value
+          : this.notificationSound,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -321,6 +400,8 @@ class User extends DataClass implements Insertable<User> {
           ..write('email: $email, ')
           ..write('password: $password, ')
           ..write('avatarPath: $avatarPath, ')
+          ..write('notificationsEnabled: $notificationsEnabled, ')
+          ..write('notificationSound: $notificationSound, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -334,6 +415,8 @@ class User extends DataClass implements Insertable<User> {
     email,
     password,
     avatarPath,
+    notificationsEnabled,
+    notificationSound,
     createdAt,
   );
   @override
@@ -346,6 +429,8 @@ class User extends DataClass implements Insertable<User> {
           other.email == this.email &&
           other.password == this.password &&
           other.avatarPath == this.avatarPath &&
+          other.notificationsEnabled == this.notificationsEnabled &&
+          other.notificationSound == this.notificationSound &&
           other.createdAt == this.createdAt);
 }
 
@@ -356,6 +441,8 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> email;
   final Value<String> password;
   final Value<String?> avatarPath;
+  final Value<bool> notificationsEnabled;
+  final Value<String> notificationSound;
   final Value<DateTime> createdAt;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -364,6 +451,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.email = const Value.absent(),
     this.password = const Value.absent(),
     this.avatarPath = const Value.absent(),
+    this.notificationsEnabled = const Value.absent(),
+    this.notificationSound = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -373,6 +462,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String email,
     required String password,
     this.avatarPath = const Value.absent(),
+    this.notificationsEnabled = const Value.absent(),
+    this.notificationSound = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : fullName = Value(fullName),
        username = Value(username),
@@ -385,6 +476,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? email,
     Expression<String>? password,
     Expression<String>? avatarPath,
+    Expression<bool>? notificationsEnabled,
+    Expression<String>? notificationSound,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -394,6 +487,9 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (email != null) 'email': email,
       if (password != null) 'password': password,
       if (avatarPath != null) 'avatar_path': avatarPath,
+      if (notificationsEnabled != null)
+        'notifications_enabled': notificationsEnabled,
+      if (notificationSound != null) 'notification_sound': notificationSound,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -405,6 +501,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String>? email,
     Value<String>? password,
     Value<String?>? avatarPath,
+    Value<bool>? notificationsEnabled,
+    Value<String>? notificationSound,
     Value<DateTime>? createdAt,
   }) {
     return UsersCompanion(
@@ -414,6 +512,8 @@ class UsersCompanion extends UpdateCompanion<User> {
       email: email ?? this.email,
       password: password ?? this.password,
       avatarPath: avatarPath ?? this.avatarPath,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+      notificationSound: notificationSound ?? this.notificationSound,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -439,6 +539,12 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (avatarPath.present) {
       map['avatar_path'] = Variable<String>(avatarPath.value);
     }
+    if (notificationsEnabled.present) {
+      map['notifications_enabled'] = Variable<bool>(notificationsEnabled.value);
+    }
+    if (notificationSound.present) {
+      map['notification_sound'] = Variable<String>(notificationSound.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -454,6 +560,8 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('email: $email, ')
           ..write('password: $password, ')
           ..write('avatarPath: $avatarPath, ')
+          ..write('notificationsEnabled: $notificationsEnabled, ')
+          ..write('notificationSound: $notificationSound, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -6412,6 +6520,8 @@ typedef $$UsersTableCreateCompanionBuilder =
       required String email,
       required String password,
       Value<String?> avatarPath,
+      Value<bool> notificationsEnabled,
+      Value<String> notificationSound,
       Value<DateTime> createdAt,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -6422,6 +6532,8 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String> email,
       Value<String> password,
       Value<String?> avatarPath,
+      Value<bool> notificationsEnabled,
+      Value<String> notificationSound,
       Value<DateTime> createdAt,
     });
 
@@ -6460,6 +6572,16 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get avatarPath => $composableBuilder(
     column: $table.avatarPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get notificationsEnabled => $composableBuilder(
+    column: $table.notificationsEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notificationSound => $composableBuilder(
+    column: $table.notificationSound,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6508,6 +6630,16 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get notificationsEnabled => $composableBuilder(
+    column: $table.notificationsEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notificationSound => $composableBuilder(
+    column: $table.notificationSound,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6540,6 +6672,16 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get avatarPath => $composableBuilder(
     column: $table.avatarPath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get notificationsEnabled => $composableBuilder(
+    column: $table.notificationsEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notificationSound => $composableBuilder(
+    column: $table.notificationSound,
     builder: (column) => column,
   );
 
@@ -6581,6 +6723,8 @@ class $$UsersTableTableManager
                 Value<String> email = const Value.absent(),
                 Value<String> password = const Value.absent(),
                 Value<String?> avatarPath = const Value.absent(),
+                Value<bool> notificationsEnabled = const Value.absent(),
+                Value<String> notificationSound = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
@@ -6589,6 +6733,8 @@ class $$UsersTableTableManager
                 email: email,
                 password: password,
                 avatarPath: avatarPath,
+                notificationsEnabled: notificationsEnabled,
+                notificationSound: notificationSound,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -6599,6 +6745,8 @@ class $$UsersTableTableManager
                 required String email,
                 required String password,
                 Value<String?> avatarPath = const Value.absent(),
+                Value<bool> notificationsEnabled = const Value.absent(),
+                Value<String> notificationSound = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
@@ -6607,6 +6755,8 @@ class $$UsersTableTableManager
                 email: email,
                 password: password,
                 avatarPath: avatarPath,
+                notificationsEnabled: notificationsEnabled,
+                notificationSound: notificationSound,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0

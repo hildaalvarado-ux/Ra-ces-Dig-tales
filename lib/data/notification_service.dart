@@ -71,11 +71,14 @@ class NotificationService {
     required DateTime scheduledDate,
     int? colorValue,
   }) async {
+    final user = await appDb.getUserById(userId);
+    final notificationsEnabled = user?.notificationsEnabled ?? true;
+
     final now = tz.TZDateTime.now(tz.local);
     final tzDate = tz.TZDateTime.from(scheduledDate, tz.local);
 
     // 1. Primary Notification
-    if (tzDate.isAfter(now)) {
+    if (tzDate.isAfter(now) && notificationsEnabled) {
       await _notificationsPlugin.zonedSchedule(
         id: taskId,
         title: title,
@@ -89,6 +92,11 @@ class NotificationService {
             importance: fln.Importance.max,
             priority: fln.Priority.high,
             color: colorValue != null ? Color(colorValue) : null,
+            sound: (user?.notificationSound != null &&
+                    user?.notificationSound != 'default')
+                ? fln.RawResourceAndroidNotificationSound(
+                    user!.notificationSound)
+                : null,
           ),
         ),
         androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
@@ -113,7 +121,7 @@ class NotificationService {
     final reminderDate = scheduledDate.add(const Duration(hours: 2));
     final tzReminderDate = tz.TZDateTime.from(reminderDate, tz.local);
 
-    if (tzReminderDate.isAfter(now)) {
+    if (tzReminderDate.isAfter(now) && notificationsEnabled) {
       await _notificationsPlugin.zonedSchedule(
         id: taskId + 1000000,
         title: 'Pendiente: $title',
@@ -123,10 +131,16 @@ class NotificationService {
           android: fln.AndroidNotificationDetails(
             'cultivo_reminders',
             'Recordatorios de Tareas',
-            channelDescription: 'Recordatorios si no se completa la tarea en 2 horas',
+            channelDescription:
+                'Recordatorios si no se completa la tarea en 2 horas',
             importance: fln.Importance.high,
             priority: fln.Priority.high,
             color: colorValue != null ? Color(colorValue) : null,
+            sound: (user?.notificationSound != null &&
+                    user?.notificationSound != 'default')
+                ? fln.RawResourceAndroidNotificationSound(
+                    user!.notificationSound)
+                : null,
           ),
         ),
         androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,
@@ -135,10 +149,13 @@ class NotificationService {
     }
 
     // 3. Nightly Reminder (8:00 PM)
-    final nightlyDate = DateTime(scheduledDate.year, scheduledDate.month, scheduledDate.day, 20, 0);
+    final nightlyDate = DateTime(
+        scheduledDate.year, scheduledDate.month, scheduledDate.day, 20, 0);
     final tzNightlyDate = tz.TZDateTime.from(nightlyDate, tz.local);
 
-    if (tzNightlyDate.isAfter(now) && tzNightlyDate.isAfter(tzDate)) {
+    if (tzNightlyDate.isAfter(now) &&
+        tzNightlyDate.isAfter(tzDate) &&
+        notificationsEnabled) {
       await _notificationsPlugin.zonedSchedule(
         id: taskId + 2000000,
         title: 'Gestión Pendiente: $title',
@@ -152,6 +169,11 @@ class NotificationService {
             importance: fln.Importance.high,
             priority: fln.Priority.high,
             color: colorValue != null ? Color(colorValue) : null,
+            sound: (user?.notificationSound != null &&
+                    user?.notificationSound != 'default')
+                ? fln.RawResourceAndroidNotificationSound(
+                    user!.notificationSound)
+                : null,
           ),
         ),
         androidScheduleMode: fln.AndroidScheduleMode.exactAllowWhileIdle,

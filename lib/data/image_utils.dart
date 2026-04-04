@@ -127,4 +127,15 @@ class ImageUtils {
       debugPrint('Error deleting image at $path: $e');
     }
   }
+
+  static Uint8List? dataUriToBytes(String dataUri) {
+    try {
+      final parts = dataUri.split(',');
+      if (parts.length < 2) return null;
+      return base64Decode(parts[1]);
+    } catch (e) {
+      debugPrint('Error decoding data URI: $e');
+      return null;
+    }
+  }
 }
