@@ -16,6 +16,7 @@ import 'datos/pesticidas.dart';
 import 'datos/calendario.dart';
 import 'datos/notificaciones.dart';
 import 'datos/diario.dart';
+import 'datos/creditos.dart';
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -174,10 +175,17 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         break;
 
+      case 'Créditos':
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const CreditosPage(),
+          ),
+        );
+        break;
+
       case 'Favoritos':
       case 'Opciones':
       case 'Contacto':
-      case 'Créditos':
       default:
         // ✅ placeholder temporal para que no se rompa la navegación
         await Navigator.of(context).push(
