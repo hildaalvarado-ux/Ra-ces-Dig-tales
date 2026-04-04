@@ -16,7 +16,7 @@ class _NotificacionesConfigPageState extends State<NotificacionesConfigPage> {
   User? _user;
   bool _loading = true;
 
-  final List<String> _sounds = ['default', 'naturaleza', 'campana', 'suave', 'silent'];
+  final List<String> _sounds = ['default', 'silent'];
 
   static const _ringtoneChannel = MethodChannel('com.example.raices_digitalesv1/ringtone_picker');
 
@@ -42,6 +42,10 @@ class _NotificacionesConfigPageState extends State<NotificacionesConfigPage> {
     final newSound = sound ?? _user!.notificationSound;
 
     await appDb.updateUserNotificationSettings(widget.userId, newEnabled, newSound);
+
+    // Sync notifications with the new settings
+    await notificationService.syncNotifications(widget.userId);
+
     _loadUser();
   }
 

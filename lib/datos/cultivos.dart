@@ -396,8 +396,7 @@ class _CultivosPageState extends State<CultivosPage> {
 
     for (final plan in allPlans) {
       await notificationService.cancelAllNotificationsForPlan(plan.id);
-      await appDb.deleteTasksByPlan(plan.id);
-      await appDb.hardDeleteCropPlan(plan.id);
+      await appDb.deleteCropPlanPermanently(plan.id);
     }
 
     // Also delete any observations related to this crop name
