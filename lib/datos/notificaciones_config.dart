@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../data/app_database.dart';
 import '../data/db_instance.dart';
 import '../main.dart';
@@ -15,7 +16,9 @@ class _NotificacionesConfigPageState extends State<NotificacionesConfigPage> {
   User? _user;
   bool _loading = true;
 
-  final List<String> _sounds = ['default', 'naturaleza', 'campana', 'suave'];
+  final List<String> _sounds = ['default', 'naturaleza', 'campana', 'suave', 'silent'];
+
+  static const _ringtoneChannel = MethodChannel('com.example.raices_digitalesv1/ringtone_picker');
 
   @override
   void initState() {
@@ -159,7 +162,46 @@ class _NotificacionesConfigPageState extends State<NotificacionesConfigPage> {
     );
   }
 
+  Future<void> _pickSystemSound() async {
+    try {
+      final currentSound = _user?.notificationSound ?? 'default';
+      String? currentUri;
+      if (currentSound.contains('|')) {
+        currentUri = currentSound.split('|')[0];
+      }
+
+      final result = await _ringtoneChannel.invokeMethod('pickRingtone', {
+        'currentUri': currentUri,
+      });
+
+      if (result != null && result is Map) {
+        final uri = result['uri'] as String;
+        final title = result['title'] as String;
+
+        if (uri == 'silent') {
+          _updateSettings(sound: 'silent');
+        } else {
+          _updateSettings(sound: '$uri|$title');
+        }
+      }
+    } on PlatformException catch (e) {
+      debugPrint("Error picking ringtone: $e");
+    }
+  }
+
+  String _getSoundDisplayName(String sound) {
+    if (sound == 'default') return 'Predeterminado';
+    if (sound == 'silent') return 'Silencio';
+    if (sound.contains('|')) {
+      return sound.split('|')[1];
+    }
+    return sound[0].toUpperCase() + sound.substring(1);
+  }
+
   Widget _buildSoundSelector() {
+    final currentSound = _user?.notificationSound ?? 'default';
+    final isSystemSound = currentSound.contains('|');
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -167,30 +209,47 @@ class _NotificacionesConfigPageState extends State<NotificacionesConfigPage> {
         border: Border.all(color: AppColors.greenDark.withOpacity(0.1)),
       ),
       child: Column(
-        children: _sounds.map((sound) {
-          final isSelected = _user?.notificationSound == sound;
-          return Column(
-            children: [
-              ListTile(
-                onTap: () => _updateSettings(sound: sound),
-                leading: Icon(
-                  isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
-                  color: isSelected ? AppColors.greenAccent : Colors.grey,
-                ),
-                title: Text(
-                  sound[0].toUpperCase() + sound.substring(1),
-                  style: TextStyle(
-                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                    color: isSelected ? AppColors.greenDarker : Colors.black87,
+        children: [
+          ..._sounds.map((sound) {
+            final isSelected = !isSystemSound && currentSound == sound;
+            return Column(
+              children: [
+                ListTile(
+                  onTap: () => _updateSettings(sound: sound),
+                  leading: Icon(
+                    isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
+                    color: isSelected ? AppColors.greenAccent : Colors.grey,
                   ),
+                  title: Text(
+                    _getSoundDisplayName(sound),
+                    style: TextStyle(
+                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                      color: isSelected ? AppColors.greenDarker : Colors.black87,
+                    ),
+                  ),
+                  trailing: isSelected ? const Icon(Icons.check_rounded, color: AppColors.greenAccent) : null,
                 ),
-                trailing: isSelected ? const Icon(Icons.check_rounded, color: AppColors.greenAccent) : null,
-              ),
-              if (sound != _sounds.last)
                 Divider(height: 1, color: AppColors.greenDark.withOpacity(0.05)),
-            ],
-          );
-        }).toList(),
+              ],
+            );
+          }),
+          ListTile(
+            onTap: _pickSystemSound,
+            leading: Icon(
+              isSystemSound ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
+              color: isSystemSound ? AppColors.greenAccent : Colors.grey,
+            ),
+            title: Text(
+              isSystemSound ? _getSoundDisplayName(currentSound) : 'Sonido del sistema...',
+              style: TextStyle(
+                fontWeight: isSystemSound ? FontWeight.w800 : FontWeight.w600,
+                color: isSystemSound ? AppColors.greenDarker : Colors.black87,
+              ),
+            ),
+            subtitle: isSystemSound ? const Text('Personalizado desde el sistema', style: TextStyle(fontSize: 12)) : null,
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+          ),
+        ],
       ),
     );
   }
