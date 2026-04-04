@@ -17,6 +17,7 @@ import 'datos/calendario.dart';
 import 'datos/notificaciones.dart';
 import 'datos/diario.dart';
 import 'datos/creditos.dart';
+import 'datos/opciones.dart';
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -183,8 +184,15 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         break;
 
-      case 'Favoritos':
       case 'Opciones':
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => OpcionesPage(userId: widget.userId),
+          ),
+        );
+        break;
+
+      case 'Favoritos':
       case 'Contacto':
       default:
         // ✅ placeholder temporal para que no se rompa la navegación
