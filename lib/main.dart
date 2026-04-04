@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 import 'crearcuenta.dart';
 import 'login.dart';
 
 // ✅ NUEVO: para leer sesión
 import 'data/db_instance.dart';
 import 'data/notification_service.dart';
+import 'data/settings_provider.dart';
 import 'dashboard.dart';
 import 'datos/calendario.dart';
 
@@ -15,7 +17,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('es_ES', null);
   await notificationService.init();
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => SettingsProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class AppColors {
@@ -45,6 +52,15 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
+      builder: (context, child) {
+        final settings = Provider.of<SettingsProvider>(context);
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(settings.textScaleFactor),
+          ),
+          child: child!,
+        );
+      },
 
       // ✅ Rutas correctas (se mantiene tu estructura)
       routes: {

@@ -3,6 +3,8 @@ import '../main.dart';
 import 'perfil.dart';
 import 'notificaciones_config.dart';
 import 'rendimiento.dart';
+import 'apariencia.dart';
+import 'ayuda.dart';
 
 class OpcionesPage extends StatelessWidget {
   final int userId;
@@ -89,13 +91,27 @@ class OpcionesPage extends StatelessWidget {
                 _OptionButton(
                   icon: Icons.palette_rounded,
                   label: 'Apariencia',
-                  onTap: () => _showPlaceholder(context, 'Apariencia'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AparienciaPage(),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 _OptionButton(
                   icon: Icons.help_rounded,
                   label: 'Ayuda',
-                  onTap: () => _showPlaceholder(context, 'Ayuda'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AyudaPage(),
+                      ),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 40),
