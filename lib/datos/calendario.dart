@@ -68,6 +68,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
     if (newStatus) {
       // If completed, cancel notifications for this task
       await notificationService.cancelNotification(task.id);
+      // Mark all logs related to this task as completed/read
+      await appDb.updateNotificationStatusByTask(task.id, 'completed');
     } else {
       // If uncompleted, reschedule if it's in the future
       if (task.date.isAfter(DateTime.now())) {
