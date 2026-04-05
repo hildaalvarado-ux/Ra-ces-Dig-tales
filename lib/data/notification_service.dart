@@ -231,7 +231,7 @@ class NotificationService {
     final taskIds = futureTasks.map((t) => t.id).toList();
     if (taskIds.isNotEmpty) {
       await (appDb.delete(appDb.notificationLogs)
-            ..where((t) => t.taskId.isIn(taskIds) & t.status.equals('unread') & t.timestamp.isAtLeastValue(now)))
+            ..where((t) => t.taskId.isIn(taskIds) & t.status.equals('unread') & t.timestamp.isBiggerOrEqualValue(now)))
           .go();
     }
 

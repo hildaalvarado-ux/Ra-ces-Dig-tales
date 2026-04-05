@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/app_database.dart';
 import '../data/db_instance.dart';
+import '../data/notification_service.dart';
 import '../main.dart';
 
 class NotificacionesConfigPage extends StatefulWidget {
