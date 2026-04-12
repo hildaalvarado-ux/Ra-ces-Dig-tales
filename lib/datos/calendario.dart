@@ -9,6 +9,7 @@ import '../data/app_database.dart';
 import '../data/notification_service.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
+import 'diario.dart';
 
 class CalendarioPage extends StatefulWidget {
   final int userId;
@@ -70,6 +71,35 @@ class _CalendarioPageState extends State<CalendarioPage> {
       await notificationService.cancelNotification(task.id);
       // Mark all logs related to this task as completed/read
       await appDb.updateNotificationStatusByTask(task.id, 'completed');
+
+      // If it's a harvest task, ask to finalize the plan
+      if (task.type.toLowerCase() == 'cosecha' && task.planId != null) {
+        final plan = _plans[task.planId];
+        if (plan != null && plan.status == 'active') {
+          final finalize = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('¿Cosecha completada?', style: TextStyle(fontWeight: FontWeight.bold)),
+              content: Text('¿Deseas marcar el plan "${plan.nickname ?? plan.cropName}" como FINALIZADO? \n\nEsto lo moverá al historial de planes.'),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('MANTENER ACTIVO')),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark),
+                  child: const Text('SÍ, FINALIZAR', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          );
+
+          if (finalize == true) {
+            await appDb.finalizeCropPlan(plan.id);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cultivo finalizado con éxito.')));
+            }
+          }
+        }
+      }
     } else {
       // If uncompleted, reschedule if it's in the future
       if (task.date.isAfter(DateTime.now())) {
@@ -235,7 +265,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('¿Eliminar cultivo perdido?', style: TextStyle(fontWeight: FontWeight.bold)),
-        content: Text('Esta acción borrará el plan "${plan.nickname ?? plan.cropName}" y todas sus tareas. ¿Estás seguro?'),
+        content: Text('Esta acción borrará el plan "${plan.nickname ?? plan.cropName}", todas sus tareas y observaciones. ¿Estás seguro?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('CANCELAR')),
           ElevatedButton(
@@ -262,11 +292,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
         // 1. Cancel notifications (parallelized in service)
         await notificationService.cancelAllNotificationsForPlan(plan.id);
 
-        // 2. Database Cleanup (bulk)
+        // 2. Database Cleanup (bulk) - This now handles tasks, notifications and observations by planId
         await appDb.deleteCropPlanPermanently(plan.id);
-
-        // 3. Delete associated observations
-        await appDb.deleteObservationsByCropName(widget.userId, plan.cropName);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Plan eliminado correctamente.')));
@@ -592,9 +619,10 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
   String _selectedStage = 'Crecimiento';
   bool _hasIrrigation = false;
   bool _hasPest = false;
-  bool _hasTF = false;
+  bool _hasFertilization = false;
+  bool _hasTransplant = false;
   String? _selectedCropName;
-  List<CropPlan> _activePlans = [];
+  List<CropPlan> _allPlans = [];
 
   @override
   void initState() {
@@ -603,12 +631,15 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
   }
 
   Future<void> _loadCrops() async {
-    final list = await appDb.getUserCropPlans(widget.userId);
+    final list = await appDb.getAllUserCropPlans(widget.userId);
     if (mounted) {
       setState(() {
-        _activePlans = list;
-        if (_activePlans.length == 1) {
-          _selectedCropName = _activePlans.first.nickname ?? _activePlans.first.cropName;
+        _allPlans = list;
+        if (_allPlans.isNotEmpty) {
+          final activeOnes = _allPlans.where((p) => p.status == 'active').toList();
+          if (activeOnes.length == 1) {
+            _selectedCropName = activeOnes.first.nickname ?? activeOnes.first.cropName;
+          }
         }
       });
     }
@@ -616,6 +647,11 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedPlan = _selectedCropName != null
+        ? _allPlans.firstWhere((p) => (p.nickname ?? p.cropName) == _selectedCropName)
+        : null;
+    final isFinalized = selectedPlan?.status == 'finalized';
+
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20),
       child: SingleChildScrollView(
@@ -627,13 +663,27 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value: _selectedCropName,
-              items: _activePlans.map((e) {
+              items: _allPlans.map((e) {
                 final name = e.nickname ?? e.cropName;
-                return DropdownMenuItem(value: name, child: Text(name));
+                return DropdownMenuItem(
+                  value: name,
+                  child: Text(name + (e.status == 'finalized' ? ' (Finalizado)' : '')),
+                );
               }).toList(),
               onChanged: (v) => setState(() => _selectedCropName = v),
-              decoration: InputDecoration(labelText: 'Selecciona tu cultivo activo', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+              decoration: InputDecoration(
+                labelText: 'Selecciona tu cultivo',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
             ),
+            if (isFinalized)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  'Este cultivo está marcado como finalizado.',
+                  style: TextStyle(color: Colors.orange.shade900, fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 12),
             TextField(
               controller: _contentCtrl,
@@ -678,9 +728,16 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
               dense: true,
             ),
             CheckboxListTile(
-              title: const Text('¿Hubo trasplante o fertilización?'),
-              value: _hasTF,
-              onChanged: (v) => setState(() => _hasTF = v!),
+              title: const Text('¿Hubo fertilización?'),
+              value: _hasFertilization,
+              onChanged: (v) => setState(() => _hasFertilization = v!),
+              controlAffinity: ListTileControlAffinity.leading,
+              dense: true,
+            ),
+            CheckboxListTile(
+              title: const Text('¿Hubo trasplante?'),
+              value: _hasTransplant,
+              onChanged: (v) => setState(() => _hasTransplant = v!),
               controlAffinity: ListTileControlAffinity.leading,
               dense: true,
             ),
@@ -695,12 +752,13 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
                     return;
                   }
 
-                  final plan = _activePlans.firstWhere((p) => (p.nickname ?? p.cropName) == _selectedCropName);
+                  final plan = _allPlans.firstWhere((p) => (p.nickname ?? p.cropName) == _selectedCropName);
                   final cultivoData = jsonDecode(plan.payloadJson);
-                  final imagePath = plan.id > 0 ? plan.payloadJson.contains('imagePath') ? cultivoData['imagePath'] : null : null;
+                  final imagePath = plan.payloadJson.contains('imagePath') ? cultivoData['imagePath'] : null;
 
                   await appDb.insertObservation(ObservationsCompanion.insert(
                     userId: widget.userId,
+                    planId: Value(plan.id),
                     cropName: _selectedCropName!,
                     cropImagePath: Value(imagePath),
                     content: _contentCtrl.text,
@@ -708,11 +766,18 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
                     stage: Value(_selectedStage),
                     hasIrrigation: Value(_hasIrrigation),
                     hasPest: Value(_hasPest),
-                    hasTransplantOrFertilization: Value(_hasTF),
+                    hasFertilization: Value(_hasFertilization),
+                    hasTransplant: Value(_hasTransplant),
                   ));
                   if (mounted) {
-                    Navigator.pop(context);
+                    Navigator.pop(context); // Cierra el bottom sheet
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Observación guardada en el diario.')));
+
+                    // Dirigir directamente al diario
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => DiarioPage(userId: widget.userId))
+                    );
+
                     widget.onSaved();
                   }
                 },

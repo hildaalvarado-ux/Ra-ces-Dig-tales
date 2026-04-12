@@ -107,9 +107,46 @@ class _GuideDetail {
   _GuideDetail(this.icon, this.title, this.description);
 }
 
-class CultivoDetallePage extends StatelessWidget {
+class CultivoDetallePage extends StatefulWidget {
   final Cultivo cultivo;
   const CultivoDetallePage({super.key, required this.cultivo});
+
+  @override
+  State<CultivoDetallePage> createState() => _CultivoDetallePageState();
+}
+
+class _CultivoDetallePageState extends State<CultivoDetallePage> {
+  List<Observation> _observations = [];
+  List<CropPlan> _plans = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final userId = await appDb.getActiveUserId();
+    if (userId != null) {
+      final obs = await appDb.getUserObservations(userId);
+      final plans = await appDb.getAllPlansByCropName(userId, widget.cultivo.nombre);
+
+      // Filter observations for this crop name
+      final filteredObs = obs.where((o) => o.cropName == widget.cultivo.nombre).toList();
+      filteredObs.sort((a, b) => a.date.compareTo(b.date));
+
+      if (mounted) {
+        setState(() {
+          _observations = filteredObs;
+          _plans = plans;
+          _loading = false;
+        });
+      }
+    } else {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   Future<void> _shareCrop(BuildContext context) async {
     try {
@@ -117,18 +154,18 @@ class CultivoDetallePage extends StatelessWidget {
       final archive = Archive();
 
       // JSON del cultivo
-      final jsonStr = jsonEncode(cultivo.toJson());
+      final jsonStr = jsonEncode(widget.cultivo.toJson());
       archive.addFile(ArchiveFile('cultivo.json', jsonStr.length, utf8.encode(jsonStr)));
 
       // Imagen si existe
-      if (cultivo.imagePath != null && cultivo.imagePath!.isNotEmpty) {
-        if (cultivo.imagePath!.startsWith('data:image')) {
-          final parts = cultivo.imagePath!.split(',');
+      if (widget.cultivo.imagePath != null && widget.cultivo.imagePath!.isNotEmpty) {
+        if (widget.cultivo.imagePath!.startsWith('data:image')) {
+          final parts = widget.cultivo.imagePath!.split(',');
           final bytes = base64Decode(parts.last);
           final ext = parts.first.split('/').last.split(';').first;
           archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
         } else {
-          final file = File(cultivo.imagePath!);
+          final file = File(widget.cultivo.imagePath!);
           if (await file.exists()) {
             final bytes = await file.readAsBytes();
             final ext = file.path.split('.').last;
@@ -143,14 +180,14 @@ class CultivoDetallePage extends StatelessWidget {
       if (kIsWeb) {
         // En Web, descargamos el archivo
         final blob = XFile.fromData(Uint8List.fromList(zipData),
-            name: '${cultivo.nombre}.rdc', mimeType: 'application/zip');
+            name: '${widget.cultivo.nombre}.rdc', mimeType: 'application/zip');
         await Share.shareXFiles([blob]);
       } else {
         final tempDir = await getTemporaryDirectory();
-        final zipFile = File('${tempDir.path}/${cultivo.nombre}.rdc');
+        final zipFile = File('${tempDir.path}/${widget.cultivo.nombre}.rdc');
         await zipFile.writeAsBytes(zipData);
 
-        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira mi cultivo: ${cultivo.nombre}');
+        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira mi cultivo: ${widget.cultivo.nombre}');
       }
     } catch (e) {
       if (!context.mounted) return;
@@ -161,23 +198,23 @@ class CultivoDetallePage extends StatelessWidget {
   }
 
   Widget _buildImage() {
-    if (cultivo.imagePath != null && cultivo.imagePath!.isNotEmpty) {
-      if (cultivo.imagePath!.startsWith('data:image')) {
+    if (widget.cultivo.imagePath != null && widget.cultivo.imagePath!.isNotEmpty) {
+      if (widget.cultivo.imagePath!.startsWith('data:image')) {
         return Image.memory(
-          base64Decode(cultivo.imagePath!.split(',').last),
+          base64Decode(widget.cultivo.imagePath!.split(',').last),
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
-            cultivo.imagePath!,
+            widget.cultivo.imagePath!,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
           );
         } else {
           return Image.file(
-            File(cultivo.imagePath!),
+            File(widget.cultivo.imagePath!),
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
           );
@@ -185,9 +222,9 @@ class CultivoDetallePage extends StatelessWidget {
       }
     }
 
-    if (cultivo.imagen.isNotEmpty) {
+    if (widget.cultivo.imagen.isNotEmpty) {
       return Image.asset(
-        cultivo.imagen,
+        widget.cultivo.imagen,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => const Icon(Icons.local_florist_rounded),
       );
@@ -247,7 +284,7 @@ class CultivoDetallePage extends StatelessWidget {
   }
 
   Future<void> _showQuickGuide(BuildContext context) async {
-    final guia = cultivo.guiaRapida ?? {};
+    final guia = widget.cultivo.guiaRapida ?? {};
 
     await showModalBottomSheet(
       context: context,
@@ -538,7 +575,7 @@ class CultivoDetallePage extends StatelessWidget {
       try {
         await CropPlanGenerator.generate(
           userId: userId,
-          cultivo: cultivo,
+          cultivo: widget.cultivo,
           startDate: selectedDate,
           preferredTime: selectedTime,
           nickname: nicknameCtrl.text.trim().isEmpty ? null : nicknameCtrl.text.trim(),
@@ -547,7 +584,7 @@ class CultivoDetallePage extends StatelessWidget {
 
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Plan para ${cultivo.nombre} generado con éxito.')),
+            SnackBar(content: Text('Plan para ${widget.cultivo.nombre} generado con éxito.')),
           );
 
           // Using rootNavigator: true to ensure we jump out of any modal bottom sheets if they exist
@@ -574,7 +611,7 @@ class CultivoDetallePage extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
-          title: Text(cultivo.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(widget.cultivo.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
             IconButton(
               tooltip: 'Compartir',
@@ -604,18 +641,26 @@ class CultivoDetallePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              if (_plans.isNotEmpty) ...[
+                _buildPlansSection(),
+                const SizedBox(height: 12),
+              ],
+              if (_observations.isNotEmpty) ...[
+                _buildObservationsSection(),
+                const SizedBox(height: 12),
+              ],
               _DetailCard(
                 icon: 'assets/iconos/id.png',
                 title: 'Identificación',
                 onHelp: () => HelpDialogs.show(context, title: 'Identificación', text: 'Descripción breve para reconocer el cultivo.'),
-                child: Text(cultivo.identificacion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                child: Text(widget.cultivo.identificacion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 12),
               _DetailCard(
                 icon: 'assets/iconos/siembra.png',
                 title: 'Siembra',
                 onHelp: () => HelpDialogs.show(context, title: 'Siembra', text: 'Consejos básicos para sembrar este cultivo.'),
-                child: Text(cultivo.siembra, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                child: Text(widget.cultivo.siembra, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 12),
               _DetailCard(
@@ -624,7 +669,7 @@ class CultivoDetallePage extends StatelessWidget {
                 onHelp: () => HelpDialogs.show(context, title: 'Ficha rápida', text: 'Datos clave como distancia, profundidad, clima y riego.'),
                 child: Column(
                   children: [
-                    ...cultivo.ficha.entries
+                    ...widget.cultivo.ficha.entries
                       .map((e) => _InfoRow(
                             label: e.key,
                             value: e.key == 'Temporada de siembra' || e.key == 'Temporada de cosecha'
@@ -636,7 +681,7 @@ class CultivoDetallePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              if (cultivo.plagas.isNotEmpty)
+              if (widget.cultivo.plagas.isNotEmpty)
                 _DetailCard(
                   icon: 'assets/iconos/id.png', // Reusing ID for now
                   title: 'Plagas',
@@ -644,10 +689,10 @@ class CultivoDetallePage extends StatelessWidget {
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: cultivo.plagas.map((p) => _RelatedChip(name: p, type: 'plaga')).toList(),
+                    children: widget.cultivo.plagas.map((p) => _RelatedChip(name: p, type: 'plaga')).toList(),
                   ),
                 ),
-              if (cultivo.beneficiosos.isNotEmpty) ...[
+              if (widget.cultivo.beneficiosos.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 _DetailCard(
                   icon: 'assets/iconos/verano.png',
@@ -656,11 +701,11 @@ class CultivoDetallePage extends StatelessWidget {
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: cultivo.beneficiosos.map((c) => _RelatedChip(name: c, type: 'cultivo')).toList(),
+                    children: widget.cultivo.beneficiosos.map((c) => _RelatedChip(name: c, type: 'cultivo')).toList(),
                   ),
                 ),
               ],
-              if (cultivo.perjudiciales.isNotEmpty) ...[
+              if (widget.cultivo.perjudiciales.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 _DetailCard(
                   icon: 'assets/iconos/invierno.png',
@@ -669,7 +714,7 @@ class CultivoDetallePage extends StatelessWidget {
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: cultivo.perjudiciales.map((c) => _RelatedChip(name: c, type: 'cultivo')).toList(),
+                    children: widget.cultivo.perjudiciales.map((c) => _RelatedChip(name: c, type: 'cultivo')).toList(),
                   ),
                 ),
               ],
@@ -677,6 +722,113 @@ class CultivoDetallePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPlansSection() {
+    return _DetailCard(
+      icon: 'assets/iconos/calendario.png',
+      title: 'Planes en curso / Finalizados',
+      onHelp: () => HelpDialogs.show(context, title: 'Planes', text: 'Planes de cultivo asociados a esta planta.'),
+      child: Column(
+        children: _plans.map((p) {
+          final color = p.colorValue != null ? Color(p.colorValue!) : AppColors.greenDark;
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: color.withOpacity(0.2)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.calendar_today_rounded, color: color, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(p.nickname ?? p.cropName, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+                      Text(
+                        'Estado: ${p.status == 'active' ? 'Activo' : 'Finalizado'}',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  DateFormat('dd/MM/yyyy').format(p.startDate),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildObservationsSection() {
+    final plansMap = {for (var p in _plans) p.id: p};
+    return _DetailCard(
+      icon: 'assets/iconos/id.png',
+      title: 'Historial de Observaciones',
+      onHelp: () => HelpDialogs.show(context, title: 'Historial', text: 'Registro cronológico de lo que has observado en este cultivo.'),
+      child: Column(
+        children: _observations.map((obs) {
+          final plan = obs.planId != null ? plansMap[obs.planId] : null;
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.greenDark.withOpacity(0.1)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      DateFormat('dd/MM/yyyy').format(obs.date),
+                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: AppColors.greenDark),
+                    ),
+                    if (plan != null)
+                      Text(
+                        'Semana ${obs.date.difference(plan.startDate).inDays ~/ 7 + 1}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(obs.content, style: const TextStyle(fontSize: 13, height: 1.3)),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  children: [
+                    if (obs.plantStatus != null) _miniTag(obs.plantStatus!, Colors.blueGrey),
+                    if (obs.hasIrrigation) const Icon(Icons.water_drop, size: 14, color: Colors.blue),
+                    if (obs.hasPest) const Icon(Icons.bug_report, size: 14, color: Colors.red),
+                    if (obs.hasFertilization) const Icon(Icons.science_rounded, size: 14, color: Colors.orange),
+                    if (obs.hasTransplant) const Icon(Icons.import_export_rounded, size: 14, color: Colors.teal),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _miniTag(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+      child: Text(label, style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.bold)),
     );
   }
 }

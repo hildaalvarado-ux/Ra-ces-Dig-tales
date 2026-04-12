@@ -18,20 +18,49 @@ class DiarioPage extends StatefulWidget {
 class _DiarioPageState extends State<DiarioPage> {
   bool _loading = true;
   List<Observation> _observations = [];
+  Map<int, CropPlan> _plans = {};
 
   @override
   void initState() {
     super.initState();
-    _loadObservations();
+    _loadData();
   }
 
-  Future<void> _loadObservations() async {
+  Future<void> _loadData() async {
     setState(() => _loading = true);
-    final list = await appDb.getUserObservations(widget.userId);
+    final obsList = await appDb.getUserObservations(widget.userId);
+    final plansList = await appDb.getAllUserCropPlans(widget.userId);
+
+    // Sort chronological ascending
+    obsList.sort((a, b) => a.date.compareTo(b.date));
+
     setState(() {
-      _observations = list;
+      _observations = obsList;
+      _plans = {for (var p in plansList) p.id: p};
       _loading = false;
     });
+  }
+
+  Future<void> _deleteObservation(int id) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar observación'),
+        content: const Text('¿Estás seguro de que quieres eliminar esta nota del diario?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('CANCELAR')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('ELIMINAR', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (ok == true) {
+      await (appDb.delete(appDb.observations)..where((t) => t.id.equals(id))).go();
+      _loadData();
+    }
   }
 
   @override
@@ -60,7 +89,12 @@ class _DiarioPageState extends State<DiarioPage> {
                       itemCount: _observations.length,
                       itemBuilder: (context, index) {
                         final obs = _observations[index];
-                        return _ObservationCard(obs: obs);
+                        final plan = obs.planId != null ? _plans[obs.planId] : null;
+                        return _ObservationCard(
+                          obs: obs,
+                          plan: plan,
+                          onDelete: () => _deleteObservation(obs.id),
+                        );
                       },
                     ),
         ),
@@ -71,7 +105,9 @@ class _DiarioPageState extends State<DiarioPage> {
 
 class _ObservationCard extends StatelessWidget {
   final Observation obs;
-  const _ObservationCard({required this.obs});
+  final CropPlan? plan;
+  final VoidCallback onDelete;
+  const _ObservationCard({required this.obs, this.plan, required this.onDelete});
 
   Widget _buildImage() {
     if (obs.cropImagePath != null && obs.cropImagePath!.isNotEmpty) {
@@ -123,12 +159,34 @@ class _ObservationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(obs.cropName, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker, fontSize: 16)),
-                    Text(
-                      DateFormat('dd MMMM yyyy, hh:mm a', 'es').format(obs.date),
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade700, fontWeight: FontWeight.bold),
+                    Row(
+                      children: [
+                        Text(
+                          DateFormat('dd/MM/yy, hh:mm a', 'es').format(obs.date),
+                          style: TextStyle(fontSize: 11, color: Colors.grey.shade700, fontWeight: FontWeight.bold),
+                        ),
+                        if (plan != null) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.greenDark.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Semana ${obs.date.difference(plan!.startDate).inDays ~/ 7 + 1}',
+                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.greenDark),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+                onPressed: onDelete,
               ),
               if (obs.plantStatus != null)
                 Container(
@@ -153,8 +211,12 @@ class _ObservationCard extends StatelessWidget {
             children: [
               if (obs.stage != null) _Tag(label: 'Etapa: ${obs.stage}', color: Colors.blueGrey),
               if (obs.hasIrrigation) _Tag(label: 'Riego', color: Colors.blue, icon: Icons.water_drop),
-              if (obs.hasPest) _Tag(label: 'Plaga detectada', color: Colors.red, icon: Icons.bug_report),
-              if (obs.hasTransplantOrFertilization) _Tag(label: 'Trasplante/Fert.', color: Colors.orange, icon: Icons.auto_awesome),
+              if (obs.hasPest) _Tag(label: 'Plaga', color: Colors.red, icon: Icons.bug_report),
+              if (obs.hasFertilization) _Tag(label: 'Fertilización', color: Colors.orange, icon: Icons.science_rounded),
+              if (obs.hasTransplant) _Tag(label: 'Trasplante', color: Colors.teal, icon: Icons.import_export_rounded),
+              // Support for legacy data
+              if (obs.hasTransplantOrFertilization && !obs.hasFertilization && !obs.hasTransplant)
+                _Tag(label: 'Trasplante/Fert.', color: Colors.orange, icon: Icons.auto_awesome),
             ],
           ),
         ],
