@@ -184,7 +184,7 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         break;
 
-      case 'Opciones':
+      case 'Configuración':
         await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => OpcionesPage(userId: widget.userId),
