@@ -121,6 +121,7 @@ class CropPlans extends Table {
   TextColumn get preferredTime => text()(); // HH:mm
   TextColumn get payloadJson => text()();
   BoolColumn get active => boolean().withDefault(const Constant(true))();
+  TextColumn get status => text().withDefault(const Constant('active'))(); // active, finalized
 }
 
 class CalendarTasks extends Table {
@@ -150,6 +151,7 @@ class NotificationLogs extends Table {
 class Observations extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get userId => integer()();
+  IntColumn get planId => integer().nullable()();
   TextColumn get cropName => text()();
   TextColumn get cropImagePath => text().nullable()();
   DateTimeColumn get date => dateTime().withDefault(currentDateAndTime)();
@@ -159,6 +161,8 @@ class Observations extends Table {
   BoolColumn get hasIrrigation => boolean().withDefault(const Constant(false))();
   BoolColumn get hasPest => boolean().withDefault(const Constant(false))();
   BoolColumn get hasTransplantOrFertilization => boolean().withDefault(const Constant(false))();
+  BoolColumn get hasFertilization => boolean().withDefault(const Constant(false))();
+  BoolColumn get hasTransplant => boolean().withDefault(const Constant(false))();
 }
 
 @DriftDatabase(tables: [
@@ -181,7 +185,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -248,6 +252,21 @@ class AppDatabase extends _$AppDatabase {
           if (from < 10) {
             await m.addColumn(users, users.notificationsEnabled);
             await m.addColumn(users, users.notificationSound);
+          }
+          if (from < 11) {
+            // We must try to add columns if the table exists.
+            // If from < 7, cropPlans doesn't exist yet, it will be created by m.createTable(cropPlans) with all columns.
+            // If from >= 7, cropPlans exists and we need to add 'status'.
+            if (from >= 7) {
+              await m.addColumn(cropPlans, cropPlans.status);
+            }
+            // If from < 8, observations doesn't exist yet.
+            // If from >= 8, observations exists and we need to add the new columns.
+            if (from >= 8) {
+              await m.addColumn(observations, observations.planId);
+              await m.addColumn(observations, observations.hasFertilization);
+              await m.addColumn(observations, observations.hasTransplant);
+            }
           }
         },
         beforeOpen: (details) async {
@@ -676,7 +695,10 @@ class AppDatabase extends _$AppDatabase {
     // 3. Delete all tasks for this plan
     await (delete(calendarTasks)..where((t) => t.planId.equals(planId))).go();
 
-    // 4. Delete the plan itself
+    // 4. Delete all observations for this plan
+    await (delete(observations)..where((t) => t.planId.equals(planId))).go();
+
+    // 5. Delete the plan itself
     await (delete(cropPlans)..where((t) => t.id.equals(planId))).go();
   }
 
@@ -772,6 +794,12 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
+  Future<void> finalizeCropPlan(int planId) {
+    return (update(cropPlans)..where((t) => t.id.equals(planId))).write(
+      const CropPlansCompanion(status: Value('finalized')),
+    );
+  }
+
   Future<void> deleteTasksByPlan(int planId) {
     return (delete(calendarTasks)..where((t) => t.planId.equals(planId))).go();
   }
@@ -810,22 +838,13 @@ class AppDatabase extends _$AppDatabase {
               t.timestamp.isSmallerThanValue(sevenDaysAgo)))
         .go();
 
-    // 2. Eliminar planes de cultivo inactivos y sus tareas/logs asociados
+    // 2. Eliminar planes de cultivo inactivos y sus tareas/logs/observaciones asociados
     final inactivePlans = await (select(cropPlans)
           ..where((t) => t.userId.equals(userId) & t.active.equals(false)))
         .get();
 
     for (final plan in inactivePlans) {
-      final tasks = await (select(calendarTasks)
-            ..where((t) => t.planId.equals(plan.id)))
-          .get();
-      final taskIds = tasks.map((t) => t.id).toList();
-      if (taskIds.isNotEmpty) {
-        await (delete(notificationLogs)..where((t) => t.taskId.isIn(taskIds)))
-            .go();
-      }
-      await (delete(calendarTasks)..where((t) => t.planId.equals(plan.id))).go();
-      await (delete(cropPlans)..where((t) => t.id.equals(plan.id))).go();
+      await deleteCropPlanPermanently(plan.id);
       deletedCount++;
     }
 

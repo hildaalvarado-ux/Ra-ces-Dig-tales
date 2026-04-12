@@ -4301,6 +4301,16 @@ class $CropPlansTable extends CropPlans
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('active'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -4312,6 +4322,7 @@ class $CropPlansTable extends CropPlans
     preferredTime,
     payloadJson,
     active,
+    status,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4392,6 +4403,12 @@ class $CropPlansTable extends CropPlans
         active.isAcceptableOrUnknown(data['active']!, _activeMeta),
       );
     }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
     return context;
   }
 
@@ -4437,6 +4454,10 @@ class $CropPlansTable extends CropPlans
         DriftSqlType.bool,
         data['${effectivePrefix}active'],
       )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
     );
   }
 
@@ -4456,6 +4477,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
   final String preferredTime;
   final String payloadJson;
   final bool active;
+  final String status;
   const CropPlan({
     required this.id,
     required this.userId,
@@ -4466,6 +4488,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     required this.preferredTime,
     required this.payloadJson,
     required this.active,
+    required this.status,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4483,6 +4506,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     map['preferred_time'] = Variable<String>(preferredTime);
     map['payload_json'] = Variable<String>(payloadJson);
     map['active'] = Variable<bool>(active);
+    map['status'] = Variable<String>(status);
     return map;
   }
 
@@ -4501,6 +4525,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
       preferredTime: Value(preferredTime),
       payloadJson: Value(payloadJson),
       active: Value(active),
+      status: Value(status),
     );
   }
 
@@ -4519,6 +4544,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
       preferredTime: serializer.fromJson<String>(json['preferredTime']),
       payloadJson: serializer.fromJson<String>(json['payloadJson']),
       active: serializer.fromJson<bool>(json['active']),
+      status: serializer.fromJson<String>(json['status']),
     );
   }
   @override
@@ -4534,6 +4560,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
       'preferredTime': serializer.toJson<String>(preferredTime),
       'payloadJson': serializer.toJson<String>(payloadJson),
       'active': serializer.toJson<bool>(active),
+      'status': serializer.toJson<String>(status),
     };
   }
 
@@ -4547,6 +4574,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     String? preferredTime,
     String? payloadJson,
     bool? active,
+    String? status,
   }) => CropPlan(
     id: id ?? this.id,
     userId: userId ?? this.userId,
@@ -4557,6 +4585,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     preferredTime: preferredTime ?? this.preferredTime,
     payloadJson: payloadJson ?? this.payloadJson,
     active: active ?? this.active,
+    status: status ?? this.status,
   );
   CropPlan copyWithCompanion(CropPlansCompanion data) {
     return CropPlan(
@@ -4575,6 +4604,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
           ? data.payloadJson.value
           : this.payloadJson,
       active: data.active.present ? data.active.value : this.active,
+      status: data.status.present ? data.status.value : this.status,
     );
   }
 
@@ -4589,7 +4619,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
           ..write('startDate: $startDate, ')
           ..write('preferredTime: $preferredTime, ')
           ..write('payloadJson: $payloadJson, ')
-          ..write('active: $active')
+          ..write('active: $active, ')
+          ..write('status: $status')
           ..write(')'))
         .toString();
   }
@@ -4605,6 +4636,7 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
     preferredTime,
     payloadJson,
     active,
+    status,
   );
   @override
   bool operator ==(Object other) =>
@@ -4618,7 +4650,8 @@ class CropPlan extends DataClass implements Insertable<CropPlan> {
           other.startDate == this.startDate &&
           other.preferredTime == this.preferredTime &&
           other.payloadJson == this.payloadJson &&
-          other.active == this.active);
+          other.active == this.active &&
+          other.status == this.status);
 }
 
 class CropPlansCompanion extends UpdateCompanion<CropPlan> {
@@ -4631,6 +4664,7 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
   final Value<String> preferredTime;
   final Value<String> payloadJson;
   final Value<bool> active;
+  final Value<String> status;
   const CropPlansCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
@@ -4641,6 +4675,7 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     this.preferredTime = const Value.absent(),
     this.payloadJson = const Value.absent(),
     this.active = const Value.absent(),
+    this.status = const Value.absent(),
   });
   CropPlansCompanion.insert({
     this.id = const Value.absent(),
@@ -4652,6 +4687,7 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     required String preferredTime,
     required String payloadJson,
     this.active = const Value.absent(),
+    this.status = const Value.absent(),
   }) : userId = Value(userId),
        cropName = Value(cropName),
        startDate = Value(startDate),
@@ -4667,6 +4703,7 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     Expression<String>? preferredTime,
     Expression<String>? payloadJson,
     Expression<bool>? active,
+    Expression<String>? status,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -4678,6 +4715,7 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
       if (preferredTime != null) 'preferred_time': preferredTime,
       if (payloadJson != null) 'payload_json': payloadJson,
       if (active != null) 'active': active,
+      if (status != null) 'status': status,
     });
   }
 
@@ -4691,6 +4729,7 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     Value<String>? preferredTime,
     Value<String>? payloadJson,
     Value<bool>? active,
+    Value<String>? status,
   }) {
     return CropPlansCompanion(
       id: id ?? this.id,
@@ -4702,6 +4741,7 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
       preferredTime: preferredTime ?? this.preferredTime,
       payloadJson: payloadJson ?? this.payloadJson,
       active: active ?? this.active,
+      status: status ?? this.status,
     );
   }
 
@@ -4735,6 +4775,9 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
     if (active.present) {
       map['active'] = Variable<bool>(active.value);
     }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
     return map;
   }
 
@@ -4749,7 +4792,8 @@ class CropPlansCompanion extends UpdateCompanion<CropPlan> {
           ..write('startDate: $startDate, ')
           ..write('preferredTime: $preferredTime, ')
           ..write('payloadJson: $payloadJson, ')
-          ..write('active: $active')
+          ..write('active: $active, ')
+          ..write('status: $status')
           ..write(')'))
         .toString();
   }
@@ -5817,6 +5861,15 @@ class $ObservationsTable extends Observations
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<int> planId = GeneratedColumn<int>(
+    'plan_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _cropNameMeta = const VerificationMeta(
     'cropName',
   );
@@ -5925,10 +5978,41 @@ class $ObservationsTable extends Observations
         ),
         defaultValue: const Constant(false),
       );
+  static const VerificationMeta _hasFertilizationMeta = const VerificationMeta(
+    'hasFertilization',
+  );
+  @override
+  late final GeneratedColumn<bool> hasFertilization = GeneratedColumn<bool>(
+    'has_fertilization',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_fertilization" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _hasTransplantMeta = const VerificationMeta(
+    'hasTransplant',
+  );
+  @override
+  late final GeneratedColumn<bool> hasTransplant = GeneratedColumn<bool>(
+    'has_transplant',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_transplant" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     userId,
+    planId,
     cropName,
     cropImagePath,
     date,
@@ -5938,6 +6022,8 @@ class $ObservationsTable extends Observations
     hasIrrigation,
     hasPest,
     hasTransplantOrFertilization,
+    hasFertilization,
+    hasTransplant,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5961,6 +6047,12 @@ class $ObservationsTable extends Observations
       );
     } else if (isInserting) {
       context.missing(_userIdMeta);
+    }
+    if (data.containsKey('plan_id')) {
+      context.handle(
+        _planIdMeta,
+        planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta),
+      );
     }
     if (data.containsKey('crop_name')) {
       context.handle(
@@ -6032,6 +6124,24 @@ class $ObservationsTable extends Observations
         ),
       );
     }
+    if (data.containsKey('has_fertilization')) {
+      context.handle(
+        _hasFertilizationMeta,
+        hasFertilization.isAcceptableOrUnknown(
+          data['has_fertilization']!,
+          _hasFertilizationMeta,
+        ),
+      );
+    }
+    if (data.containsKey('has_transplant')) {
+      context.handle(
+        _hasTransplantMeta,
+        hasTransplant.isAcceptableOrUnknown(
+          data['has_transplant']!,
+          _hasTransplantMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -6049,6 +6159,10 @@ class $ObservationsTable extends Observations
         DriftSqlType.int,
         data['${effectivePrefix}user_id'],
       )!,
+      planId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}plan_id'],
+      ),
       cropName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}crop_name'],
@@ -6085,6 +6199,14 @@ class $ObservationsTable extends Observations
         DriftSqlType.bool,
         data['${effectivePrefix}has_transplant_or_fertilization'],
       )!,
+      hasFertilization: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_fertilization'],
+      )!,
+      hasTransplant: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_transplant'],
+      )!,
     );
   }
 
@@ -6097,6 +6219,7 @@ class $ObservationsTable extends Observations
 class Observation extends DataClass implements Insertable<Observation> {
   final int id;
   final int userId;
+  final int? planId;
   final String cropName;
   final String? cropImagePath;
   final DateTime date;
@@ -6106,9 +6229,12 @@ class Observation extends DataClass implements Insertable<Observation> {
   final bool hasIrrigation;
   final bool hasPest;
   final bool hasTransplantOrFertilization;
+  final bool hasFertilization;
+  final bool hasTransplant;
   const Observation({
     required this.id,
     required this.userId,
+    this.planId,
     required this.cropName,
     this.cropImagePath,
     required this.date,
@@ -6118,12 +6244,17 @@ class Observation extends DataClass implements Insertable<Observation> {
     required this.hasIrrigation,
     required this.hasPest,
     required this.hasTransplantOrFertilization,
+    required this.hasFertilization,
+    required this.hasTransplant,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['user_id'] = Variable<int>(userId);
+    if (!nullToAbsent || planId != null) {
+      map['plan_id'] = Variable<int>(planId);
+    }
     map['crop_name'] = Variable<String>(cropName);
     if (!nullToAbsent || cropImagePath != null) {
       map['crop_image_path'] = Variable<String>(cropImagePath);
@@ -6141,6 +6272,8 @@ class Observation extends DataClass implements Insertable<Observation> {
     map['has_transplant_or_fertilization'] = Variable<bool>(
       hasTransplantOrFertilization,
     );
+    map['has_fertilization'] = Variable<bool>(hasFertilization);
+    map['has_transplant'] = Variable<bool>(hasTransplant);
     return map;
   }
 
@@ -6148,6 +6281,9 @@ class Observation extends DataClass implements Insertable<Observation> {
     return ObservationsCompanion(
       id: Value(id),
       userId: Value(userId),
+      planId: planId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(planId),
       cropName: Value(cropName),
       cropImagePath: cropImagePath == null && nullToAbsent
           ? const Value.absent()
@@ -6163,6 +6299,8 @@ class Observation extends DataClass implements Insertable<Observation> {
       hasIrrigation: Value(hasIrrigation),
       hasPest: Value(hasPest),
       hasTransplantOrFertilization: Value(hasTransplantOrFertilization),
+      hasFertilization: Value(hasFertilization),
+      hasTransplant: Value(hasTransplant),
     );
   }
 
@@ -6174,6 +6312,7 @@ class Observation extends DataClass implements Insertable<Observation> {
     return Observation(
       id: serializer.fromJson<int>(json['id']),
       userId: serializer.fromJson<int>(json['userId']),
+      planId: serializer.fromJson<int?>(json['planId']),
       cropName: serializer.fromJson<String>(json['cropName']),
       cropImagePath: serializer.fromJson<String?>(json['cropImagePath']),
       date: serializer.fromJson<DateTime>(json['date']),
@@ -6185,6 +6324,8 @@ class Observation extends DataClass implements Insertable<Observation> {
       hasTransplantOrFertilization: serializer.fromJson<bool>(
         json['hasTransplantOrFertilization'],
       ),
+      hasFertilization: serializer.fromJson<bool>(json['hasFertilization']),
+      hasTransplant: serializer.fromJson<bool>(json['hasTransplant']),
     );
   }
   @override
@@ -6193,6 +6334,7 @@ class Observation extends DataClass implements Insertable<Observation> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'userId': serializer.toJson<int>(userId),
+      'planId': serializer.toJson<int?>(planId),
       'cropName': serializer.toJson<String>(cropName),
       'cropImagePath': serializer.toJson<String?>(cropImagePath),
       'date': serializer.toJson<DateTime>(date),
@@ -6204,12 +6346,15 @@ class Observation extends DataClass implements Insertable<Observation> {
       'hasTransplantOrFertilization': serializer.toJson<bool>(
         hasTransplantOrFertilization,
       ),
+      'hasFertilization': serializer.toJson<bool>(hasFertilization),
+      'hasTransplant': serializer.toJson<bool>(hasTransplant),
     };
   }
 
   Observation copyWith({
     int? id,
     int? userId,
+    Value<int?> planId = const Value.absent(),
     String? cropName,
     Value<String?> cropImagePath = const Value.absent(),
     DateTime? date,
@@ -6219,9 +6364,12 @@ class Observation extends DataClass implements Insertable<Observation> {
     bool? hasIrrigation,
     bool? hasPest,
     bool? hasTransplantOrFertilization,
+    bool? hasFertilization,
+    bool? hasTransplant,
   }) => Observation(
     id: id ?? this.id,
     userId: userId ?? this.userId,
+    planId: planId.present ? planId.value : this.planId,
     cropName: cropName ?? this.cropName,
     cropImagePath: cropImagePath.present
         ? cropImagePath.value
@@ -6234,11 +6382,14 @@ class Observation extends DataClass implements Insertable<Observation> {
     hasPest: hasPest ?? this.hasPest,
     hasTransplantOrFertilization:
         hasTransplantOrFertilization ?? this.hasTransplantOrFertilization,
+    hasFertilization: hasFertilization ?? this.hasFertilization,
+    hasTransplant: hasTransplant ?? this.hasTransplant,
   );
   Observation copyWithCompanion(ObservationsCompanion data) {
     return Observation(
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
+      planId: data.planId.present ? data.planId.value : this.planId,
       cropName: data.cropName.present ? data.cropName.value : this.cropName,
       cropImagePath: data.cropImagePath.present
           ? data.cropImagePath.value
@@ -6256,6 +6407,12 @@ class Observation extends DataClass implements Insertable<Observation> {
       hasTransplantOrFertilization: data.hasTransplantOrFertilization.present
           ? data.hasTransplantOrFertilization.value
           : this.hasTransplantOrFertilization,
+      hasFertilization: data.hasFertilization.present
+          ? data.hasFertilization.value
+          : this.hasFertilization,
+      hasTransplant: data.hasTransplant.present
+          ? data.hasTransplant.value
+          : this.hasTransplant,
     );
   }
 
@@ -6264,6 +6421,7 @@ class Observation extends DataClass implements Insertable<Observation> {
     return (StringBuffer('Observation(')
           ..write('id: $id, ')
           ..write('userId: $userId, ')
+          ..write('planId: $planId, ')
           ..write('cropName: $cropName, ')
           ..write('cropImagePath: $cropImagePath, ')
           ..write('date: $date, ')
@@ -6272,7 +6430,11 @@ class Observation extends DataClass implements Insertable<Observation> {
           ..write('stage: $stage, ')
           ..write('hasIrrigation: $hasIrrigation, ')
           ..write('hasPest: $hasPest, ')
-          ..write('hasTransplantOrFertilization: $hasTransplantOrFertilization')
+          ..write(
+            'hasTransplantOrFertilization: $hasTransplantOrFertilization, ',
+          )
+          ..write('hasFertilization: $hasFertilization, ')
+          ..write('hasTransplant: $hasTransplant')
           ..write(')'))
         .toString();
   }
@@ -6281,6 +6443,7 @@ class Observation extends DataClass implements Insertable<Observation> {
   int get hashCode => Object.hash(
     id,
     userId,
+    planId,
     cropName,
     cropImagePath,
     date,
@@ -6290,6 +6453,8 @@ class Observation extends DataClass implements Insertable<Observation> {
     hasIrrigation,
     hasPest,
     hasTransplantOrFertilization,
+    hasFertilization,
+    hasTransplant,
   );
   @override
   bool operator ==(Object other) =>
@@ -6297,6 +6462,7 @@ class Observation extends DataClass implements Insertable<Observation> {
       (other is Observation &&
           other.id == this.id &&
           other.userId == this.userId &&
+          other.planId == this.planId &&
           other.cropName == this.cropName &&
           other.cropImagePath == this.cropImagePath &&
           other.date == this.date &&
@@ -6306,12 +6472,15 @@ class Observation extends DataClass implements Insertable<Observation> {
           other.hasIrrigation == this.hasIrrigation &&
           other.hasPest == this.hasPest &&
           other.hasTransplantOrFertilization ==
-              this.hasTransplantOrFertilization);
+              this.hasTransplantOrFertilization &&
+          other.hasFertilization == this.hasFertilization &&
+          other.hasTransplant == this.hasTransplant);
 }
 
 class ObservationsCompanion extends UpdateCompanion<Observation> {
   final Value<int> id;
   final Value<int> userId;
+  final Value<int?> planId;
   final Value<String> cropName;
   final Value<String?> cropImagePath;
   final Value<DateTime> date;
@@ -6321,9 +6490,12 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
   final Value<bool> hasIrrigation;
   final Value<bool> hasPest;
   final Value<bool> hasTransplantOrFertilization;
+  final Value<bool> hasFertilization;
+  final Value<bool> hasTransplant;
   const ObservationsCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
+    this.planId = const Value.absent(),
     this.cropName = const Value.absent(),
     this.cropImagePath = const Value.absent(),
     this.date = const Value.absent(),
@@ -6333,10 +6505,13 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
     this.hasIrrigation = const Value.absent(),
     this.hasPest = const Value.absent(),
     this.hasTransplantOrFertilization = const Value.absent(),
+    this.hasFertilization = const Value.absent(),
+    this.hasTransplant = const Value.absent(),
   });
   ObservationsCompanion.insert({
     this.id = const Value.absent(),
     required int userId,
+    this.planId = const Value.absent(),
     required String cropName,
     this.cropImagePath = const Value.absent(),
     this.date = const Value.absent(),
@@ -6346,12 +6521,15 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
     this.hasIrrigation = const Value.absent(),
     this.hasPest = const Value.absent(),
     this.hasTransplantOrFertilization = const Value.absent(),
+    this.hasFertilization = const Value.absent(),
+    this.hasTransplant = const Value.absent(),
   }) : userId = Value(userId),
        cropName = Value(cropName),
        content = Value(content);
   static Insertable<Observation> custom({
     Expression<int>? id,
     Expression<int>? userId,
+    Expression<int>? planId,
     Expression<String>? cropName,
     Expression<String>? cropImagePath,
     Expression<DateTime>? date,
@@ -6361,10 +6539,13 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
     Expression<bool>? hasIrrigation,
     Expression<bool>? hasPest,
     Expression<bool>? hasTransplantOrFertilization,
+    Expression<bool>? hasFertilization,
+    Expression<bool>? hasTransplant,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (userId != null) 'user_id': userId,
+      if (planId != null) 'plan_id': planId,
       if (cropName != null) 'crop_name': cropName,
       if (cropImagePath != null) 'crop_image_path': cropImagePath,
       if (date != null) 'date': date,
@@ -6375,12 +6556,15 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
       if (hasPest != null) 'has_pest': hasPest,
       if (hasTransplantOrFertilization != null)
         'has_transplant_or_fertilization': hasTransplantOrFertilization,
+      if (hasFertilization != null) 'has_fertilization': hasFertilization,
+      if (hasTransplant != null) 'has_transplant': hasTransplant,
     });
   }
 
   ObservationsCompanion copyWith({
     Value<int>? id,
     Value<int>? userId,
+    Value<int?>? planId,
     Value<String>? cropName,
     Value<String?>? cropImagePath,
     Value<DateTime>? date,
@@ -6390,10 +6574,13 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
     Value<bool>? hasIrrigation,
     Value<bool>? hasPest,
     Value<bool>? hasTransplantOrFertilization,
+    Value<bool>? hasFertilization,
+    Value<bool>? hasTransplant,
   }) {
     return ObservationsCompanion(
       id: id ?? this.id,
       userId: userId ?? this.userId,
+      planId: planId ?? this.planId,
       cropName: cropName ?? this.cropName,
       cropImagePath: cropImagePath ?? this.cropImagePath,
       date: date ?? this.date,
@@ -6404,6 +6591,8 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
       hasPest: hasPest ?? this.hasPest,
       hasTransplantOrFertilization:
           hasTransplantOrFertilization ?? this.hasTransplantOrFertilization,
+      hasFertilization: hasFertilization ?? this.hasFertilization,
+      hasTransplant: hasTransplant ?? this.hasTransplant,
     );
   }
 
@@ -6415,6 +6604,9 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
     }
     if (userId.present) {
       map['user_id'] = Variable<int>(userId.value);
+    }
+    if (planId.present) {
+      map['plan_id'] = Variable<int>(planId.value);
     }
     if (cropName.present) {
       map['crop_name'] = Variable<String>(cropName.value);
@@ -6445,6 +6637,12 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
         hasTransplantOrFertilization.value,
       );
     }
+    if (hasFertilization.present) {
+      map['has_fertilization'] = Variable<bool>(hasFertilization.value);
+    }
+    if (hasTransplant.present) {
+      map['has_transplant'] = Variable<bool>(hasTransplant.value);
+    }
     return map;
   }
 
@@ -6453,6 +6651,7 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
     return (StringBuffer('ObservationsCompanion(')
           ..write('id: $id, ')
           ..write('userId: $userId, ')
+          ..write('planId: $planId, ')
           ..write('cropName: $cropName, ')
           ..write('cropImagePath: $cropImagePath, ')
           ..write('date: $date, ')
@@ -6461,7 +6660,11 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
           ..write('stage: $stage, ')
           ..write('hasIrrigation: $hasIrrigation, ')
           ..write('hasPest: $hasPest, ')
-          ..write('hasTransplantOrFertilization: $hasTransplantOrFertilization')
+          ..write(
+            'hasTransplantOrFertilization: $hasTransplantOrFertilization, ',
+          )
+          ..write('hasFertilization: $hasFertilization, ')
+          ..write('hasTransplant: $hasTransplant')
           ..write(')'))
         .toString();
   }
@@ -8782,6 +8985,7 @@ typedef $$CropPlansTableCreateCompanionBuilder =
       required String preferredTime,
       required String payloadJson,
       Value<bool> active,
+      Value<String> status,
     });
 typedef $$CropPlansTableUpdateCompanionBuilder =
     CropPlansCompanion Function({
@@ -8794,6 +8998,7 @@ typedef $$CropPlansTableUpdateCompanionBuilder =
       Value<String> preferredTime,
       Value<String> payloadJson,
       Value<bool> active,
+      Value<String> status,
     });
 
 class $$CropPlansTableFilterComposer
@@ -8847,6 +9052,11 @@ class $$CropPlansTableFilterComposer
 
   ColumnFilters<bool> get active => $composableBuilder(
     column: $table.active,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -8904,6 +9114,11 @@ class $$CropPlansTableOrderingComposer
     column: $table.active,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CropPlansTableAnnotationComposer
@@ -8947,6 +9162,9 @@ class $$CropPlansTableAnnotationComposer
 
   GeneratedColumn<bool> get active =>
       $composableBuilder(column: $table.active, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
 }
 
 class $$CropPlansTableTableManager
@@ -8986,6 +9204,7 @@ class $$CropPlansTableTableManager
                 Value<String> preferredTime = const Value.absent(),
                 Value<String> payloadJson = const Value.absent(),
                 Value<bool> active = const Value.absent(),
+                Value<String> status = const Value.absent(),
               }) => CropPlansCompanion(
                 id: id,
                 userId: userId,
@@ -8996,6 +9215,7 @@ class $$CropPlansTableTableManager
                 preferredTime: preferredTime,
                 payloadJson: payloadJson,
                 active: active,
+                status: status,
               ),
           createCompanionCallback:
               ({
@@ -9008,6 +9228,7 @@ class $$CropPlansTableTableManager
                 required String preferredTime,
                 required String payloadJson,
                 Value<bool> active = const Value.absent(),
+                Value<String> status = const Value.absent(),
               }) => CropPlansCompanion.insert(
                 id: id,
                 userId: userId,
@@ -9018,6 +9239,7 @@ class $$CropPlansTableTableManager
                 preferredTime: preferredTime,
                 payloadJson: payloadJson,
                 active: active,
+                status: status,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -9576,6 +9798,7 @@ typedef $$ObservationsTableCreateCompanionBuilder =
     ObservationsCompanion Function({
       Value<int> id,
       required int userId,
+      Value<int?> planId,
       required String cropName,
       Value<String?> cropImagePath,
       Value<DateTime> date,
@@ -9585,11 +9808,14 @@ typedef $$ObservationsTableCreateCompanionBuilder =
       Value<bool> hasIrrigation,
       Value<bool> hasPest,
       Value<bool> hasTransplantOrFertilization,
+      Value<bool> hasFertilization,
+      Value<bool> hasTransplant,
     });
 typedef $$ObservationsTableUpdateCompanionBuilder =
     ObservationsCompanion Function({
       Value<int> id,
       Value<int> userId,
+      Value<int?> planId,
       Value<String> cropName,
       Value<String?> cropImagePath,
       Value<DateTime> date,
@@ -9599,6 +9825,8 @@ typedef $$ObservationsTableUpdateCompanionBuilder =
       Value<bool> hasIrrigation,
       Value<bool> hasPest,
       Value<bool> hasTransplantOrFertilization,
+      Value<bool> hasFertilization,
+      Value<bool> hasTransplant,
     });
 
 class $$ObservationsTableFilterComposer
@@ -9617,6 +9845,11 @@ class $$ObservationsTableFilterComposer
 
   ColumnFilters<int> get userId => $composableBuilder(
     column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get planId => $composableBuilder(
+    column: $table.planId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9664,6 +9897,16 @@ class $$ObservationsTableFilterComposer
     column: $table.hasTransplantOrFertilization,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<bool> get hasFertilization => $composableBuilder(
+    column: $table.hasFertilization,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasTransplant => $composableBuilder(
+    column: $table.hasTransplant,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$ObservationsTableOrderingComposer
@@ -9682,6 +9925,11 @@ class $$ObservationsTableOrderingComposer
 
   ColumnOrderings<int> get userId => $composableBuilder(
     column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get planId => $composableBuilder(
+    column: $table.planId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -9729,6 +9977,16 @@ class $$ObservationsTableOrderingComposer
     column: $table.hasTransplantOrFertilization,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get hasFertilization => $composableBuilder(
+    column: $table.hasFertilization,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasTransplant => $composableBuilder(
+    column: $table.hasTransplant,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ObservationsTableAnnotationComposer
@@ -9745,6 +10003,9 @@ class $$ObservationsTableAnnotationComposer
 
   GeneratedColumn<int> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
 
   GeneratedColumn<String> get cropName =>
       $composableBuilder(column: $table.cropName, builder: (column) => column);
@@ -9778,6 +10039,16 @@ class $$ObservationsTableAnnotationComposer
 
   GeneratedColumn<bool> get hasTransplantOrFertilization => $composableBuilder(
     column: $table.hasTransplantOrFertilization,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hasFertilization => $composableBuilder(
+    column: $table.hasFertilization,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hasTransplant => $composableBuilder(
+    column: $table.hasTransplant,
     builder: (column) => column,
   );
 }
@@ -9815,6 +10086,7 @@ class $$ObservationsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> userId = const Value.absent(),
+                Value<int?> planId = const Value.absent(),
                 Value<String> cropName = const Value.absent(),
                 Value<String?> cropImagePath = const Value.absent(),
                 Value<DateTime> date = const Value.absent(),
@@ -9824,9 +10096,12 @@ class $$ObservationsTableTableManager
                 Value<bool> hasIrrigation = const Value.absent(),
                 Value<bool> hasPest = const Value.absent(),
                 Value<bool> hasTransplantOrFertilization = const Value.absent(),
+                Value<bool> hasFertilization = const Value.absent(),
+                Value<bool> hasTransplant = const Value.absent(),
               }) => ObservationsCompanion(
                 id: id,
                 userId: userId,
+                planId: planId,
                 cropName: cropName,
                 cropImagePath: cropImagePath,
                 date: date,
@@ -9836,11 +10111,14 @@ class $$ObservationsTableTableManager
                 hasIrrigation: hasIrrigation,
                 hasPest: hasPest,
                 hasTransplantOrFertilization: hasTransplantOrFertilization,
+                hasFertilization: hasFertilization,
+                hasTransplant: hasTransplant,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required int userId,
+                Value<int?> planId = const Value.absent(),
                 required String cropName,
                 Value<String?> cropImagePath = const Value.absent(),
                 Value<DateTime> date = const Value.absent(),
@@ -9850,9 +10128,12 @@ class $$ObservationsTableTableManager
                 Value<bool> hasIrrigation = const Value.absent(),
                 Value<bool> hasPest = const Value.absent(),
                 Value<bool> hasTransplantOrFertilization = const Value.absent(),
+                Value<bool> hasFertilization = const Value.absent(),
+                Value<bool> hasTransplant = const Value.absent(),
               }) => ObservationsCompanion.insert(
                 id: id,
                 userId: userId,
+                planId: planId,
                 cropName: cropName,
                 cropImagePath: cropImagePath,
                 date: date,
@@ -9862,6 +10143,8 @@ class $$ObservationsTableTableManager
                 hasIrrigation: hasIrrigation,
                 hasPest: hasPest,
                 hasTransplantOrFertilization: hasTransplantOrFertilization,
+                hasFertilization: hasFertilization,
+                hasTransplant: hasTransplant,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
