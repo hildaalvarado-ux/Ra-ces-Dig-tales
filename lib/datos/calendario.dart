@@ -866,6 +866,7 @@ class CropPlanGenerator {
     required TimeOfDay preferredTime,
     String? nickname,
     int? colorValue,
+    bool? isAlmacigoOverride,
   }) async {
     try {
       final planId = await appDb.insertCropPlan(CropPlansCompanion.insert(
@@ -894,13 +895,16 @@ class CropPlanGenerator {
     ));
 
     // Day 1: Sowing
+    final usesAlmacigo = isAlmacigoOverride ?? (guia['usaAlmacigo'] == true);
+
     tasks.add(CalendarTasksCompanion.insert(
       planId: drift.Value(planId),
       userId: userId,
-      title: 'Siembra de ${cultivo.nombre}',
+      title: 'Siembra de ${cultivo.nombre}${usesAlmacigo ? ' (Almácigo)' : ' (Directa)'}',
       description: drift.Value(
         'Tipo: ${cultivo.ficha['Tipo de siembra'] ?? 'No especificado'}. '
         'Profundidad: ${cultivo.ficha['Profundidad de semilla'] ?? 'No especificado'}. '
+        '${usesAlmacigo ? 'Sembrar en semilleros protegidos.' : 'Sembrar directamente en el sitio final.'} '
         '${guia['comoSembrar'] ?? ''}'
       ),
       date: startDate.add(const Duration(days: 1)).copyWith(hour: preferredTime.hour, minute: preferredTime.minute),
@@ -920,7 +924,6 @@ class CropPlanGenerator {
     }
 
     // --- PHASE 2: ALMACIGO & GROWTH ---
-    bool usesAlmacigo = guia['usaAlmacigo'] == true;
     int timeInAlmacigo = guia['tiempoAlmacigo'] ?? 0;
 
     if (usesAlmacigo && timeInAlmacigo > 0) {
@@ -928,7 +931,7 @@ class CropPlanGenerator {
         planId: drift.Value(planId),
         userId: userId,
         title: 'Evaluación de trasplante: ${cultivo.nombre}',
-        description: drift.Value('Verificar si ya está lista: ${guia['senalesTrasplante'] ?? 'No especificado'}'),
+        description: drift.Value('Verificar si ya está lista para mover a su lugar definitivo. ${guia['senalesTrasplante'] ?? 'No especificado'}'),
         date: startDate.add(Duration(days: timeInAlmacigo)).copyWith(hour: preferredTime.hour, minute: preferredTime.minute),
         type: 'Trasplante',
       ));
