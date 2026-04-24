@@ -136,7 +136,7 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         break;
 
-      case 'Plagas':
+      case 'Insectos':
         await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => PlagasPage(userId: widget.userId),
@@ -144,7 +144,7 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         break;
 
-      case 'Pesticidas':
+      case 'Repelentes':
         await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => PesticidasPage(userId: widget.userId),
@@ -337,8 +337,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         items: [
                           _HoverItem('Cultivos', () => _openFeature('Cultivos')),
                           _HoverItem('Fertilizantes', () => _openFeature('Fertilizantes')),
-                          _HoverItem('Pesticidas', () => _openFeature('Pesticidas')),
-                          _HoverItem('Plagas', () => _openFeature('Plagas')),
+                          _HoverItem('Repelentes', () => _openFeature('Repelentes')),
+                          _HoverItem('Insectos', () => _openFeature('Insectos')),
                         ],
                       ),
 
@@ -433,8 +433,8 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             _DashboardTile(label: 'Cultivos', icon: Icons.local_florist_rounded, onTap: () => _openFeature('Cultivos')),
             _DashboardTile(label: 'Fertilizantes', icon: Icons.science_rounded, onTap: () => _openFeature('Fertilizantes')),
-            _DashboardTile(label: 'Pesticidas', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Pesticidas')),
-            _DashboardTile(label: 'Plagas', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Plagas')),
+            _DashboardTile(label: 'Repelentes', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Repelentes')),
+            _DashboardTile(label: 'Insectos', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Insectos')),
             _DashboardTile(label: 'Calendario', icon: Icons.calendar_month_rounded, onTap: () => _openFeature('Calendario')),
             _DashboardTile(label: 'Diario', icon: Icons.menu_book_rounded, onTap: () => _openFeature('Diario')),
           ],
@@ -678,18 +678,18 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 _DrawerItem(
                   icon: Icons.sanitizer_rounded,
-                  label: 'Pesticidas',
+                  label: 'Repelentes',
                   onTap: () {
                     Navigator.pop(context);
-                    _openFeature('Pesticidas');
+                    _openFeature('Repelentes');
                   },
                 ),
                 _DrawerItem(
                   icon: Icons.bug_report_rounded,
-                  label: 'Plagas',
+                  label: 'Insectos',
                   onTap: () {
                     Navigator.pop(context);
-                    _openFeature('Plagas');
+                    _openFeature('Insectos');
                   },
                 ),
 
@@ -716,10 +716,10 @@ class _DashboardPageState extends State<DashboardPage> {
                 const _DrawerSectionTitle('Otros'),
                 _DrawerItem(
                   icon: Icons.settings_rounded,
-                  label: 'Opciones',
+                  label: 'Configuración',
                   onTap: () {
                     Navigator.pop(context);
-                    _openFeature('Opciones');
+                    _openFeature('Configuración');
                   },
                 ),
                 _DrawerItem(

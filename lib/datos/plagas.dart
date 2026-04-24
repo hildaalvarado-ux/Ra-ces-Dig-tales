@@ -72,7 +72,9 @@ class _PlagasPageState extends State<PlagasPage> {
 
   List<Plaga> _applyFilters(List<Plaga> list) {
     final q = _searchCtrl.text.toLowerCase();
-    return list.where((p) => p.nombre.toLowerCase().contains(q) || p.cientifico.toLowerCase().contains(q)).toList();
+    return list.where((p) =>
+        p.nombre.toLowerCase().contains(q) ||
+        p.cientifico.toLowerCase().contains(q)).toList();
   }
 
   List<Plaga> get _filteredCatalogo => _applyFilters(_catalogo);
@@ -87,7 +89,10 @@ class _PlagasPageState extends State<PlagasPage> {
         appBar: AppBar(
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
-          title: const Text('Plagas', style: TextStyle(fontWeight: FontWeight.w900)),
+          title: const Text(
+            'Insectos', // ✅ CAMBIADO
+            style: TextStyle(fontWeight: FontWeight.w900),
+          ),
         ),
         body: SafeArea(
           child: Padding(
@@ -98,11 +103,13 @@ class _PlagasPageState extends State<PlagasPage> {
                   controller: _searchCtrl,
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
-                    hintText: 'Buscar plaga...',
+                    hintText: 'Buscar insecto...', // ✅ CAMBIADO
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.85),
                     prefixIcon: const Icon(Icons.search_rounded),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -112,22 +119,30 @@ class _PlagasPageState extends State<PlagasPage> {
                       : ListView(
                           children: [
                             if (_filteredAgregados.isNotEmpty) ...[
-                              _buildSectionHeader('Mis plagas'),
-                              ..._filteredAgregados.map((p) => _PlagaTile(plaga: p)),
+                              _buildSectionHeader('Mis insectos'), // ✅
+                              ..._filteredAgregados
+                                  .map((p) => _PlagaTile(plaga: p)),
                             ],
                             if (_filteredCompartidos.isNotEmpty) ...[
-                              _buildSectionHeader('Compartidas'),
-                              ..._filteredCompartidos.map((p) => _PlagaTile(plaga: p)),
+                              _buildSectionHeader('Compartidos'),
+                              ..._filteredCompartidos
+                                  .map((p) => _PlagaTile(plaga: p)),
                             ],
                             if (_filteredCatalogo.isNotEmpty) ...[
                               _buildSectionHeader('Catálogo'),
-                              ..._filteredCatalogo.map((p) => _PlagaTile(plaga: p)),
+                              ..._filteredCatalogo
+                                  .map((p) => _PlagaTile(plaga: p)),
                             ],
-                            if (_filteredCatalogo.isEmpty && _filteredAgregados.isEmpty && _filteredCompartidos.isEmpty)
-                              const Center(child: Padding(
-                                padding: EdgeInsets.all(20.0),
-                                child: Text('No se encontraron plagas'),
-                              )),
+                            if (_filteredCatalogo.isEmpty &&
+                                _filteredAgregados.isEmpty &&
+                                _filteredCompartidos.isEmpty)
+                              const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(20.0),
+                                  child: Text(
+                                      'No se encontraron insectos'), // ✅
+                                ),
+                              ),
                           ],
                         ),
                 ),
@@ -144,7 +159,12 @@ class _PlagasPageState extends State<PlagasPage> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Text(
         title.toUpperCase(),
-        style: TextStyle(color: AppColors.greenDarker.withOpacity(0.6), fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.2),
+        style: TextStyle(
+          color: AppColors.greenDarker.withOpacity(0.6),
+          fontWeight: FontWeight.w900,
+          fontSize: 12,
+          letterSpacing: 1.2,
+        ),
       ),
     );
   }
@@ -159,7 +179,8 @@ class _PlagaTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       color: Colors.white.withOpacity(0.82),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         leading: Container(
           width: 44,
@@ -173,9 +194,22 @@ class _PlagaTile extends StatelessWidget {
             child: _buildImage(),
           ),
         ),
-        title: Text(plaga.nombre, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker)),
-        subtitle: Text(plaga.cientifico, style: const TextStyle(fontStyle: FontStyle.italic)),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: plaga))),
+        title: Text(
+          plaga.nombre,
+          style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              color: AppColors.greenDarker),
+        ),
+        subtitle: Text(
+          plaga.cientifico,
+          style: const TextStyle(fontStyle: FontStyle.italic),
+        ),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PlagaDetallePage(plaga: plaga),
+          ),
+        ),
       ),
     );
   }
@@ -183,18 +217,35 @@ class _PlagaTile extends StatelessWidget {
   Widget _buildImage() {
     if (plaga.imagePath != null && plaga.imagePath!.isNotEmpty) {
       if (plaga.imagePath!.startsWith('data:image')) {
-        return Image.memory(base64Decode(plaga.imagePath!.split(',').last), fit: BoxFit.cover);
+        return Image.memory(
+          base64Decode(plaga.imagePath!.split(',').last),
+          fit: BoxFit.cover,
+        );
       } else {
         if (kIsWeb) {
-          return Image.network(plaga.imagePath!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image));
+          return Image.network(
+            plaga.imagePath!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) =>
+                const Icon(Icons.broken_image),
+          );
         } else {
-          return Image.file(File(plaga.imagePath!), fit: BoxFit.cover);
+          return Image.file(
+            File(plaga.imagePath!),
+            fit: BoxFit.cover,
+          );
         }
       }
     }
     if (plaga.imagen.isNotEmpty) {
-      return Image.asset(plaga.imagen, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded));
+      return Image.asset(
+        plaga.imagen,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) =>
+            const Icon(Icons.bug_report_rounded),
+      );
     }
-    return const Icon(Icons.bug_report_rounded, color: AppColors.greenDarker);
+    return const Icon(Icons.bug_report_rounded,
+        color: AppColors.greenDarker);
   }
 }
