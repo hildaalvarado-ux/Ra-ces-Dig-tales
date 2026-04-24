@@ -60,7 +60,7 @@ class Fertilizante {
         'esCasero': esCasero,
         'dificultad': dificultad,
         'faseAplicacion': faseAplicacion,
-        'plagas': plagas,
+        'insectos': plagas,
       };
 
   static Fertilizante fromJson(Map<String, dynamic> j) {
@@ -69,7 +69,7 @@ class Fertilizante {
         ) ??
         <String, String>{};
 
-    final plagas = (j['plagas'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
+    final plagas = (j['insectos'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
 
     return Fertilizante(
       id: j['id'] as int?,
@@ -282,8 +282,8 @@ class FertilizanteDetallePage extends StatelessWidget {
               if (fertilizante.plagas.isNotEmpty) ...[
                 _DetailCard(
                   icon: 'assets/iconos/id.png',
-                  title: 'Plagas que combate o repele',
-                  onHelp: () => HelpDialogs.show(context, title: 'Plagas', text: 'Plagas que este fertilizante ayuda a controlar.'),
+                  title: 'Insectos que combate o repele',
+                  onHelp: () => HelpDialogs.show(context, title: 'Insectos', text: 'Insectos que este fertilizante ayuda a controlar.'),
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,

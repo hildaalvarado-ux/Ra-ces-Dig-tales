@@ -155,14 +155,66 @@ class _PesticidasPageState extends State<PesticidasPage> {
         child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
       );
 
-  Widget _tile(Pesticida p) => ListTile(
-        title: Text(p.nombre),
-        subtitle: Text(p.tipo),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => PesticidaDetallePage(pesticida: p),
+  Widget _tile(Pesticida p) => Card(
+        margin: const EdgeInsets.only(bottom: 10),
+        color: Colors.white.withOpacity(0.82),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: ListTile(
+          leading: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: AppColors.greenDark.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: _buildTileImage(p),
+            ),
           ),
+          title: Text(
+            p.nombre,
+            style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker),
+          ),
+          subtitle: Text(p.tipo),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PesticidaDetallePage(pesticida: p),
+            ),
+            ),
         ),
       );
+
+  Widget _buildTileImage(Pesticida p) {
+    if (p.imagePath != null && p.imagePath!.isNotEmpty) {
+      if (p.imagePath!.startsWith('data:image')) {
+        return Image.memory(
+          base64Decode(p.imagePath!.split(',').last),
+          fit: BoxFit.cover,
+        );
+      } else {
+        if (kIsWeb) {
+          return Image.network(
+            p.imagePath!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        } else {
+          return Image.file(
+            File(p.imagePath!),
+            fit: BoxFit.cover,
+          );
+        }
+      }
+    }
+    if (p.imagen.isNotEmpty) {
+      return Image.asset(
+        p.imagen,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.eco_rounded),
+      );
+    }
+    return const Icon(Icons.eco_rounded, color: AppColors.greenDarker);
+  }
 }

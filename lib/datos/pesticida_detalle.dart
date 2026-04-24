@@ -50,7 +50,7 @@ class Pesticida {
         'identificacion': identificacion,
         'uso': uso,
         'ficha': ficha,
-        'plagas': plagas,
+        'insectos': plagas,
         'ingredientes': ingredientes,
         'elaboracion': elaboracion,
         'precauciones': precauciones,
@@ -63,7 +63,7 @@ class Pesticida {
         <String, String>{};
 
     final plagas =
-        (j['plagas'] as List?)?.map((e) => e.toString()).toList() ??
+        (j['insectos'] as List?)?.map((e) => e.toString()).toList() ??
             <String>[];
 
     final ingredientes =
@@ -145,7 +145,7 @@ class PesticidaDetallePage extends StatelessWidget {
         await zipFile.writeAsBytes(zipData);
         await Share.shareXFiles(
           [XFile(zipFile.path)],
-          text: 'Mira este preparado natural: ${pesticida.nombre}',
+          text: 'Mira este repelente natural: ${pesticida.nombre}',
         );
       }
     } catch (e) {
@@ -321,11 +321,11 @@ class PesticidaDetallePage extends StatelessWidget {
               if (pesticida.plagas.isNotEmpty)
                 _DetailCard(
                   icon: 'assets/iconos/id.png',
-                  title: 'Plagas que combate o repele',
+                  title: 'Insectos que combate o repele',
                   onHelp: () => HelpDialogs.show(
                     context,
-                    title: 'Plagas',
-                    text: 'Plagas relacionadas con este preparado.',
+                    title: 'Insectos',
+                    text: 'Insectos relacionados con este preparado.',
                   ),
                   child: Wrap(
                     spacing: 8,

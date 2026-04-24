@@ -61,7 +61,7 @@ class Cultivo {
         'identificacion': identificacion,
         'siembra': siembra,
         'ficha': ficha,
-        'plagas': plagas,
+        'insectos': plagas,
         'beneficiosos': beneficiosos,
         'perjudiciales': perjudiciales,
         if (guiaRapida != null) 'guiaRapida': guiaRapida,
@@ -73,7 +73,7 @@ class Cultivo {
         ) ??
         <String, String>{};
 
-    final plagas = (j['plagas'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
+    final plagas = (j['insectos'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
     final ben = (j['beneficiosos'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
     final per = (j['perjudiciales'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
     final guia = j['guiaRapida'] as Map<String, dynamic>?;
@@ -694,8 +694,8 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
               if (widget.cultivo.plagas.isNotEmpty)
                 _DetailCard(
                   icon: 'assets/iconos/id.png', // Reusing ID for now
-                  title: 'Plagas',
-                  onHelp: () => HelpDialogs.show(context, title: 'Plagas', text: 'Plagas comunes que pueden afectar este cultivo.'),
+                  title: 'Insectos',
+                  onHelp: () => HelpDialogs.show(context, title: 'Insectos', text: 'Insectos comunes que pueden afectar este cultivo.'),
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -905,37 +905,82 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-class _RelatedChip extends StatelessWidget {
+class _RelatedChip extends StatefulWidget {
   final String name;
   final String type; // 'cultivo' or 'plaga'
 
   const _RelatedChip({required this.name, required this.type});
 
   @override
+  State<_RelatedChip> createState() => _RelatedChipState();
+}
+
+class _RelatedChipState extends State<_RelatedChip> {
+  String? _assetPath;
+  bool _loaded = false;
+  dynamic _targetItem;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadItemInfo();
+  }
+
+  Future<void> _loadItemInfo() async {
+    try {
+      final String jsonAssetPath = widget.type == 'cultivo' ? 'assets/data/cultivos.json' : 'assets/data/plagas.json';
+      final raw = await rootBundle.loadString(jsonAssetPath);
+      final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
+      final decoded = jsonDecode(cleanJson) as List;
+
+      if (widget.type == 'cultivo') {
+        final catalog = decoded.map((e) => Cultivo.fromJson(Map<String, dynamic>.from(e))).toList();
+        _targetItem = catalog.firstWhere((i) => i.nombre.toLowerCase() == widget.name.toLowerCase());
+        _assetPath = (_targetItem as Cultivo).imagen;
+      } else {
+        final catalog = decoded.map((e) => Plaga.fromJson(Map<String, dynamic>.from(e))).toList();
+        _targetItem = catalog.firstWhere((i) => i.nombre.toLowerCase() == widget.name.toLowerCase());
+        _assetPath = (_targetItem as Plaga).imagen;
+      }
+      if (mounted) setState(() => _loaded = true);
+    } catch (e) {
+      // Silently fail if not found
+    }
+  }
+
+  Widget _buildThumb() {
+    if (!_loaded || _assetPath == null || _assetPath!.isEmpty) {
+      return Icon(widget.type == 'cultivo' ? Icons.local_florist_rounded : Icons.bug_report_rounded, size: 16, color: AppColors.greenDarker);
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: Image.asset(
+        _assetPath!,
+        width: 24,
+        height: 24,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Icon(widget.type == 'cultivo' ? Icons.local_florist_rounded : Icons.bug_report_rounded, size: 16, color: AppColors.greenDarker),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () async {
-        try {
-          final String assetPath = type == 'cultivo' ? 'assets/data/cultivos.json' : 'assets/data/plagas.json';
-          final raw = await rootBundle.loadString(assetPath);
-          final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
-          final decoded = jsonDecode(cleanJson) as List;
-
-          if (type == 'cultivo') {
-            final catalog = decoded.map((e) => Cultivo.fromJson(Map<String, dynamic>.from(e))).toList();
-            final item = catalog.firstWhere((i) => i.nombre.toLowerCase() == name.toLowerCase());
-            if (context.mounted) Navigator.push(context, MaterialPageRoute(builder: (_) => CultivoDetallePage(cultivo: item)));
-          } else {
-            final catalog = decoded.map((e) => Plaga.fromJson(Map<String, dynamic>.from(e))).toList();
-            final item = catalog.firstWhere((i) => i.nombre.toLowerCase() == name.toLowerCase());
-            if (context.mounted) Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: item)));
-          }
-        } catch (e) {
-          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sin detalle para: $name')));
+      onTap: () {
+        if (_targetItem == null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sin detalle para: ${widget.name}')));
+          return;
+        }
+        if (widget.type == 'cultivo') {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => CultivoDetallePage(cultivo: _targetItem as Cultivo)));
+        } else {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: _targetItem as Plaga)));
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -944,9 +989,9 @@ class _RelatedChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(type == 'cultivo' ? Icons.local_florist_rounded : Icons.bug_report_rounded, size: 16, color: AppColors.greenDarker),
-            const SizedBox(width: 4),
-            Text(name, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.greenDarker)),
+            _buildThumb(),
+            const SizedBox(width: 6),
+            Text(widget.name, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.greenDarker)),
           ],
         ),
       ),

@@ -4,7 +4,7 @@
     "nombre": "Agua jabonosa",
     "tipo": "Casero",
     "identificacion": "El agua jabonosa consiste en el insecticida más fácil y efectivo que puede realizarse. Actúa debilitando la piel protectora de los insectos de cuerpo blando, provocando que se sequen. Esta base jabonosa puede incluso ser mezclada con otros ingredientes para preparar insecticidas aún más potentes.",
-    "uso": "Preventivo: rociar una vez cada 7 o 15 días. Intensivo: una vez cada 3 días durante un mínimo de un mes o hasta eliminar plaga.",
+    "uso": "Preventivo: rociar una vez cada 7 o 15 días. Intensivo: una vez cada 3 días durante un mínimo de un mes o hasta eliminar el insecto.",
     "ingredientes": [
       "50 g (1/4) de jabón en barra puro (blanco, sin aditivos ni aromas)",
       "1 litro de agua hirviendo"
@@ -23,19 +23,19 @@
       "Se puede almacenar en lugar oscuro por varios meses."
     ],
     "ficha": {
-      "Tipo de pesticida": "Insecticida",
+      "Tipo de repelente": "Insecticida",
       "Efecto": "Eliminador",
       "Formato": "Líquido",
       "Aplicación": "Rociar"
     },
-    "plagas": ["Pulgón", "Trips", "Mosca blanca", "Cochinilla"]
+    "insectos": ["Pulgón", "Trips", "Mosca blanca", "Cochinilla"]
   },
   {
     "imagen": "assets/pesticidas/ajop.png",
     "nombre": "Repelente de ajo picante",
     "tipo": "Casero",
     "identificacion": "Una mejora más potente del agua jabonosa, que sirve para repeler insectos de mayor tamaño. Se basa en la acción repelente de los compuestos del ajo y el ají o chile picante.",
-    "uso": "Semanalmente hasta eliminar la plaga.",
+    "uso": "Semanalmente hasta eliminar el insecto.",
     "ingredientes": [
       "25 g de ajo o de 5 a 6 dientes",
       "50 g de ají o chile picante (de 3 a 5 unidades dependiendo tamaño)",
@@ -57,12 +57,12 @@
       "Puede prepararse sin el ají o chile picante, pero disminuyendo su efectividad especialmente en orugas y arañuela roja."
     ],
     "ficha": {
-      "Tipo de pesticida": "Insecticida",
+      "Tipo de repelente": "Insecticida",
       "Efecto": "Repelente",
       "Formato": "Líquido",
       "Aplicación": "Rociar"
     },
-    "plagas": ["Cochinilla", "Chinche verde", "Arañuela roja", "Oruga"]
+    "insectos": ["Cochinilla", "Chinche verde", "Arañuela roja", "Oruga"]
   },
   {
     "imagen": "assets/pesticidas/canela.png",
@@ -80,19 +80,19 @@
       "No tiene."
     ],
     "ficha": {
-      "Tipo de pesticida": "Fungicida",
+      "Tipo de repelente": "Fungicida",
       "Efecto": "Repelente",
       "Formato": "Sólido",
       "Aplicación": "Dispersar"
     },
-    "plagas": ["Oídio"]
+    "insectos": ["Oídio"]
   },
   {
     "imagen": "assets/pesticidas/limon.png",
     "nombre": "Insecticida de Limón",
     "tipo": "Casero",
     "identificacion": "Este insecticida de limón aprovecha el limoneno, una sustancia química extraída del aceite de la cáscara del limón, que sirve como repelente y neutralizador de insectos de piel blanda.",
-    "uso": "Rociar el preparado puro sin diluir sobre las plantas cada 3 días hasta eliminar la plaga.",
+    "uso": "Rociar el preparado puro sin diluir sobre las plantas cada 3 días hasta eliminar el insecto.",
     "ingredientes": [
       "2 limones",
       "1 litro de agua hirviendo"
@@ -107,19 +107,19 @@
       "Todos los pesticidas líquidos deben ser rociados en la tarde, una vez puesto el sol, para evitar quemar las hojas."
     ],
     "ficha": {
-      "Tipo de pesticida": "Insecticida",
+      "Tipo de repelente": "Insecticida",
       "Efecto": "Eliminador",
       "Formato": "Líquido",
       "Aplicación": "Rociar"
     },
-    "plagas": ["Pulgón", "Mosca blanca", "Trips", "Cochinilla"]
+    "insectos": ["Pulgón", "Mosca blanca", "Trips", "Cochinilla"]
   },
   {
     "imagen": "assets/pesticidas/tomatei.png",
     "nombre": "Insecticida de Tomate",
     "tipo": "Casero",
     "identificacion": "La hoja de tomate tiene grandes cantidades de alcaloides tóxicos para los insectos, transformándolo en un efectivo insecticida casero. Es capaz de eliminar insectos de piel blanda y además repeler hormigas cortadoras.",
-    "uso": "Semanalmente hasta eliminar la plaga.",
+    "uso": "Semanalmente hasta eliminar el insecto.",
     "ingredientes": [
       "Podas sanas de tomates (hojas y tallos)"
     ],
@@ -134,11 +134,11 @@
       "Se debe diluir al 20% con agua."
     ],
     "ficha": {
-      "Tipo de pesticida": "Insecticida",
+      "Tipo de repelente": "Insecticida",
       "Efecto": "Eliminador",
       "Formato": "Líquido",
       "Aplicación": "Rociar"
     },
-    "plagas": ["Pulgón", "Mosca blanca", "Cochinilla", "Trips", "Hormiga", "Minador"]
+    "insectos": ["Pulgón", "Mosca blanca", "Cochinilla", "Trips", "Hormiga", "Minador"]
   }
 ]

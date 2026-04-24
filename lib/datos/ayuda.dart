@@ -95,8 +95,8 @@ class _TutorialSection extends StatelessWidget {
           ),
           _buildStep(
             icon: Icons.bug_report_rounded,
-            title: 'Control de Plagas y Fertilizantes',
-            description: 'Consulta los módulos especializados para aprender a combatir plagas de forma orgánica o química, y descubre recetas para crear tus propios fertilizantes caseros.',
+            title: 'Control de Insectos y Fertilizantes',
+            description: 'Consulta los módulos especializados para aprender a combatir insectos de forma orgánica o química, y descubre recetas para crear tus propios fertilizantes caseros.',
           ),
 
           const SizedBox(height: 20),
