@@ -24,14 +24,19 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
   late TextEditingController _identificacionCtrl;
   late TextEditingController _siembraCtrl;
 
+  // Almácigo settings
+  bool _usaAlmacigo = false;
+  late TextEditingController _tiempoAlmacigoCtrl;
+
   String _tipo = 'Vegetal';
   String _estacion = 'Todas';
   String? _imagePath;
 
   final Map<String, TextEditingController> _fichaCtrls = {};
+  final List<String> _fichaKeys = [];
   final List<TextEditingController> _plagasCtrls = [];
 
-  final List<String> _fichaKeys = [
+  final List<String> _defaultFichaKeys = [
     'Temporada de siembra',
     'Época de siembra',
     'Tipo de siembra',
@@ -60,18 +65,28 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
     _identificacionCtrl = TextEditingController(text: c?.identificacion ?? '');
     _siembraCtrl = TextEditingController(text: c?.siembra ?? '');
 
+    final guia = c?.guiaRapida ?? {};
+    _usaAlmacigo = guia['usaAlmacigo'] == true;
+    _tiempoAlmacigoCtrl = TextEditingController(text: (guia['tiempoAlmacigo'] ?? 0).toString());
+
     if (c != null) {
       _tipo = c.tipo;
       _estacion = c.estacion;
       _imagePath = c.imagePath;
-      for (var key in _fichaKeys) {
+
+      // Unir llaves por defecto con las existentes en el cultivo
+      final allKeys = {..._defaultFichaKeys, ...c.ficha.keys};
+      for (var key in allKeys) {
+        _fichaKeys.add(key);
         _fichaCtrls[key] = TextEditingController(text: c.ficha[key] ?? '');
       }
+
       for (var p in c.plagas) {
         _plagasCtrls.add(TextEditingController(text: p));
       }
     } else {
-      for (var key in _fichaKeys) {
+      for (var key in _defaultFichaKeys) {
+        _fichaKeys.add(key);
         _fichaCtrls[key] = TextEditingController();
       }
     }
@@ -84,6 +99,7 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
     _cosechaMesesCtrl.dispose();
     _identificacionCtrl.dispose();
     _siembraCtrl.dispose();
+    _tiempoAlmacigoCtrl.dispose();
     for (var ctrl in _fichaCtrls.values) {
       ctrl.dispose();
     }
@@ -103,6 +119,48 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
     setState(() {
       _plagasCtrls[index].dispose();
       _plagasCtrls.removeAt(index);
+    });
+  }
+
+  void _addFichaField() {
+    final keyCtrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Nuevo campo personalizado'),
+        content: TextField(
+          controller: keyCtrl,
+          decoration: const InputDecoration(
+            labelText: 'Nombre del campo (ej: pH del suelo)',
+            hintText: 'Ingrese el nombre de la información adicional',
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
+          ElevatedButton(
+            onPressed: () {
+              final key = keyCtrl.text.trim();
+              if (key.isNotEmpty && !_fichaKeys.contains(key)) {
+                setState(() {
+                  _fichaKeys.add(key);
+                  _fichaCtrls[key] = TextEditingController();
+                });
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('AGREGAR'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _removeFichaField(String key) {
+    setState(() {
+      _fichaKeys.remove(key);
+      _fichaCtrls[key]?.dispose();
+      _fichaCtrls.remove(key);
     });
   }
 
@@ -168,11 +226,15 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
   void _save() {
     if (!_formKey.currentState!.validate()) return;
 
+    final guia = Map<String, dynamic>.from(widget.cultivo?.guiaRapida ?? {});
+    guia['usaAlmacigo'] = _usaAlmacigo;
+    guia['tiempoAlmacigo'] = int.tryParse(_tiempoAlmacigoCtrl.text.trim()) ?? 0;
+
     final nuevo = Cultivo(
       id: widget.cultivo?.id,
       nombre: _nombreCtrl.text.trim(),
       cientifico: _cientificoCtrl.text.trim(),
-      imagen: '',
+      imagen: widget.cultivo?.imagen ?? '',
       imagePath: _imagePath,
       cosechaMeses: int.tryParse(_cosechaMesesCtrl.text.trim()) ?? 0,
       tipo: _tipo,
@@ -181,6 +243,7 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
       siembra: _siembraCtrl.text.trim(),
       ficha: _fichaCtrls.map((k, v) => MapEntry(k, v.text.trim())),
       plagas: _plagasCtrls.map((e) => e.text.trim()).where((e) => e.isNotEmpty).toList(),
+      guiaRapida: guia,
     );
 
     Navigator.pop(context, nuevo);
@@ -268,13 +331,58 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
                   (v) => setState(() => _estacion = v!)),
 
                 const SizedBox(height: 20),
+                _buildSectionTitle('Configuración de Almácigo'),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      SwitchListTile(
+                        title: const Text('¿Requiere almácigo?', style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: const Text('Activa esta opción si el cultivo se inicia en semillero antes de trasplantar.'),
+                        value: _usaAlmacigo,
+                        activeColor: AppColors.greenDark,
+                        onChanged: (v) => setState(() => _usaAlmacigo = v),
+                      ),
+                      if (_usaAlmacigo)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: _buildTextField(_tiempoAlmacigoCtrl, 'Días en almácigo hasta trasplante', isNumber: true),
+                        ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
                 _buildSectionTitle('Detalles'),
                 _buildTextField(_identificacionCtrl, 'Identificación', maxLines: 3),
                 _buildTextField(_siembraCtrl, 'Instrucciones de Siembra', maxLines: 3),
 
                 const SizedBox(height: 20),
-                _buildSectionTitle('Ficha Técnica'),
-                ..._fichaKeys.map((key) => _buildTextField(_fichaCtrls[key]!, key)),
+                Row(
+                  children: [
+                    _buildSectionTitle('Ficha Técnica'),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: _addFichaField,
+                      icon: const Icon(Icons.add_circle_outline, color: AppColors.greenDark),
+                      tooltip: 'Agregar campo personalizado',
+                    ),
+                  ],
+                ),
+                ..._fichaKeys.map((key) => Row(
+                  children: [
+                    Expanded(child: _buildTextField(_fichaCtrls[key]!, key)),
+                    IconButton(
+                      onPressed: () => _removeFichaField(key),
+                      icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                      tooltip: 'Eliminar campo',
+                    ),
+                  ],
+                )),
 
                 const SizedBox(height: 20),
                 Row(

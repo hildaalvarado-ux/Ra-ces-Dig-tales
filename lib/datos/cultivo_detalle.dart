@@ -467,6 +467,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
     TimeOfDay selectedTime = const TimeOfDay(hour: 7, minute: 0);
     final nicknameCtrl = TextEditingController();
     Color selectedColor = Colors.green;
+    bool isAlmacigo = widget.cultivo.guiaRapida?['usaAlmacigo'] == true;
 
     final colors = [
       Colors.green,
@@ -551,6 +552,14 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                         if (picked != null) setState(() => selectedTime = picked);
                       },
                     ),
+                    const Divider(),
+                    CheckboxListTile(
+                      title: const Text('¿Sembrar en almácigo?', style: TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: const Text('Si se selecciona, el plan incluirá una tarea de trasplante.'),
+                      value: isAlmacigo,
+                      activeColor: AppColors.greenDark,
+                      onChanged: (v) => setState(() => isAlmacigo = v ?? false),
+                    ),
                   ],
                 ),
               ),
@@ -580,6 +589,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
           preferredTime: selectedTime,
           nickname: nicknameCtrl.text.trim().isEmpty ? null : nicknameCtrl.text.trim(),
           colorValue: selectedColor.value,
+          isAlmacigoOverride: isAlmacigo,
         );
 
         if (context.mounted) {
