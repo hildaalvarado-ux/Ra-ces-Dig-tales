@@ -19,9 +19,9 @@ class Fertilizante {
   final String identificacion;
   final String uso;
   final Map<String, String> ficha;
-  final String ingredientes;
-  final String elaboracion;
-  final String precauciones;
+  final List<String> ingredientes;
+  final List<String> elaboracion;
+  final List<String> precauciones;
   final bool esCasero;
   final String dificultad;
   final String faseAplicacion;
@@ -36,9 +36,9 @@ class Fertilizante {
     required this.identificacion,
     required this.uso,
     required this.ficha,
-    this.ingredientes = '',
-    this.elaboracion = '',
-    this.precauciones = '',
+    this.ingredientes = const [],
+    this.elaboracion = const [],
+    this.precauciones = const [],
     this.esCasero = false,
     this.dificultad = '',
     this.faseAplicacion = '',
@@ -71,6 +71,24 @@ class Fertilizante {
 
     final plagas = (j['insectos'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
 
+    final ingredientes = (j['ingredientes'] is List)
+        ? (j['ingredientes'] as List).map((e) => e.toString()).toList()
+        : (j['ingredientes'] != null && j['ingredientes'].toString().isNotEmpty)
+            ? [j['ingredientes'].toString()]
+            : <String>[];
+
+    final elaboracion = (j['elaboracion'] is List)
+        ? (j['elaboracion'] as List).map((e) => e.toString()).toList()
+        : (j['elaboracion'] != null && j['elaboracion'].toString().isNotEmpty)
+            ? [j['elaboracion'].toString()]
+            : <String>[];
+
+    final precauciones = (j['precauciones'] is List)
+        ? (j['precauciones'] as List).map((e) => e.toString()).toList()
+        : (j['precauciones'] != null && j['precauciones'].toString().isNotEmpty)
+            ? [j['precauciones'].toString()]
+            : <String>[];
+
     return Fertilizante(
       id: j['id'] as int?,
       nombre: (j['nombre'] ?? '').toString(),
@@ -80,9 +98,9 @@ class Fertilizante {
       identificacion: (j['identificacion'] ?? '').toString(),
       uso: (j['uso'] ?? '').toString(),
       ficha: ficha,
-      ingredientes: (j['ingredientes'] ?? '').toString(),
-      elaboracion: (j['elaboracion'] ?? '').toString(),
-      precauciones: (j['precauciones'] ?? '').toString(),
+      ingredientes: ingredientes,
+      elaboracion: elaboracion,
+      precauciones: precauciones,
       esCasero: j['esCasero'] ?? false,
       dificultad: (j['dificultad'] ?? '').toString(),
       faseAplicacion: (j['faseAplicacion'] ?? '').toString(),
@@ -303,13 +321,21 @@ class FertilizanteDetallePage extends StatelessWidget {
                       if (fertilizante.dificultad.isNotEmpty)
                         _InfoRow(label: 'Dificultad', value: fertilizante.dificultad),
                       if (fertilizante.ingredientes.isNotEmpty) ...[
-                        Text('Ingredientes:', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 13)),
-                        Text(fertilizante.ingredientes, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.8), fontWeight: FontWeight.w700)),
+                        Text('Ingredientes:', style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 13)),
+                        const SizedBox(height: 8),
+                        ...fertilizante.ingredientes.map((e) => _BulletRow(text: e, icon: Icons.check_circle)),
                         const SizedBox(height: 10),
                       ],
                       if (fertilizante.elaboracion.isNotEmpty) ...[
-                        Text('Instrucciones:', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 13)),
-                        Text(fertilizante.elaboracion, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.8), fontWeight: FontWeight.w700)),
+                        Text('Instrucciones:', style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 13)),
+                        const SizedBox(height: 8),
+                        ...List.generate(
+                          fertilizante.elaboracion.length,
+                          (index) => _StepRow(
+                            index: index + 1,
+                            text: fertilizante.elaboracion[index],
+                          ),
+                        ),
                       ],
                     ],
                   ),
@@ -321,7 +347,16 @@ class FertilizanteDetallePage extends StatelessWidget {
                   icon: 'assets/iconos/id.png',
                   title: 'Precauciones',
                   onHelp: () => HelpDialogs.show(context, title: 'Precauciones', text: 'Advertencias importantes.'),
-                  child: Text(fertilizante.precauciones, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                  child: Column(
+                    children: fertilizante.precauciones
+                        .map(
+                          (e) => _BulletRow(
+                            text: e,
+                            icon: Icons.warning_amber_rounded,
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -365,8 +400,7 @@ class _DetailCard extends StatelessWidget {
             children: [
               Image.asset(icon, width: 24, height: 24, errorBuilder: (_, __, ___) => const Icon(Icons.info_outline)),
               const SizedBox(width: 8),
-              Text(title, style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 16)),
-              const Spacer(),
+              Expanded(child: Text(title, style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 16))),
               IconButton(onPressed: onHelp, icon: const Icon(Icons.help_outline_rounded), color: AppColors.greenDarker),
             ],
           ),
@@ -382,19 +416,152 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
   const _InfoRow({required this.label, required this.value});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.greenDark.withOpacity(0.14)),
+        border: Border.all(
+          color: AppColors.greenDark.withOpacity(0.14),
+        ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: Text('$label: $value', style: const TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w700, height: 1.25))),
+          Container(
+            width: 9,
+            height: 9,
+            margin: const EdgeInsets.only(top: 5),
+            decoration: const BoxDecoration(
+              color: AppColors.greenDark,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  color: AppColors.greenDarker,
+                  height: 1.35,
+                  fontSize: 14,
+                ),
+                children: [
+                  TextSpan(
+                    text: '$label: ',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  TextSpan(
+                    text: value,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BulletRow extends StatelessWidget {
+  final String text;
+  final IconData icon;
+
+  const _BulletRow({
+    required this.text,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.greenDark.withOpacity(0.12),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.greenDark, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: AppColors.greenDarker,
+                fontWeight: FontWeight.w700,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepRow extends StatelessWidget {
+  final int index;
+  final String text;
+
+  const _StepRow({
+    required this.index,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.greenDark.withOpacity(0.12),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              color: AppColors.greenDark,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              '$index',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: AppColors.greenDarker,
+                fontWeight: FontWeight.w700,
+                height: 1.35,
+              ),
+            ),
+          ),
         ],
       ),
     );

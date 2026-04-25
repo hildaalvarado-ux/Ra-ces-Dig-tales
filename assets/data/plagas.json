@@ -6,13 +6,13 @@
     "danos": "Causa amarillamiento de las hojas y debilitamiento general de la planta al succionar la savia. También puede transmitir enfermedades virales graves.",
     "identificacion": "Se identifican fácilmente como diminutos puntos blancos que vuelan al mover o sacudir la planta. Se refugian principalmente en el envés de las hojas.",
     "causas": "Ambientes cálidos y húmedos, aunque también proliferan con la falta de humedad y escasez de lluvia. El exceso de malezas cercanas favorece su presencia.",
-    "control": "Preventivo: Evitar malezas y sembrar repelentes (albahaca, ruda). Tratamiento: Repelente de sábila (2L en 2L agua) o mezcla de aceite (5ml) y jabón líquido (1 cda) por litro de agua. Aplicar al atardecer.",
+    "control": "Preventivo: Evitar malezas y sembrar repelentes (albahaca, ruda). Tratamiento: Repelente APICHI (5ml/L), Caldo Ceniza (20ml/L) o Repelente de sábila (2L en 2L agua). También puede usar Extracto de hojas de tomate o Jabón barra.",
     "imagen": "assets/plagas/moscab.png",
     "imagenVisual": "assets/plagas/moscab_v.png",
     "ficha": {
       "Gravedad": "Alta",
       "Detección": "Vuelo al mover la planta",
-      "Tratamiento": "Jabón y aceite / Sábila",
+      "Tratamiento": "APICHI / Caldo Ceniza",
       "Prevención": "Plantas repelentes"
     }
   },
@@ -23,14 +23,14 @@
     "danos": "Provocan el enrollamiento de las hojas, presencia de melaza pegajosa que atrae hormigas y debilidad general en el crecimiento.",
     "identificacion": "Se localizan agrupados principalmente en el envés de las hojas y en los brotes nuevos más tiernos. Las altas temperaturas favorecen su desarrollo.",
     "causas": "Temperaturas altas, climas templados y exceso de nitrógeno en el suelo. La falta de enemigos naturales facilita su rápida propagación.",
-    "control": "Preventivo: Agua jabonosa cada 7 días. Tratamiento: Lejía de ceniza (10ml/L) con gotas de aceite, o mezcla de jabón líquido y alcohol (1 cda c/u por litro). Aplicar al atardecer.",
+    "control": "Preventivo: Repelente de jabón barra cada 7 días. Tratamiento: Lejía de ceniza (10ml/L), Caldo Ceniza (20ml/L), APICHI (5ml/L) o Sílico sulfocálcico.",
     "imagen": "assets/plagas/pulgon.png",
     "imagenVisual": "assets/plagas/pulgon_v.png",
     "ficha": {
       "Gravedad": "Media",
       "Detección": "Envés de las hojas",
-      "Tratamiento": "Lejía de ceniza / Alcohol",
-      "Prevención": "Control de nitrógeno"
+      "Tratamiento": "Lejía de ceniza / APICHI",
+      "Prevención": "Jabón barra"
     }
   },
   {
@@ -40,13 +40,13 @@
     "danos": "Causa perforaciones profundas en brotes tiernos, flores y frutos para alimentarse, destruyendo la cosecha desde adentro.",
     "identificacion": "Presencia de agujeros de entrada en los frutos y excrementos cerca de las perforaciones. Se recomienda monitorear brotes nuevos en busca de larvas.",
     "causas": "Aparece principalmente durante la etapa de floración de los cultivos, atraído por el aroma floral.",
-    "control": "Preventivo: Eliminar restos de cultivo y monitoreo manual. Tratamiento: Lejía de ceniza (10ml/L) o mezcla de vinagre, sal y bicarbonato (50ml/50g/50g en 5L agua).",
+    "control": "Preventivo: Eliminar restos de cultivo y monitoreo manual. Tratamiento: Lejía de ceniza (15ml/L), Extracto de hojas de tomate o Repelente a base planta epacina. Aplicar cada 5-7 días.",
     "imagen": "assets/plagas/gusano_fruto.png",
     "imagenVisual": "assets/plagas/gusano_fruto_v.png",
     "ficha": {
       "Gravedad": "Muy Alta",
       "Detección": "Agujeros en frutos",
-      "Tratamiento": "Lejía de ceniza / Manual",
+      "Tratamiento": "Lejía de ceniza / Epacina",
       "Prevención": "Limpieza de restos"
     }
   },
@@ -57,13 +57,13 @@
     "danos": "Dibuja 'caminos' o líneas blancas/transparentes en las hojas, causando debilitamiento, marchitamiento y reducción de la fotosíntesis.",
     "identificacion": "Presencia de galerías serpentiformes visibles en la superficie de las hojas. Busca activamente brotes tiernos durante el desarrollo de la planta.",
     "causas": "Climas cálidos y presencia de plantas hospederas silvestres. La falta de depredadores naturales acelera su avance.",
-    "control": "Preventivo: Plantas aromáticas y eliminar hojas afectadas. Tratamiento: Espolvorear ceniza fina o aplicar mezcla de bicarbonato y jabón líquido (1 cdta c/u por litro).",
+    "control": "Preventivo: Plantas aromáticas y eliminar hojas afectadas. Tratamiento: Repelente de sábila, APICHI (5ml/L) o Bicarbonato de sodio (1 cda/L). También puede usar Té de hojas de albahaca.",
     "imagen": "assets/plagas/minador.png",
     "imagenVisual": "assets/plagas/minador_v.png",
     "ficha": {
       "Gravedad": "Baja",
       "Detección": "Galerías en hojas",
-      "Tratamiento": "Ceniza / Bicarbonato",
+      "Tratamiento": "Sábila / APICHI",
       "Prevención": "Plantas aromáticas"
     }
   },
@@ -74,13 +74,13 @@
     "danos": "Provocan manchas de color plateado en las hojas y puntos negros (excrementos). Pueden deformar brotes y flores.",
     "identificacion": "Se observan como pequeñas líneas móviles en flores y brotes nuevos. Los ambientes secos favorecen su multiplicación rápida.",
     "causas": "Temperaturas elevadas, falta de humedad y presencia de malezas donde se refugian.",
-    "control": "Preventivo: Eliminar malezas y colocar trampas cromáticas (bolsas azules/amarillas con aceite). Tratamiento: Aceite con jabón o azufre (5g/L) al atardecer.",
+    "control": "Preventivo: Eliminar malezas y colocar trampas cromáticas. Tratamiento: Caldo Ceniza (20ml/L), APICHI (5ml/L), Té de hojas de albahaca o Repelente de jabón barra.",
     "imagen": "assets/plagas/pulgon.png",
     "imagenVisual": "assets/plagas/trips_v.png",
     "ficha": {
       "Gravedad": "Media",
       "Detección": "Flores y brotes",
-      "Tratamiento": "Azufre / Trampas",
+      "Tratamiento": "Caldo Ceniza / APICHI",
       "Prevención": "Humedad y limpieza"
     }
   },
@@ -91,13 +91,13 @@
     "danos": "Pueden defoliar plantas enteras en una sola noche, cortando hojas, tallos y flores de manera sistemática y rápida.",
     "identificacion": "Presencia de caminos despejados en el suelo y hormigas transportando trozos de hojas. Su mayor actividad ocurre durante la noche.",
     "causas": "Suelos muy secos y falta de materia orgánica protectora que distraiga su actividad del cultivo principal.",
-    "control": "Preventivo: Cáscaras de cítricos o ceniza en el nido. Tratamiento: Agua con detergente espumoso, cebo de arroz con bicarbonato o mezcla de bicarbonato, detergente y azúcar.",
+    "control": "Preventivo: Barreras de ceniza o cáscaras de cítricos. Tratamiento: Extracto de hojas de tomate frescas o verdes, Bicarbonato de sodio o cebo de arroz con bicarbonato.",
     "imagen": "assets/plagas/hormiga.png",
     "imagenVisual": "assets/plagas/hormiga_v.png",
     "ficha": {
       "Gravedad": "Alta",
       "Detección": "Caminos y nidos",
-      "Tratamiento": "Cebos / Detergente",
+      "Tratamiento": "Extracto tomate / Bicarbonato",
       "Prevención": "Barreras de ceniza"
     }
   },
@@ -108,13 +108,13 @@
     "danos": "Debilitamiento progresivo de la planta y aparición de fumagina (moho negro) sobre la melaza pegajosa que segregan.",
     "identificacion": "Manchas blancas con aspecto algodonoso o protuberancias cerosas pegadas a los tallos y el envés de las hojas.",
     "causas": "Aparecen en plantas débiles, con poco riego, en ambientes muy secos o que reciben poca luz solar.",
-    "control": "Preventivo: Podas de aireación y agua jabonosa. Tratamiento: Alcohol diluido, caldo ceniza (20ml/L) o espolvorear ceniza fina en zonas húmedas afectadas.",
+    "control": "Preventivo: Podas de aireación y jabón barra. Tratamiento: Caldo Ceniza (20ml/L), Repelente de sábila, Sílico sulfocálcico o alcohol diluido.",
     "imagen": "assets/plagas/cochinilla.png",
     "imagenVisual": "assets/plagas/cochinilla_v.png",
     "ficha": {
       "Gravedad": "Media",
       "Detección": "Tallos y axilas",
-      "Tratamiento": "Alcohol / Caldo ceniza",
+      "Tratamiento": "Caldo Ceniza / Sábila",
       "Prevención": "Poda y ventilación"
     }
   },
@@ -125,7 +125,7 @@
     "danos": "Causa un fuerte debilitamiento en la planta y es un importante transmisor de virus y marchitez bacteriana.",
     "identificacion": "Insectos rayados o manchados sobre las hojas. Atacan con mayor intensidad en épocas de calor y sequía.",
     "causas": "Mucho calor, falta de rotación de cultivos y presencia de restos de cosechas anteriores.",
-    "control": "Preventivo: Rotación de cultivos y trampa de melaza con levadura. Tratamiento: Aplicar repelente APICHI (5ml/L) cada 7 días al atardecer.",
+    "control": "Preventivo: Rotación de cultivos y trampas de melaza. Tratamiento: Aplicar repelente APICHI (5ml/L) cada 7 días al atardecer.",
     "imagen": "assets/plagas/escarabajo_pepino.png",
     "imagenVisual": "assets/plagas/escarabajo_pepino_v.png",
     "ficha": {
@@ -142,13 +142,13 @@
     "danos": "Causa numerosos agujeros redondos y pequeños en las hojas ('cribado'), lo que retrasa significativamente el crecimiento de la planta.",
     "identificacion": "Pequeños puntos negros que saltan al tocar la planta. Suele aparecer al inicio del ciclo del cultivo en épocas secas.",
     "causas": "Épocas secas, calor intenso y presencia de maleza abundante alrededor del huerto.",
-    "control": "Preventivo: Eliminar malezas y restos de cultivo anterior. Tratamiento: Caldo ceniza (20ml/L) o ceniza fina sobre hojas húmedas.",
+    "control": "Preventivo: Eliminar malezas y restos de cultivo. Tratamiento: Caldo Ceniza (20ml/L) o espolvorear ceniza fina sobre hojas húmedas.",
     "imagen": "assets/plagas/pulga_saltona.png",
     "imagenVisual": "assets/plagas/pulga_saltona_v.png",
     "ficha": {
       "Gravedad": "Media",
       "Detección": "Agujeros en hojas",
-      "Tratamiento": "Caldo ceniza / Ceniza",
+      "Tratamiento": "Caldo Ceniza / Ceniza",
       "Prevención": "Limpieza de maleza"
     }
   },
@@ -159,13 +159,13 @@
     "danos": "Las larvas se alimentan internamente del fruto, causando su pudrición y caída prematura antes de completar el desarrollo.",
     "identificacion": "Pequeños orificios en botones florales y caída masiva de chiles pequeños. Aparece en floración y formación de frutos.",
     "causas": "Permanencia del insecto en el suelo o restos de cultivos de chile de temporadas pasadas.",
-    "control": "Preventivo: Rotación de cultivos y eliminación de frutos caídos. Tratamiento: Macerado de ajo en lejía de ceniza (8ml/L) cada 5 días.",
+    "control": "Preventivo: Rotación de cultivos y eliminación de frutos caídos. Tratamiento: Repelente APICHI (5ml/L) o Macerado de ajo en lejía de ceniza (8ml/L) cada 5 días.",
     "imagen": "assets/plagas/picudo_chile.png",
     "imagenVisual": "assets/plagas/picudo_chile_v.png",
     "ficha": {
       "Gravedad": "Muy Alta",
       "Detección": "Botones y frutos",
-      "Tratamiento": "Ajo y lejía ceniza",
+      "Tratamiento": "APICHI / Lejía de ceniza",
       "Prevención": "Rotación de siembra"
     }
   },
@@ -182,7 +182,7 @@
     "ficha": {
       "Gravedad": "Alta",
       "Detección": "Toda la planta",
-      "Tratamiento": "APICHI / Ruda",
+      "Tratamiento": "APICHI / Limpieza",
       "Prevención": "Rotación y limpieza"
     }
   },
@@ -193,13 +193,13 @@
     "danos": "Provoca cicatrices y puntos amarillos en las hojas. En ataques severos, forma finas telarañas y causa la caída del follaje.",
     "identificacion": "Puntos diminutos en el envés de las hojas (común en pepino y chile). Se favorece por ambientes muy secos y calurosos.",
     "causas": "Condiciones de calor extremo y muy baja humedad ambiental. El exceso de abono nitrogenado también las favorece.",
-    "control": "Preventivo: Limpieza de malezas y pulverización con agua. Tratamiento: Jabón rallado disuelto o azufre (5g/L) al atardecer.",
+    "control": "Preventivo: Pulverización con agua. Tratamiento: Caldo Ceniza (20ml/L), Lejía de ceniza (10ml/L), Sílico sulfocálcico o Repelente de sábila.",
     "imagen": "assets/plagas/aranuela.png",
     "imagenVisual": "assets/plagas/aranuela_v.png",
     "ficha": {
       "Gravedad": "Alta",
       "Detección": "Envés (lupa)",
-      "Tratamiento": "Azufre / Jabón",
+      "Tratamiento": "Caldo Ceniza / Sábila",
       "Prevención": "Aumentar humedad"
     }
   },
@@ -210,14 +210,82 @@
     "danos": "Se alimentan de las raíces y la base del tallo, debilitando la planta hasta que muere repentinamente.",
     "identificacion": "Túneles de tierra en la base de las plantas o raíces que se deshacen al tocarlas. Activos en lugares húmedos.",
     "causas": "Exceso de humedad, mal drenaje y presencia de madera o restos vegetales enterrados en el suelo.",
-    "control": "Preventivo: Buen drenaje y eliminar madera enterrada. Tratamiento: Mezcla de cal y ceniza en círculo alrededor del tronco, o cebo de cartón húmedo.",
+    "control": "Preventivo: Buen drenaje. Tratamiento: Repelente E.M.5 (aplicado al suelo), mezcla de cal y ceniza en círculo, o cebo de cartón húmedo.",
     "imagen": "assets/plagas/comejen.png",
     "imagenVisual": "assets/plagas/comejen_v.png",
     "ficha": {
       "Gravedad": "Media",
       "Detección": "Raíces y base",
-      "Tratamiento": "Cal y ceniza / Cebo",
+      "Tratamiento": "E.M.5 / Cal y ceniza",
       "Prevención": "Drenaje y limpieza"
+    }
+  },
+  {
+    "nombre": "Chinche verde",
+    "cientifico": "Nezara viridula",
+    "descripcion": "Insecto de color verde intenso que succiona la savia de frutos y brotes, causando deformaciones y manchas.",
+    "danos": "Los frutos presentan picaduras que se transforman en manchas corchosas y mal sabor. Puede causar la caída de flores y frutos pequeños.",
+    "identificacion": "Insecto de cuerpo en forma de escudo, de color verde (aunque las ninfas pueden tener puntos blancos o rojos). Desprenden un olor fuerte al ser molestados.",
+    "causas": "Climas templados y presencia de malezas leguminosas cercanas.",
+    "control": "Preventivo: Eliminar malezas hospederas. Tratamiento: Repelente de ajo picante, Repelente a base planta epacina o recolección manual de adultos.",
+    "imagen": "assets/plagas/pulgon.png",
+    "imagenVisual": "assets/plagas/pulgon_v.png",
+    "ficha": {
+      "Gravedad": "Media",
+      "Detección": "Frutos y brotes",
+      "Tratamiento": "Ajo picante / Epacina",
+      "Prevención": "Control de malezas"
+    }
+  },
+  {
+    "nombre": "Oídio",
+    "cientifico": "Erysiphaceae",
+    "descripcion": "Hongo que se manifiesta como un polvo blanco o grisáceo sobre las hojas, tallos y frutos.",
+    "danos": "Reduce la fotosíntesis, debilita la planta y puede causar la deformación y caída de las hojas. Afecta la calidad de los frutos.",
+    "identificacion": "Manchas blancas con aspecto de harina en la superficie de las hojas. Suele aparecer en condiciones de alta humedad y temperaturas moderadas.",
+    "causas": "Sombreado excesivo, falta de ventilación y alta humedad ambiental con temperaturas entre 10°C y 25°C.",
+    "control": "Preventivo: Mejorar ventilación y evitar exceso de nitrógeno. Tratamiento: Fungicida de canela, Bicarbonato de sodio o Caldo Bordelés. También puede usar Caldo Ceniza.",
+    "imagen": "assets/plagas/moscab.png",
+    "imagenVisual": "assets/plagas/moscab_v.png",
+    "ficha": {
+      "Gravedad": "Media",
+      "Detección": "Polvo blanco en hojas",
+      "Tratamiento": "Canela / Bicarbonato",
+      "Prevención": "Ventilación y poda"
+    }
+  },
+  {
+    "nombre": "Babosas",
+    "cientifico": "Gastropoda",
+    "descripcion": "Moluscos sin concha que se alimentan de una gran variedad de plantas, especialmente brotes tiernos.",
+    "danos": "Grandes agujeros irregulares en las hojas y rastros de baba pegajosa.",
+    "identificacion": "Cuerpos blandos y alargados, activos principalmente de noche o en días nublados y húmedos.",
+    "causas": "Exceso de humedad y presencia de materia orgánica en descomposición.",
+    "control": "Preventivo: Ceniza de madera alrededor de las plantas. Tratamiento: Recolección manual o trampas de cerveza.",
+    "imagen": "assets/plagas/hormiga.png",
+    "imagenVisual": "assets/plagas/cochinilla_v.png",
+    "ficha": {
+      "Gravedad": "Baja",
+      "Detección": "Rastros de baba",
+      "Tratamiento": "Ceniza / Manual",
+      "Prevención": "Barreras físicas"
+    }
+  },
+  {
+    "nombre": "Caracoles",
+    "cientifico": "Gastropoda",
+    "descripcion": "Moluscos con concha espiral que se alimentan de tejidos vegetales tiernos.",
+    "danos": "Agujeros en hojas y tallos, similares a los de las babosas.",
+    "identificacion": "Concha calcárea visible. Se refugian en lugares frescos y sombreados durante el día.",
+    "causas": "Humedad alta y disponibilidad de follaje tierno.",
+    "control": "Preventivo: Ceniza de madera o cáscaras de huevo trituradas. Tratamiento: Recolección manual.",
+    "imagen": "assets/plagas/hormiga.png",
+    "imagenVisual": "assets/plagas/cochinilla_v.png",
+    "ficha": {
+      "Gravedad": "Baja",
+      "Detección": "Concha y baba",
+      "Tratamiento": "Ceniza / Manual",
+      "Prevención": "Barreras de ceniza"
     }
   }
 ]
