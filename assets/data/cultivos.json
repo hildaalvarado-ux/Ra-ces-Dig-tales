@@ -34,9 +34,22 @@
       "Temporada de cosecha": "Todo el año",
       "Época de cosecha": "Tardía"
     },
-    "insectos": ["Pulgón", "Cochinilla", "Minador", "Arañuela roja", "Hormiga"],
-    "beneficiosos": ["Chile verde", "Tomate", "Pepino"],
-    "perjudiciales": ["Frijol", "Ejotes"]
+    "insectos": [
+      "Pulgón",
+      "Cochinilla",
+      "Minador",
+      "Arañuela roja",
+      "Hormiga"
+    ],
+    "beneficiosos": [
+      "Chile verde",
+      "Tomate",
+      "Pepino"
+    ],
+    "perjudiciales": [
+      "Frijol",
+      "Ejotes"
+    ]
   },
   {
     "imagen": "assets/cultivos/rabano.jpg",
@@ -73,9 +86,23 @@
       "Temporada de cosecha": "Todo el año",
       "Época de cosecha": "Media"
     },
-    "insectos": ["Pulgón", "Mosca blanca", "Minador", "Arañuela roja", "trips"],
-    "beneficiosos": ["pepino", "Tomate", "Chile verde"],
-    "perjudiciales": ["repollo", "coliflor", "Brocoli"]
+    "insectos": [
+      "Pulgón",
+      "Mosca blanca",
+      "Minador",
+      "Arañuela roja",
+      "Trips"
+    ],
+    "beneficiosos": [
+      "Pepino",
+      "Tomate",
+      "Chile verde"
+    ],
+    "perjudiciales": [
+      "Repollo",
+      "Coliflor",
+      "Brocoli"
+    ]
   },
   {
     "imagen": "assets/cultivos/pepino.jpg",
@@ -112,9 +139,23 @@
       "Temporada de cosecha": "Todo el año",
       "Época de cosecha": "Toda"
     },
-    "insectos": ["Pulgón", "Mosca blanca", "Minador", "Arañuela roja", "oruga"],
-    "beneficiosos": ["Maíz", "Frijol", "Rabanito"],
-    "perjudiciales": ["Melón", "Sandía", "tomate"]
+    "insectos": [
+      "Pulgón",
+      "Mosca blanca",
+      "Minador",
+      "Arañuela roja",
+      "Oruga"
+    ],
+    "beneficiosos": [
+      "Maíz",
+      "Frijol",
+      "Rabanito"
+    ],
+    "perjudiciales": [
+      "Melón",
+      "Sandía",
+      "Tomate"
+    ]
   },
   {
     "imagen": "assets/cultivos/tomate.png",
@@ -135,16 +176,38 @@
       "distanciaTrasplante": "40-60 cm entre plantas"
     },
     "ficha": {
-      "Riego": "Frecuente",
-      "Luz": "Sol pleno",
-      "Suelo": "Rico en nutrientes",
-      "Distancia": "40cm",
+      "Temporada de siembra": "Todo el año",
+      "Época de siembra": "Cualquiera",
       "Tipo de siembra": "Almácigo",
-      "Profundidad de semilla": "0.5 cm"
+      "Profundidad de semilla": "0.5 cm",
+      "Distancia entre plantas": "40 cm",
+      "Fase lunar": "Creciente",
+      "Clima ideal": "Cálido",
+      "Resistencia al frío": "Baja",
+      "Temperatura mínima": "15°C",
+      "Temperatura máxima": "32°C",
+      "Riego": "Frecuente",
+      "Luz solar": "Sol pleno",
+      "Cosecha en": "4 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Mosca blanca", "Pulgón", "Minador", "Oruga"],
-    "beneficiosos": ["Cilantro", "Cebolla morada", "Chile verde", "Albahaca"],
-    "perjudiciales": ["Maíz", "Pepino"]
+    "insectos": [
+      "Mosca blanca",
+      "Pulgón",
+      "Minador",
+      "Oruga"
+    ],
+    "beneficiosos": [
+      "Cilantro",
+      "Cebolla morada",
+      "Chile verde",
+      "Albahaca"
+    ],
+    "perjudiciales": [
+      "Maíz",
+      "Pepino"
+    ]
   },
   {
     "imagen": "assets/cultivos/chile_verde.jpg",
@@ -166,17 +229,35 @@
     },
     "ficha": {
       "Temporada de siembra": "Todo el año",
+      "Época de siembra": "Toda",
       "Tipo de siembra": "Almácigo",
       "Profundidad de semilla": "1 cm",
       "Distancia entre plantas": "40 cm",
+      "Fase lunar": "Creciente",
       "Clima ideal": "Cálido",
+      "Resistencia al frío": "Sensible",
+      "Temperatura mínima": "18°C",
+      "Temperatura máxima": "35°C",
       "Riego": "Frecuente",
       "Luz solar": "Plena luz",
-      "Cosecha en": "4 meses"
+      "Cosecha en": "4 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Pulgón", "Mosca blanca", "Trips"],
-    "beneficiosos": ["Albahaca", "Tomate", "Cilantro"],
-    "perjudiciales": ["Frijol", "Maíz"]
+    "insectos": [
+      "Pulgón",
+      "Mosca blanca",
+      "Trips"
+    ],
+    "beneficiosos": [
+      "Albahaca",
+      "Tomate",
+      "Cilantro"
+    ],
+    "perjudiciales": [
+      "Frijol",
+      "Maíz"
+    ]
   },
   {
     "imagen": "assets/cultivos/pipian.jpg",
@@ -198,17 +279,33 @@
     },
     "ficha": {
       "Temporada de siembra": "Todo el año",
+      "Época de siembra": "Toda",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "2 cm",
       "Distancia entre plantas": "100 cm",
+      "Fase lunar": "Creciente",
       "Clima ideal": "Cálido",
+      "Resistencia al frío": "Sensible",
+      "Temperatura mínima": "18°C",
+      "Temperatura máxima": "35°C",
       "Riego": "Moderado",
       "Luz solar": "Plena luz",
-      "Cosecha en": "2 meses"
+      "Cosecha en": "2 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Temprana"
     },
-    "insectos": ["Mosca blanca", "Pulgón", "Gusano barrenador"],
-    "beneficiosos": ["Maíz", "Frijol"],
-    "perjudiciales": ["Pepino"]
+    "insectos": [
+      "Mosca blanca",
+      "Pulgón",
+      "Gusano barrenador"
+    ],
+    "beneficiosos": [
+      "Maíz",
+      "Frijol"
+    ],
+    "perjudiciales": [
+      "Pepino"
+    ]
   },
   {
     "imagen": "assets/cultivos/maiz_blanco.jpeg",
@@ -230,17 +327,33 @@
     },
     "ficha": {
       "Temporada de siembra": "Invierno (Mayo-Junio)",
+      "Época de siembra": "Invierno",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "5 cm",
       "Distancia entre plantas": "35 cm",
+      "Fase lunar": "Creciente",
       "Clima ideal": "Cálido",
+      "Resistencia al frío": "Media",
+      "Temperatura mínima": "15°C",
+      "Temperatura máxima": "35°C",
       "Riego": "Moderado",
       "Luz solar": "Plena luz",
-      "Cosecha en": "4 meses"
+      "Cosecha en": "4 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Gusano cogollero", "Pulgón"],
-    "beneficiosos": ["Frijol", "Sandía", "Pipián"],
-    "perjudiciales": ["Tomate"]
+    "insectos": [
+      "Gusano cogollero",
+      "Pulgón"
+    ],
+    "beneficiosos": [
+      "Frijol",
+      "Sandía",
+      "Pipián"
+    ],
+    "perjudiciales": [
+      "Tomate"
+    ]
   },
   {
     "imagen": "assets/cultivos/frijol.jpg",
@@ -262,20 +375,36 @@
     },
     "ficha": {
       "Temporada de siembra": "Todo el año",
+      "Época de siembra": "Toda",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "3 cm",
       "Distancia entre plantas": "20 cm",
+      "Fase lunar": "Menguante",
       "Clima ideal": "Templado-Cálido",
+      "Resistencia al frío": "Sensible",
+      "Temperatura mínima": "15°C",
+      "Temperatura máxima": "30°C",
       "Riego": "Moderado",
       "Luz solar": "Plena luz",
-      "Cosecha en": "3 meses"
+      "Cosecha en": "3 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Mosca blanca", "Picudo del frijol", "Babosas"],
-    "beneficiosos": ["Maíz", "Pepino"],
-    "perjudiciales": ["Cebolla morada"]
+    "insectos": [
+      "Mosca blanca",
+      "Picudo del frijol",
+      "Babosas"
+    ],
+    "beneficiosos": [
+      "Maíz",
+      "Pepino"
+    ],
+    "perjudiciales": [
+      "Cebolla morada"
+    ]
   },
   {
-    "imagen": "assets/cultivos/tomate.png",
+    "imagen": "assets/cultivos/maicillo.jpg",
     "nombre": "Maicillo",
     "cientifico": "Sorghum bicolor",
     "cosechaMeses": 4,
@@ -294,17 +423,31 @@
     },
     "ficha": {
       "Temporada de siembra": "Postrera (Agosto-Septiembre)",
+      "Época de siembra": "Postrera",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "3 cm",
       "Distancia entre plantas": "20 cm",
+      "Fase lunar": "Creciente",
       "Clima ideal": "Cálido y seco",
+      "Resistencia al frío": "Media",
+      "Temperatura mínima": "15°C",
+      "Temperatura máxima": "40°C",
       "Riego": "Bajo",
       "Luz solar": "Plena luz",
-      "Cosecha en": "4 meses"
+      "Cosecha en": "4 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Pulgón amarillo", "Gusano cogollero"],
-    "beneficiosos": ["Frijol"],
-    "perjudiciales": ["Ninguno reportado"]
+    "insectos": [
+      "Pulgón amarillo",
+      "Gusano cogollero"
+    ],
+    "beneficiosos": [
+      "Frijol"
+    ],
+    "perjudiciales": [
+      "Ninguno reportado"
+    ]
   },
   {
     "imagen": "assets/cultivos/arroz.jpg",
@@ -326,17 +469,31 @@
     },
     "ficha": {
       "Temporada de siembra": "Invierno",
+      "Época de siembra": "Invierno",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "2 cm",
       "Distancia entre plantas": "15 cm",
+      "Fase lunar": "Creciente",
       "Clima ideal": "Cálido y húmedo",
+      "Resistencia al frío": "Baja",
+      "Temperatura mínima": "20°C",
+      "Temperatura máxima": "35°C",
       "Riego": "Muy alto",
       "Luz solar": "Plena luz",
-      "Cosecha en": "5 meses"
+      "Cosecha en": "5 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Chinches", "Pájaro arrocero"],
-    "beneficiosos": ["Ninguno"],
-    "perjudiciales": ["Ninguno"]
+    "insectos": [
+      "Chinches",
+      "Pájaro arrocero"
+    ],
+    "beneficiosos": [
+      "Ninguno"
+    ],
+    "perjudiciales": [
+      "Ninguno"
+    ]
   },
   {
     "imagen": "assets/cultivos/chilejala.jpg",
@@ -358,17 +515,33 @@
     },
     "ficha": {
       "Temporada de siembra": "Todo el año",
+      "Época de siembra": "Toda",
       "Tipo de siembra": "Almácigo",
       "Profundidad de semilla": "1 cm",
       "Distancia entre plantas": "40 cm",
+      "Fase lunar": "Creciente",
       "Clima ideal": "Cálido",
+      "Resistencia al frío": "Sensible",
+      "Temperatura mínima": "18°C",
+      "Temperatura máxima": "32°C",
       "Riego": "Frecuente",
       "Luz solar": "Plena luz",
-      "Cosecha en": "4 meses"
+      "Cosecha en": "4 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Pulgón", "Mosca blanca", "Ácaros"],
-    "beneficiosos": ["Tomate", "Cebolla morada"],
-    "perjudiciales": ["Frijol"]
+    "insectos": [
+      "Pulgón",
+      "Mosca blanca",
+      "Ácaros"
+    ],
+    "beneficiosos": [
+      "Tomate",
+      "Cebolla morada"
+    ],
+    "perjudiciales": [
+      "Frijol"
+    ]
   },
   {
     "imagen": "assets/cultivos/cilantro.jpg",
@@ -390,17 +563,31 @@
     },
     "ficha": {
       "Temporada de siembra": "Todo el año",
+      "Época de siembra": "Toda",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "1 cm",
       "Distancia entre plantas": "10 cm",
+      "Fase lunar": "Creciente",
       "Clima ideal": "Templado",
+      "Resistencia al frío": "Media",
+      "Temperatura mínima": "10°C",
+      "Temperatura máxima": "25°C",
       "Riego": "Frecuente",
       "Luz solar": "Media luz",
-      "Cosecha en": "2 meses"
+      "Cosecha en": "2 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Pulgón"],
-    "beneficiosos": ["Tomate", "Chile verde"],
-    "perjudiciales": ["Hinojo"]
+    "insectos": [
+      "Pulgón"
+    ],
+    "beneficiosos": [
+      "Tomate",
+      "Chile verde"
+    ],
+    "perjudiciales": [
+      "Hinojo"
+    ]
   },
   {
     "imagen": "assets/cultivos/sandia.jpg",
@@ -422,17 +609,32 @@
     },
     "ficha": {
       "Temporada de siembra": "Época seca",
+      "Época de siembra": "Verano",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "3 cm",
       "Distancia entre plantas": "150 cm",
+      "Fase lunar": "Creciente",
       "Clima ideal": "Muy cálido",
+      "Resistencia al frío": "Baja",
+      "Temperatura mínima": "20°C",
+      "Temperatura máxima": "35°C",
       "Riego": "Moderado",
       "Luz solar": "Plena luz",
-      "Cosecha en": "4 meses"
+      "Cosecha en": "4 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Pulgón", "Mosca blanca", "Vaquitinas"],
-    "beneficiosos": ["Maíz"],
-    "perjudiciales": ["Pepino"]
+    "insectos": [
+      "Pulgón",
+      "Mosca blanca",
+      "Vaquitinas"
+    ],
+    "beneficiosos": [
+      "Maíz"
+    ],
+    "perjudiciales": [
+      "Pepino"
+    ]
   },
   {
     "imagen": "assets/cultivos/ejotes.jpg",
@@ -454,17 +656,31 @@
     },
     "ficha": {
       "Temporada de siembra": "Todo el año",
+      "Época de siembra": "Toda",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "3 cm",
       "Distancia entre plantas": "20 cm",
+      "Fase lunar": "Menguante",
       "Clima ideal": "Cálido",
+      "Resistencia al frío": "Sensible",
+      "Temperatura mínima": "15°C",
+      "Temperatura máxima": "30°C",
       "Riego": "Moderado",
       "Luz solar": "Plena luz",
-      "Cosecha en": "2 meses"
+      "Cosecha en": "2 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Temprana"
     },
-    "insectos": ["Mosca blanca", "Pulgón"],
-    "beneficiosos": ["Maíz"],
-    "perjudiciales": ["Cebolla morada"]
+    "insectos": [
+      "Mosca blanca",
+      "Pulgón"
+    ],
+    "beneficiosos": [
+      "Maíz"
+    ],
+    "perjudiciales": [
+      "Cebolla morada"
+    ]
   },
   {
     "imagen": "assets/cultivos/cebollines.jpg",
@@ -486,16 +702,30 @@
     },
     "ficha": {
       "Temporada de siembra": "Todo el año",
+      "Época de siembra": "Toda",
       "Tipo de siembra": "Directa",
       "Profundidad de semilla": "1 cm",
       "Distancia entre plantas": "10 cm",
+      "Fase lunar": "Menguante",
       "Clima ideal": "Templado-Cálido",
+      "Resistencia al frío": "Media",
+      "Temperatura mínima": "15°C",
+      "Temperatura máxima": "30°C",
       "Riego": "Frecuente",
       "Luz solar": "Plena luz",
-      "Cosecha en": "3 meses"
+      "Cosecha en": "3 meses",
+      "Temporada de cosecha": "Todo el año",
+      "Época de cosecha": "Media"
     },
-    "insectos": ["Trips", "Minador"],
-    "beneficiosos": ["Tomate"],
-    "perjudiciales": ["Frijol"]
+    "insectos": [
+      "Trips",
+      "Minador"
+    ],
+    "beneficiosos": [
+      "Tomate"
+    ],
+    "perjudiciales": [
+      "Frijol"
+    ]
   }
 ]
