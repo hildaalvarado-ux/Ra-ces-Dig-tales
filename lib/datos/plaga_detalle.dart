@@ -20,8 +20,11 @@ class Plaga {
   final String cientifico;
   final String imagen;
   final String? imagePath;
+  final String? imagenVisual; // New field for visual identification
+  final String descripcion; // New field
   final String identificacion;
   final String sintomas;
+  final String danos; // New field (replacing/merging with sintomas in UI if needed)
   final String causas;
   final String control;
   final Map<String, String> ficha;
@@ -32,8 +35,11 @@ class Plaga {
     required this.cientifico,
     required this.imagen,
     this.imagePath,
+    this.imagenVisual,
+    required this.descripcion,
     required this.identificacion,
     required this.sintomas,
+    required this.danos,
     required this.causas,
     required this.control,
     required this.ficha,
@@ -45,8 +51,11 @@ class Plaga {
         'cientifico': cientifico,
         'imagen': imagen,
         if (imagePath != null) 'imagePath': imagePath,
+        if (imagenVisual != null) 'imagenVisual': imagenVisual,
+        'descripcion': descripcion,
         'identificacion': identificacion,
         'sintomas': sintomas,
+        'danos': danos,
         'causas': causas,
         'control': control,
         'ficha': ficha,
@@ -64,8 +73,11 @@ class Plaga {
       cientifico: (j['cientifico'] ?? '').toString(),
       imagen: (j['imagen'] ?? '').toString(),
       imagePath: (j['imagePath'] ?? j['image_path'])?.toString(),
+      imagenVisual: j['imagenVisual']?.toString(),
+      descripcion: (j['descripcion'] ?? '').toString(),
       identificacion: (j['identificacion'] ?? '').toString(),
       sintomas: (j['sintomas'] ?? '').toString(),
+      danos: (j['danos'] ?? '').toString(),
       causas: (j['causas'] ?? '').toString(),
       control: (j['control'] ?? '').toString(),
       ficha: ficha,
@@ -260,33 +272,33 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
     }
   }
 
-  Widget _buildImage() {
-    if (widget.plaga.imagePath != null && widget.plaga.imagePath!.isNotEmpty) {
-      if (widget.plaga.imagePath!.startsWith('data:image')) {
+  Widget _buildImage({String? path, String? asset, double height = 180}) {
+    if (path != null && path.isNotEmpty) {
+      if (path.startsWith('data:image')) {
         return Image.memory(
-          base64Decode(widget.plaga.imagePath!.split(',').last),
+          base64Decode(path.split(',').last),
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
-            widget.plaga.imagePath!,
+            path,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
           );
         } else {
           return Image.file(
-            File(widget.plaga.imagePath!),
+            File(path),
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
           );
         }
       }
     }
-    if (widget.plaga.imagen.isNotEmpty) {
+    if (asset != null && asset.isNotEmpty) {
       return Image.asset(
-        widget.plaga.imagen,
+        asset,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded),
       );
@@ -322,19 +334,36 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.greenDark.withOpacity(0.12)),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: _buildImage(),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: _buildImage(path: widget.plaga.imagePath, asset: widget.plaga.imagen),
+                      ),
+                    ),
+                    if (widget.plaga.descripcion.isNotEmpty) ...[
+                      const SizedBox(height: 14),
+                      Text(
+                        widget.plaga.descripcion,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          height: 1.4,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.greenDarker,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
               const SizedBox(height: 12),
               _DetailCard(
                 icon: 'assets/iconos/id.png',
-                title: 'Identificación',
-                onHelp: () => HelpDialogs.show(context, title: 'Identificación', text: 'Cómo reconocer el insecto.'),
+                title: 'Identificación en campo',
+                onHelp: () => HelpDialogs.show(context, title: 'Identificación', text: 'Características para reconocerlo visualmente.'),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -343,29 +372,44 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
                       const SizedBox(height: 4),
                       Text(widget.plaga.cientifico, style: const TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w500)),
                     ],
+                    if (widget.plaga.imagenVisual != null && widget.plaga.imagenVisual!.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      const Text('Referencia visual:', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.greenDarker)),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: AspectRatio(
+                          aspectRatio: 1.5,
+                          child: _buildImage(asset: widget.plaga.imagenVisual),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
               const SizedBox(height: 12),
               _DetailCard(
-                icon: 'assets/iconos/verano.png', // Reusing icons
-                title: 'Síntomas',
-                onHelp: () => HelpDialogs.show(context, title: 'Síntomas', text: 'Daños que causa en el cultivo.'),
-                child: Text(widget.plaga.sintomas, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
+                icon: 'assets/iconos/verano.png',
+                title: 'Daños y síntomas',
+                onHelp: () => HelpDialogs.show(context, title: 'Daños', text: 'Impacto del insecto en el cultivo.'),
+                child: Text(
+                  widget.plaga.danos.isNotEmpty ? widget.plaga.danos : widget.plaga.sintomas,
+                  style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600),
+                ),
               ),
               const SizedBox(height: 12),
               _DetailCard(
                 icon: 'assets/iconos/id.png',
-                title: 'Causas',
-                onHelp: () => HelpDialogs.show(context, title: 'Causas', text: 'Por qué aparece este insecto.'),
+                title: 'Causas de aparición',
+                onHelp: () => HelpDialogs.show(context, title: 'Causas', text: 'Factores que favorecen su presencia.'),
                 child: Text(widget.plaga.causas.isEmpty ? 'Información no disponible.' : widget.plaga.causas, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 12),
               if (_affectedCrops.isNotEmpty) ...[
                 _DetailCard(
                   icon: 'assets/iconos/siembra.png',
-                  title: 'Cultivos que afecta',
-                  onHelp: () => HelpDialogs.show(context, title: 'Cultivos', text: 'Plantas sensibles a este insecto.'),
+                  title: 'Cultivos sensibles',
+                  onHelp: () => HelpDialogs.show(context, title: 'Cultivos', text: 'Plantas que suelen ser atacadas.'),
                   child: SizedBox(
                     height: 160,
                     child: ListView.builder(
@@ -386,9 +430,9 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
                 const SizedBox(height: 12),
               ],
               _DetailCard(
-                icon: 'assets/iconos/siembra.png', // Reusing icons
-                title: 'Cómo controlar',
-                onHelp: () => HelpDialogs.show(context, title: 'Control', text: 'Cómo combatir este insecto.'),
+                icon: 'assets/iconos/siembra.png',
+                title: 'Métodos de control',
+                onHelp: () => HelpDialogs.show(context, title: 'Control', text: 'Estrategias para combatir al insecto.'),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -430,8 +474,8 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
               const SizedBox(height: 12),
               _DetailCard(
                 icon: 'assets/iconos/indirecta.png',
-                title: 'Ficha rápida',
-                onHelp: () => HelpDialogs.show(context, title: 'Ficha rápida', text: 'Datos clave.'),
+                title: 'Ficha técnica resumida',
+                onHelp: () => HelpDialogs.show(context, title: 'Ficha técnica', text: 'Datos clave y rápidos.'),
                 child: Column(
                   children: widget.plaga.ficha.entries.map((e) => _InfoRow(label: e.key, value: e.value)).toList(),
                 ),
