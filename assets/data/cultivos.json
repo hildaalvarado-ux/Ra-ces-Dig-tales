@@ -147,7 +147,7 @@
     "perjudiciales": ["Maíz", "Pepino"]
   },
   {
-    "imagen": "assets/cultivos/pepino.jpg",
+    "imagen": "assets/cultivos/chile_verde.jpg",
     "nombre": "Chile verde",
     "cientifico": "Capsicum annuum",
     "cosechaMeses": 4,
@@ -179,7 +179,7 @@
     "perjudiciales": ["Frijol", "Maíz"]
   },
   {
-    "imagen": "assets/cultivos/pepino.jpg",
+    "imagen": "assets/cultivos/pipian.jpg",
     "nombre": "Pipián",
     "cientifico": "Cucurbita mixta",
     "cosechaMeses": 2,
@@ -211,7 +211,7 @@
     "perjudiciales": ["Pepino"]
   },
   {
-    "imagen": "assets/cultivos/tomate.png",
+    "imagen": "assets/cultivos/maiz_blanco.jpeg",
     "nombre": "Maíz",
     "cientifico": "Zea mays",
     "cosechaMeses": 4,
@@ -243,7 +243,7 @@
     "perjudiciales": ["Tomate"]
   },
   {
-    "imagen": "assets/cultivos/pepino.jpg",
+    "imagen": "assets/cultivos/frijol.jpg",
     "nombre": "Frijol",
     "cientifico": "Phaseolus vulgaris",
     "cosechaMeses": 3,
@@ -307,7 +307,7 @@
     "perjudiciales": ["Ninguno reportado"]
   },
   {
-    "imagen": "assets/cultivos/tomate.png",
+    "imagen": "assets/cultivos/arroz.jpg",
     "nombre": "Arroz",
     "cientifico": "Oryza sativa",
     "cosechaMeses": 5,
@@ -339,7 +339,7 @@
     "perjudiciales": ["Ninguno"]
   },
   {
-    "imagen": "assets/cultivos/pepino.jpg",
+    "imagen": "assets/cultivos/chilejala.jpg",
     "nombre": "Chile jalapeño",
     "cientifico": "Capsicum annuum",
     "cosechaMeses": 4,
@@ -371,7 +371,7 @@
     "perjudiciales": ["Frijol"]
   },
   {
-    "imagen": "assets/cultivos/pepino.jpg",
+    "imagen": "assets/cultivos/cilantro.jpg",
     "nombre": "Cilantro",
     "cientifico": "Coriandrum sativum",
     "cosechaMeses": 2,
@@ -403,7 +403,7 @@
     "perjudiciales": ["Hinojo"]
   },
   {
-    "imagen": "assets/cultivos/pepino.jpg",
+    "imagen": "assets/cultivos/sandia.jpg",
     "nombre": "Sandía",
     "cientifico": "Citrullus lanatus",
     "cosechaMeses": 4,
@@ -435,7 +435,7 @@
     "perjudiciales": ["Pepino"]
   },
   {
-    "imagen": "assets/cultivos/pepino.jpg",
+    "imagen": "assets/cultivos/ejotes.jpg",
     "nombre": "Ejotes",
     "cientifico": "Phaseolus vulgaris",
     "cosechaMeses": 2,
@@ -467,7 +467,7 @@
     "perjudiciales": ["Cebolla morada"]
   },
   {
-    "imagen": "assets/cultivos/cebolla.jpg",
+    "imagen": "assets/cultivos/cebollines.jpg",
     "nombre": "Cebollines",
     "cientifico": "Allium fistulosum",
     "cosechaMeses": 3,
