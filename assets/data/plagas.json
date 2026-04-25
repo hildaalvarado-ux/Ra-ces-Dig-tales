@@ -28,7 +28,7 @@
       "Tratamiento": "Limpieza de hojas",
       "Prevención": "Control de humedad"
     },
-    "pesticidas": ["Jabón potásico", "Infusión de ajo"]
+    "repelentes": ["Jabón potásico", "Infusión de ajo"]
   },
   {
     "imagen": "assets/plagas/hormiga.png",

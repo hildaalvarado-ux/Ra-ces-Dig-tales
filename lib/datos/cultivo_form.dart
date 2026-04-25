@@ -387,7 +387,7 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
                 const SizedBox(height: 20),
                 Row(
                   children: [
-                    _buildSectionTitle('Plagas'),
+                    _buildSectionTitle('Insectos'),
                     const Spacer(),
                     IconButton(
                       onPressed: _addPlaga,
@@ -398,7 +398,7 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
                 ...List.generate(_plagasCtrls.length, (index) {
                   return Row(
                     children: [
-                      Expanded(child: _buildTextField(_plagasCtrls[index], 'Plaga ${index + 1}')),
+                      Expanded(child: _buildTextField(_plagasCtrls[index], 'Insecto ${index + 1}')),
                       IconButton(
                         onPressed: () => _removePlaga(index),
                         icon: const Icon(Icons.remove_circle_outline, color: Colors.red),

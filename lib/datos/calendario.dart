@@ -721,7 +721,7 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
               dense: true,
             ),
             CheckboxListTile(
-              title: const Text('¿Se detectó alguna plaga?'),
+              title: const Text('¿Se detectó algún insecto?'),
               value: _hasPest,
               onChanged: (v) => setState(() => _hasPest = v!),
               controlAffinity: ListTileControlAffinity.leading,
@@ -994,7 +994,7 @@ class CropPlanGenerator {
           planId: drift.Value(planId),
           userId: userId,
           title: 'Aplicar preventivo: ${cultivo.nombre}',
-          description: drift.Value('Uso de pesticida orgánico o preventivo recomendado.'),
+          description: drift.Value('Uso de repelente orgánico o preventivo recomendado.'),
           date: taskDate,
           type: 'Pesticida',
         ));

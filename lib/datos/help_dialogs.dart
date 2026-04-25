@@ -49,11 +49,11 @@ class HelpDialogs {
       case 'Gravedad':
         return 'Nivel de daño que puede causar al cultivo si no se controla.';
       case 'Detección':
-        return 'Dónde buscar para encontrar rastros de la plaga.';
+        return 'Dónde buscar para encontrar rastros del insecto.';
       case 'Tratamiento':
-        return 'Acciones recomendadas para eliminar o reducir la plaga.';
+        return 'Acciones recomendadas para eliminar o reducir el insecto.';
       case 'Prevención':
-        return 'Acciones para evitar que la plaga aparezca.';
+        return 'Acciones para evitar que el insecto aparezca.';
       default:
         return 'Información de referencia para este campo.';
     }

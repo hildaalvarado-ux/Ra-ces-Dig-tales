@@ -223,7 +223,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
       final archive = Archive();
 
       final jsonStr = jsonEncode(widget.plaga.toJson());
-      archive.addFile(ArchiveFile('plaga.json', jsonStr.length, utf8.encode(jsonStr)));
+      archive.addFile(ArchiveFile('insecto.json', jsonStr.length, utf8.encode(jsonStr)));
 
       if (widget.plaga.imagePath != null && widget.plaga.imagePath!.isNotEmpty) {
         if (widget.plaga.imagePath!.startsWith('data:image')) {
@@ -252,7 +252,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
         final tempDir = await getTemporaryDirectory();
         final zipFile = File('${tempDir.path}/${widget.plaga.nombre}.rdc');
         await zipFile.writeAsBytes(zipData);
-        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira esta plaga: ${widget.plaga.nombre}');
+        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira este insecto: ${widget.plaga.nombre}');
       }
     } catch (e) {
       if (!context.mounted) return;
@@ -334,7 +334,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
               _DetailCard(
                 icon: 'assets/iconos/id.png',
                 title: 'Identificación',
-                onHelp: () => HelpDialogs.show(context, title: 'Identificación', text: 'Cómo reconocer la plaga.'),
+                onHelp: () => HelpDialogs.show(context, title: 'Identificación', text: 'Cómo reconocer el insecto.'),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -357,7 +357,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
               _DetailCard(
                 icon: 'assets/iconos/id.png',
                 title: 'Causas',
-                onHelp: () => HelpDialogs.show(context, title: 'Causas', text: 'Por qué aparece esta plaga.'),
+                onHelp: () => HelpDialogs.show(context, title: 'Causas', text: 'Por qué aparece este insecto.'),
                 child: Text(widget.plaga.causas.isEmpty ? 'Información no disponible.' : widget.plaga.causas, style: TextStyle(color: AppColors.greenDarker.withOpacity(0.86), height: 1.35, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 12),
@@ -365,7 +365,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
                 _DetailCard(
                   icon: 'assets/iconos/siembra.png',
                   title: 'Cultivos que afecta',
-                  onHelp: () => HelpDialogs.show(context, title: 'Cultivos', text: 'Plantas sensibles a esta plaga.'),
+                  onHelp: () => HelpDialogs.show(context, title: 'Cultivos', text: 'Plantas sensibles a este insecto.'),
                   child: SizedBox(
                     height: 160,
                     child: ListView.builder(
@@ -388,7 +388,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
               _DetailCard(
                 icon: 'assets/iconos/siembra.png', // Reusing icons
                 title: 'Cómo controlar',
-                onHelp: () => HelpDialogs.show(context, title: 'Control', text: 'Cómo combatir esta plaga.'),
+                onHelp: () => HelpDialogs.show(context, title: 'Control', text: 'Cómo combatir este insecto.'),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

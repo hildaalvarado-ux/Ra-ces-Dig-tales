@@ -477,7 +477,7 @@ class _HistoryObservationTile extends StatelessWidget {
             runSpacing: 8,
             children: [
               if (obs.hasIrrigation) _IndicatorIcon(icon: Icons.water_drop, color: Colors.blue, label: 'Riego'),
-              if (obs.hasPest) _IndicatorIcon(icon: Icons.bug_report, color: Colors.red, label: 'Plaga'),
+              if (obs.hasPest) _IndicatorIcon(icon: Icons.bug_report, color: Colors.red, label: 'Insecto'),
               if (obs.hasFertilization) _IndicatorIcon(icon: Icons.science_rounded, color: Colors.orange, label: 'Fert.'),
               if (obs.hasTransplant) _IndicatorIcon(icon: Icons.import_export_rounded, color: Colors.teal, label: 'Trasp.'),
             ],
