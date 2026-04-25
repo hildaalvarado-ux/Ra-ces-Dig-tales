@@ -1,34 +1,41 @@
 [
   {
-    "imagen": "assets/pesticidas/agua.png",
-    "nombre": "Agua jabonosa",
+    "imagen": "assets/pesticidas/jabón_barra.png",
+    "nombre": "Repelente de jabón barra",
     "tipo": "Casero",
-    "identificacion": "El agua jabonosa consiste en el insecticida más fácil y efectivo que puede realizarse. Actúa debilitando la piel protectora de los insectos de cuerpo blando, provocando que se sequen. Esta base jabonosa puede incluso ser mezclada con otros ingredientes para preparar insecticidas aún más potentes.",
-    "uso": "Preventivo: rociar una vez cada 7 o 15 días. Intensivo: una vez cada 3 días durante un mínimo de un mes o hasta eliminar el insecto.",
+    "identificacion": "Efectivo contra insectos de cuerpo blando. Actúa debilitando la piel protectora, provocando deshidratación.",
+    "uso": "De manera preventiva cada 7 días. Aplicar puro sin disolver.",
     "ingredientes": [
-      "50 g (1/4) de jabón en barra puro (blanco, sin aditivos ni aromas)",
-      "1 litro de agua hirviendo"
+      "1 cucharada de jabón rallado (10 g) o 10 ml de jabón líquido",
+      "1 litro de agua caliente",
+      "5 ml de aceite de cocina",
+      "1 ml de alcohol"
     ],
     "elaboracion": [
-      "Utilizar sólo 50 g o 1/4 del jabón.",
-      "Cortar el trozo y picarlo en pequeños trocitos.",
-      "Agregar el agua hirviendo y revolver hasta disolver.",
-      "Dejar reposar 24 horas o hasta que se disuelva por completo.",
-      "Se obtiene el concentrado de jabón, que se puede almacenar en un lugar oscuro por varios meses.",
-      "Agregar 40 ml o 3 cucharadas soperas del concentrado de jabón a un litro de agua."
+      "Agregue el jabón en el agua caliente.",
+      "Mezcle bien hasta que esté bien diluido y espere a que se enfríe.",
+      "Agregue 5 ml de aceite de cocina y vuelva a mezclar.",
+      "Añada 1 ml de alcohol para potenciar la fórmula."
     ],
     "precauciones": [
-      "No pasarse de la proporción del concentrado jabonoso en el agua, porque podría quemarse la planta.",
-      "Todos los pesticidas líquidos deben ser rociados en la tarde, una vez puesto el sol, para evitar quemar las hojas.",
-      "Se puede almacenar en lugar oscuro por varios meses."
+      "Aplique el mismo día de preparación.",
+      "Aplicar por la mañana o al atardecer.",
+      "No se recomienda guardar."
     ],
     "ficha": {
       "Tipo de repelente": "Insecticida",
-      "Efecto": "Eliminador",
+      "Efecto": "Contacto",
       "Formato": "Líquido",
       "Aplicación": "Rociar"
     },
-    "insectos": ["Pulgón", "Trips", "Mosca blanca", "Cochinilla"]
+    "insectos": [
+      "Araña roja",
+      "Cochinilla",
+      "Gusano perforador",
+      "Mosca blanca",
+      "Pulgones",
+      "Trips"
+    ]
   },
   {
     "imagen": "assets/pesticidas/ajop.png",
@@ -62,7 +69,12 @@
       "Formato": "Líquido",
       "Aplicación": "Rociar"
     },
-    "insectos": ["Cochinilla", "Chinche verde", "Arañuela roja", "Oruga"]
+    "insectos": [
+      "Araña roja",
+      "Chinche verde",
+      "Cochinilla",
+      "Gusano perforador"
+    ]
   },
   {
     "imagen": "assets/pesticidas/canela.png",
@@ -85,7 +97,9 @@
       "Formato": "Sólido",
       "Aplicación": "Dispersar"
     },
-    "insectos": ["Oídio"]
+    "insectos": [
+      "Oídio"
+    ]
   },
   {
     "imagen": "assets/pesticidas/limon.png",
@@ -112,26 +126,33 @@
       "Formato": "Líquido",
       "Aplicación": "Rociar"
     },
-    "insectos": ["Pulgón", "Mosca blanca", "Trips", "Cochinilla"]
+    "insectos": [
+      "Cochinilla",
+      "Mosca blanca",
+      "Pulgones",
+      "Trips"
+    ]
   },
   {
     "imagen": "assets/pesticidas/tomatei.png",
-    "nombre": "Insecticida de Tomate",
+    "nombre": "Extracto de hojas de tomate frescas o verdes",
     "tipo": "Casero",
-    "identificacion": "La hoja de tomate tiene grandes cantidades de alcaloides tóxicos para los insectos, transformándolo en un efectivo insecticida casero. Es capaz de eliminar insectos de piel blanda y además repeler hormigas cortadoras.",
-    "uso": "Semanalmente hasta eliminar el insecto.",
+    "identificacion": "La hoja de tomate tiene alcaloides tóxicos para los insectos. Ayuda a controlar pulgones, ácaros, orugas, mosca blanca, trips, araña roja y gusanos.",
+    "uso": "Mezcle 1 litro de extracto en 3 litros de agua. Aplíquelo al atardecer cada 7 días.",
     "ingredientes": [
-      "Podas sanas de tomates (hojas y tallos)"
+      "2 tazas de hojas de tomate frescas picadas",
+      "1 litro de agua",
+      "1 cucharada de jabón líquido"
     ],
     "elaboracion": [
-      "Picar las hojas y tallos lo más pequeño posible en un recipiente plástico.",
-      "Agregar 10 veces la cantidad de agua (por 100 g de hojas de tomate, 1 litro de agua).",
-      "Dejar reposar y fermentar por 5 días, revolviendo y mezclando cada día.",
-      "Filtrar bien hasta quedarse sólo con el líquido.",
-      "Se puede conservar el concentrado en envase de vidrio hasta 30 días en refrigerador."
+      "Coloque las hojas picadas en un recipiente con el litro de agua.",
+      "Tape sin sellar completamente y deje fermentar por 24 a 48 horas.",
+      "Cuele muy bien con una manta fina.",
+      "Agregue una cucharada de jabón líquido para potenciar la fórmula."
     ],
     "precauciones": [
-      "Se debe diluir al 20% con agua."
+      "No se recomienda guardarlo por más de 3 días.",
+      "Es oportuno utilizar las hojas después de realizar poda."
     ],
     "ficha": {
       "Tipo de repelente": "Insecticida",
@@ -139,6 +160,364 @@
       "Formato": "Líquido",
       "Aplicación": "Rociar"
     },
-    "insectos": ["Pulgón", "Mosca blanca", "Cochinilla", "Trips", "Hormiga", "Minador"]
+    "insectos": [
+      "Araña roja",
+      "Cochinilla",
+      "Gusano perforador",
+      "Minador de la hoja",
+      "Mosca blanca",
+      "Pulgones",
+      "Trips",
+      "Zompopos"
+    ]
+  },
+  {
+    "nombre": "Lejía de ceniza",
+    "imagen": "assets/pesticidas/lejia_ceniza.png",
+    "tipo": "Casero",
+    "identificacion": "Controla insectos y enfermedades (mal del talluelo, marchitez bacteriana). También desinfecta herramientas.",
+    "uso": "Mezcle 10 ml en un litro de agua. Para gusanos use 15 ml/litro. Aplique cada 5 a 7 días.",
+    "ingredientes": [
+      "1 taza de ceniza de leña limpia (sin clavos ni plásticos)",
+      "2 tazas de agua lluvia o sin cloro"
+    ],
+    "elaboracion": [
+      "Coloque la ceniza colada en una cubeta y agregue el agua.",
+      "Remueva al menos una vez al día durante 7 días.",
+      "Pasados los 7 días, cuele el líquido (la lejía) evitando mezclar con el fondo.",
+      "Envasar en botella oscura alejada del sol."
+    ],
+    "precauciones": [
+      "Evitar el uso de metales para la elaboración y almacenamiento.",
+      "Dosis para bomba de 17 litros: 175 ml."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Controlador",
+      "Efecto": "Multi-acción",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Araña roja",
+      "Gusano perforador",
+      "Mosca blanca",
+      "Picudo del Chile",
+      "Pulgones",
+      "Trips"
+    ]
+  },
+  {
+    "nombre": "Repelente de sábila",
+    "imagen": "assets/pesticidas/sabila.png",
+    "tipo": "Casero",
+    "identificacion": "Efectivo contra pulgones, ácaros, cochinillas, minador, araña roja, trips y algunos hongos.",
+    "uso": "Mezcle 2 litros de repelente con 2 litros de agua. Aplique cada 8 días por la mañana o atardecer.",
+    "ingredientes": [
+      "1 hoja de sábila madura (la más cercana al suelo)",
+      "2 litros de agua"
+    ],
+    "elaboracion": [
+      "Corte la hoja en trozos pequeños.",
+      "Agregue los trozos en 2 litros de agua en un recipiente plástico.",
+      "Fermente por un máximo de 24 horas en lugar alejado del sol."
+    ],
+    "precauciones": [
+      "No se debe guardar. Si sobra, refrigerar máximo 5 días.",
+      "Elaborar 24 horas antes de aplicar."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Repelente",
+      "Efecto": "Protector",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Araña roja",
+      "Cochinilla",
+      "Minador de la hoja",
+      "Mosca blanca",
+      "Pulgones",
+      "Trips"
+    ]
+  },
+  {
+    "nombre": "Té de hojas de albahaca",
+    "imagen": "assets/pesticidas/albahaca.png",
+    "tipo": "Casero",
+    "identificacion": "Excelente repelente contra mosca blanca, pulgones, trips, ácaros y orugas.",
+    "uso": "200 ml por litro de agua. Aplique cada 8 días (o cada 4 si hay plaga).",
+    "ingredientes": [
+      "300 g (7 tazas) de hojas de albahaca picadas",
+      "1 litro de agua",
+      "1 cucharadita de jabón líquido (10 ml)"
+    ],
+    "elaboracion": [
+      "Ponga a hervir 1 litro de agua.",
+      "Cuando hierva, agregue la albahaca y deje hervir 5 minutos a fuego lento.",
+      "Apague, tape y deje reposar 12 horas.",
+      "Cuele y agregue el jabón líquido."
+    ],
+    "precauciones": [
+      "Elaborar al momento. No se recomienda guardar.",
+      "Aplicar por la mañana o al atardecer."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Repelente",
+      "Efecto": "Aromático",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Araña roja",
+      "Gusano perforador",
+      "Minador de la hoja",
+      "Mosca blanca",
+      "Pulgones",
+      "Trips"
+    ]
+  },
+  {
+    "nombre": "Repelente APICHI",
+    "imagen": "assets/pesticidas/apichi.png",
+    "tipo": "Casero",
+    "identificacion": "Controla mosca blanca, ácaros, trips, pulgones, picudo del chile y minador.",
+    "uso": "5 ml por litro de agua. Aplique cada 8 o 15 días al amanecer o atardecer.",
+    "ingredientes": [
+      "1 libra de ajo molido",
+      "1 libra de pimienta negra",
+      "1 libra de chile picante molido",
+      "1 litro de alcohol o vinagre",
+      "15 litros de microorganismos líquidos o agua lluvia",
+      "5 cucharadas de canela (opcional)"
+    ],
+    "elaboracion": [
+      "En una cubeta de 20 litros, agregue ajo, pimienta, chile y alcohol.",
+      "Llene con los microorganismos o agua.",
+      "Tape herméticamente sin entrada de aire.",
+      "Pasados 15 días, colar con manta fina."
+    ],
+    "precauciones": [
+      "Preparar 15 días antes de necesitarlo.",
+      "Dosis para bomba de 17 litros: 85 ml."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Insecticida",
+      "Efecto": "Potente",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Chicharrita",
+      "Escarabajo de pepino",
+      "Minador de la hoja",
+      "Mosca blanca",
+      "Picudo del Chile",
+      "Pulgones",
+      "Trips"
+    ]
+  },
+  {
+    "nombre": "Repelente E.M.5",
+    "imagen": "assets/pesticidas/em5.png",
+    "tipo": "Casero",
+    "identificacion": "Aporta minerales, controla insectos, nemátodos y hongos.",
+    "uso": "15 ml por litro. Aplique cada 10 días al atardecer. Al suelo: 1 L por bomba para nemátodos.",
+    "ingredientes": [
+      "1/2 libra de jengibre, cebolla morada, ajos y chiles picantes (todo picado)",
+      "1/2 litro de melaza pura",
+      "250 ml de vinagre natural",
+      "250 ml de alcohol (80-90%)",
+      "3 libras de plantas aromáticas (albahaca, ruda, menta, etc.)",
+      "1 litro de microorganismos líquidos",
+      "Agua"
+    ],
+    "elaboracion": [
+      "Llene cubeta a la mitad con agua y disuelva la melaza.",
+      "Agregue el jengibre, cebolla, ajo y chiles picados.",
+      "Agregue vinagre, alcohol y las plantas aromáticas picadas.",
+      "Añada microorganismos, complete con agua y tape.",
+      "Remueva una vez al día por 15 días."
+    ],
+    "precauciones": [
+      "Elaborar 15-20 días antes de aplicar.",
+      "Ideal para curar el suelo antes de sembrar."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Controlador",
+      "Efecto": "Multi-acción",
+      "Formato": "Líquido",
+      "Aplicación": "Foliar y Suelo"
+    },
+    "insectos": [
+      "Comején",
+      "Mosca blanca",
+      "Pulgones",
+      "Trips"
+    ]
+  },
+  {
+    "nombre": "Repelente a base planta epacina",
+    "imagen": "assets/pesticidas/epacina.png",
+    "tipo": "Casero",
+    "identificacion": "Desprende fuerte olor a azufre. Funciona contra pulgones, mosca blanca, gusanos de suelo, chinches, etc.",
+    "uso": "15 ml por litro de agua. Aplique cada 8 días al atardecer.",
+    "ingredientes": [
+      "2 libras de raíces o tallos de epacina picados",
+      "1 libra de ajos molidos",
+      "1 galón de agua"
+    ],
+    "elaboracion": [
+      "Agregue los materiales en una cubeta con el agua.",
+      "Tape herméticamente y deje reposar 3 días.",
+      "Cuele y almacene en recipientes oscuros."
+    ],
+    "precauciones": [
+      "No almacenar más de 15 días.",
+      "Elabore 3 días antes de la aplicación."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Repelente",
+      "Efecto": "Azufrado",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Chinche verde",
+      "Gusano perforador",
+      "Mosca blanca",
+      "Pulgones"
+    ]
+  },
+  {
+    "nombre": "Caldo Bordelés",
+    "imagen": "assets/pesticidas/bordeles.png",
+    "tipo": "Mineral",
+    "identificacion": "Desinfectante de suelo y fungicida contra Mildiu, Antracnosis, Royas y Tizones.",
+    "uso": "1 litro de caldo por 1 litro de agua. Aplique cada 7 días al amanecer o atardecer.",
+    "ingredientes": [
+      "100 g (10 cdas) de cal",
+      "100 g (10 cdas) de sulfato de cobre",
+      "10 litros de agua (divididos en 5 y 5)"
+    ],
+    "elaboracion": [
+      "Disuelva la cal en 5 litros de agua.",
+      "Disuelva el sulfato de cobre en otros 5 litros de agua.",
+      "Vierta el cobre sobre la cal (nunca al revés) y remueva.",
+      "Prueba del machete: si sale rojizo, agregue más cal hasta que no cambie de color."
+    ],
+    "precauciones": [
+      "No aplicar en plantas en floración.",
+      "No almacenar por más de 24 horas."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Controlador",
+      "Efecto": "Fungicida",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Oídio"
+    ]
+  },
+  {
+    "nombre": "Caldo Ceniza",
+    "imagen": "assets/pesticidas/caldo_ceniza.png",
+    "tipo": "Mineral",
+    "identificacion": "Controla pulgones, mosca blanca, trips, cochinilla y hongos. Fortalece la planta con potasio.",
+    "uso": "20 ml por litro de agua. Aplique cada 8 días por la mañana o atardecer.",
+    "ingredientes": [
+      "200 g de jabón azul rallado",
+      "5 libras de ceniza de leña colada",
+      "10 litros de agua"
+    ],
+    "elaboracion": [
+      "Hierva 10 litros de agua y disuelva el jabón.",
+      "Agregue poco a poco la ceniza mezclando constantemente.",
+      "Cocine por 20 minutos después de agregar la ceniza.",
+      "Deje enfriar, cuele y almacene en recipiente oscuro."
+    ],
+    "precauciones": [
+      "Almacenar máximo 6 meses.",
+      "Dosis para bomba de 17 litros: 350 ml."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Controlador",
+      "Efecto": "Fortalecedor",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Araña roja",
+      "Cochinilla",
+      "Mosca blanca",
+      "Pulga Saltona Negra",
+      "Pulgones",
+      "Trips"
+    ]
+  },
+  {
+    "nombre": "Bicarbonato de sodio",
+    "imagen": "assets/pesticidas/bicarbonato.png",
+    "tipo": "Mineral",
+    "identificacion": "Función preventiva y curativa contra mildiu, antracnosis, tizón y virosis.",
+    "uso": "1 cda de bicarbonato + 1 cdta de jabón en 1 litro de agua. Aplique cada 7 días al atardecer.",
+    "ingredientes": [
+      "1 cucharada (10 g) de bicarbonato de sodio",
+      "1 cucharadita de jabón líquido",
+      "1 litro de agua"
+    ],
+    "elaboracion": [
+      "Disuelva el bicarbonato en el agua.",
+      "Agregue el jabón líquido y disuelva bien para adherencia."
+    ],
+    "precauciones": [
+      "No aplicar en floración ni en horas de fuerte sol.",
+      "Elaborar al momento de la aplicación."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Controlador",
+      "Efecto": "Fungicida",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Minador de la hoja",
+      "Oídio",
+      "Zompopos"
+    ]
+  },
+  {
+    "nombre": "Sílico sulfocálcico",
+    "imagen": "assets/pesticidas/silico.png",
+    "tipo": "Mineral",
+    "identificacion": "Aumenta resistencia contra ácaros, cochinilla, pulgones y hongos.",
+    "uso": "25 ml por litro de agua. Aplique cada 7 días.",
+    "ingredientes": [
+      "1 libra de cal",
+      "1 libra de ceniza colada",
+      "2 libras de azufre",
+      "15 litros de agua"
+    ],
+    "elaboracion": [
+      "Mezcle cal, ceniza y azufre con poca agua hasta formar masa.",
+      "Hierva 15 litros de agua.",
+      "Agregue la mezcla y remueva por 30 minutos hasta color vino tinto.",
+      "Deje enfriar, cuele y almacene en recipiente oscuro."
+    ],
+    "precauciones": [
+      "No usar en pepino, melón, ni plantas recién germinadas o en floración.",
+      "Almacenar máximo 2 años."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Controlador",
+      "Efecto": "Resistencia",
+      "Formato": "Líquido",
+      "Aplicación": "Rociar"
+    },
+    "insectos": [
+      "Araña roja",
+      "Cochinilla",
+      "Pulgones"
+    ]
   }
 ]

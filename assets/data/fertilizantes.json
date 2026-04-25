@@ -5,9 +5,21 @@
     "tipo": "Orgánico",
     "identificacion": "Abono obtenido a partir de la descomposición controlada de materia orgánica.",
     "uso": "Se mezcla con la tierra antes de la siembra o se aplica como cobertura.",
-    "ingredientes": "Residuos vegetales (peladuras de frutas, verduras), restos de poda, hojas secas, cartón sin tinta.",
-    "elaboracion": "1. Alternar capas de materiales secos (hojas, cartón) y húmedos (restos de cocina). 2. Mantener la humedad adecuada (como una esponja escurrida). 3. Voltear periódicamente para oxigenar. 4. Esperar de 3 a 6 meses hasta que tenga olor a tierra de bosque y color oscuro.",
-    "precauciones": "Evitar incluir restos de carne, lácteos, grasas o excrementos de mascotas para evitar malos olores y patógenos.",
+    "ingredientes": [
+      "Residuos vegetales (peladuras de frutas y verduras)",
+      "Restos de poda",
+      "Hojas secas",
+      "Cartón sin tinta"
+    ],
+    "elaboracion": [
+      "Alternar capas de materiales secos (hojas, cartón) y húmedos (restos de cocina).",
+      "Mantener la humedad adecuada (como una esponja escurrida).",
+      "Voltear periódicamente para oxigenar.",
+      "Esperar de 3 a 6 meses hasta que tenga olor a tierra de bosque y color oscuro."
+    ],
+    "precauciones": [
+      "Evitar incluir restos de carne, lácteos, grasas o excrementos de mascotas para evitar malos olores y patógenos."
+    ],
     "esCasero": true,
     "dificultad": "Media",
     "faseAplicacion": "Preparación del suelo, Crecimiento",
@@ -26,9 +38,19 @@
     "tipo": "Orgánico",
     "identificacion": "Producto de la digestión de lombrices, altamente nutritivo.",
     "uso": "Aplicar directamente en la base de las plantas o mezclar con el sustrato.",
-    "ingredientes": "Materia orgánica pre-compostada, lombrices rojas californianas (Eisenia fetida).",
-    "elaboracion": "1. Disponer de una vermicompostera. 2. Añadir la materia orgánica gradualmente. 3. Las lombrices procesan los restos convirtiéndolos en humus. 4. Cosechar el humus cuando esté oscuro y granulado.",
-    "precauciones": "Controlar el exceso de humedad y evitar alimentos muy ácidos (cítricos en exceso).",
+    "ingredientes": [
+      "Materia orgánica pre-compostada",
+      "Lombrices rojas californianas (Eisenia fetida)"
+    ],
+    "elaboracion": [
+      "Disponer de una vermicompostera.",
+      "Añadir la materia orgánica gradualmente.",
+      "Las lombrices procesan los restos convirtiéndolos en humus.",
+      "Cosechar el humus cuando esté oscuro y granulado."
+    ],
+    "precauciones": [
+      "Controlar el exceso de humedad y evitar alimentos muy ácidos (cítricos en exceso)."
+    ],
     "esCasero": true,
     "dificultad": "Alta",
     "faseAplicacion": "Transplante, Crecimiento, Floración",
@@ -47,9 +69,18 @@
     "tipo": "Orgánico",
     "identificacion": "Deyecciones animales procesadas y estabilizadas para uso agrícola.",
     "uso": "Incorporar al suelo varias semanas antes de la siembra.",
-    "ingredientes": "Excrementos de animales herbívoros (vaca, oveja, caballo) y paja.",
-    "elaboracion": "1. Amontonar el estiércol fresco. 2. Dejar fermentar y madurar durante al menos 6 meses para eliminar semillas de malezas y patógenos. 3. El producto final debe estar seco y sin olor fuerte a amoníaco.",
-    "precauciones": "No usar estiércol fresco directamente, ya que puede quemar las raíces y transmitir enfermedades.",
+    "ingredientes": [
+      "Excrementos de animales herbívoros (vaca, oveja, caballo)",
+      "Paja"
+    ],
+    "elaboracion": [
+      "Amontonar el estiércol fresco.",
+      "Dejar fermentar y madurar durante al menos 6 meses para eliminar semillas de malezas y patógenos.",
+      "El producto final debe estar seco y sin olor fuerte a amoníaco."
+    ],
+    "precauciones": [
+      "No usar estiércol fresco directamente, ya que puede quemar las raíces y transmitir enfermedades."
+    ],
     "esCasero": false,
     "dificultad": "Media",
     "faseAplicacion": "Preparación del suelo",
@@ -63,24 +94,37 @@
     }
   },
   {
-    "nombre": "Té de plátano",
+    "nombre": "Té de Cáscara de plátano, cáscara de huevo y arroz",
     "imagen": "assets/fertilizantes/te_platano.png",
     "tipo": "Casero",
-    "identificacion": "Líquido rico en potasio elaborado hirviendo cáscaras de plátano.",
-    "uso": "Regar las plantas durante la fase de floración y fructificación.",
-    "ingredientes": "4-5 cáscaras de plátano, 1 litro de agua, 2 cucharadas de azúcar (opcional).",
-    "elaboracion": "1. Cortar las cáscaras de plátano en trozos pequeños. 2. Hervirlas en el litro de agua durante 15 minutos. 3. Dejar enfriar y colar. 4. Diluir una parte de este té en cinco partes de agua antes de aplicar.",
-    "precauciones": "No abusar de su uso para no desequilibrar otros nutrientes. Usar preferiblemente en el momento.",
+    "identificacion": "Ayuda al desarrollo de raíces, tallo y cuaje de flores y frutos en todo tipo de plantas.",
+    "uso": "Diluir este foliar con otros 5 litros de agua limpia, rocíe las hojas y tallo de las plantas cada 15 días.",
+    "ingredientes": [
+      "15 cáscaras de plátano secadas al sol",
+      "20 cáscaras de huevo secadas al sol",
+      "1 taza de arroz blanco",
+      "5 litros de agua lluvia"
+    ],
+    "elaboracion": [
+      "Corte en trozos finos las cáscaras de plátano y triture las cáscaras de huevo. Agréguelos a la cubeta plástica.",
+      "Agregue 5 litros de agua limpia (agua lluvia), luego añada la taza de arroz.",
+      "Deje fermentar por 24 horas en un ambiente alejado del sol y la lluvia.",
+      "Pasado ese tiempo cuele con una manta fina.",
+      "Diluir la mezcla en una misma cantidad de agua, nunca aplicar puro."
+    ],
+    "precauciones": [
+      "No se debe guardar por más de 24 horas."
+    ],
     "esCasero": true,
     "dificultad": "Fácil",
-    "faseAplicacion": "Floración, Fructificación",
+    "faseAplicacion": "Floración, Fructificación, Crecimiento",
     "ficha": {
-      "Origen": "Cáscaras de plátano",
-      "Frecuencia": "Cada 15 días en floración",
-      "Beneficios": "Promueve el desarrollo de frutos",
-      "Nutrientes": "Potasio",
+      "Origen": "Cáscaras y arroz",
+      "Frecuencia": "Cada 15 días",
+      "Beneficios": "Desarrollo de raíces y frutos",
+      "Nutrientes": "Potasio, Calcio",
       "Efectividad": "Alta",
-      "Aplicación": "Riego"
+      "Aplicación": "Foliar y Riego"
     }
   },
   {
@@ -89,9 +133,17 @@
     "tipo": "Orgánico",
     "identificacion": "Huesos animales triturados, excelente fuente de fósforo de liberación lenta.",
     "uso": "Mezclar con el sustrato cerca de las raíces.",
-    "ingredientes": "Huesos de animales limpios.",
-    "elaboracion": "1. Hervir los huesos para eliminar restos de carne y grasa. 2. Hornearlos hasta que estén quebradizos. 3. Triturarlos hasta convertirlos en polvo fino.",
-    "precauciones": "Su uso puede atraer a mascotas o animales silvestres. Aplicar bajo tierra.",
+    "ingredientes": [
+      "Huesos de animales limpios"
+    ],
+    "elaboracion": [
+      "Hervir los huesos para eliminar restos de carne y grasa.",
+      "Hornearlos hasta que estén quebradizos.",
+      "Triturarlos hasta convertirlos en polvo fino."
+    ],
+    "precauciones": [
+      "Su uso puede atraer a mascotas o animales silvestres. Aplicar bajo tierra."
+    ],
     "esCasero": true,
     "dificultad": "Alta",
     "faseAplicacion": "Siembra, Transplante, Floración",
@@ -110,9 +162,16 @@
     "tipo": "Orgánico",
     "identificacion": "Residuo de la combustión de madera no tratada.",
     "uso": "Espolvorear ligeramente sobre el suelo (evitar exceso).",
-    "ingredientes": "Madera natural quemada (sin restos de pinturas ni químicos).",
-    "elaboracion": "1. Recolectar la ceniza de la chimenea o barbacoa (solo de madera natural). 2. Tamizar para eliminar trozos grandes de carbón.",
-    "precauciones": "No usar en plantas que prefieren suelos ácidos. Evitar el contacto directo con las hojas.",
+    "ingredientes": [
+      "Madera natural quemada (sin restos de pinturas ni químicos)"
+    ],
+    "elaboracion": [
+      "Recolectar la ceniza de la chimenea o barbacoa (solo de madera natural).",
+      "Tamizar para eliminar trozos grandes de carbón."
+    ],
+    "precauciones": [
+      "No usar en plantas que prefieren suelos ácidos. Evitar el contacto directo con las hojas."
+    ],
     "esCasero": true,
     "dificultad": "Muy Fácil",
     "faseAplicacion": "Crecimiento, Floración",
@@ -124,6 +183,109 @@
       "Efectividad": "Media",
       "Aplicación": "Espolvoreado"
     },
-    "plagas": ["Hormiga", "Caracoles", "Babosas"]
+    "insectos": [
+      "Babosas",
+      "Caracoles",
+      "Zompopos"
+    ]
+  },
+  {
+    "nombre": "Bambusina",
+    "imagen": "assets/fertilizantes/bambusina.png",
+    "tipo": "Foliar",
+    "identificacion": "Es un enraizante natural que aporta hormonas para el crecimiento y desarrollo, induciendo a la floración y fructificación.",
+    "uso": "Diluya 5 ml por litro de agua o 85 ml por bomba de 17 litros. Aplique cada 8 a 15 días.",
+    "ingredientes": [
+      "15 litros de agua lluvia o sin cloro",
+      "2 litros de melaza (miel de caña o atado de dulce disuelto)",
+      "1 metro de bambú tierno (brotones o hijos de bambú)"
+    ],
+    "elaboracion": [
+      "Corte el brote de bambú y quite todas las hojas con tuna y pique lo más fino posible.",
+      "Coloque todo el bambú picado en una cubeta plástica.",
+      "Agregue 2 litros de melaza y 15 litros de agua.",
+      "Mezcle con una paleta de madera o plástico (evite metal).",
+      "Después de 15 días, colar y almacenar en recipiente oscuro alejado del sol."
+    ],
+    "precauciones": [
+      "Aplique por la mañana o al atardecer (evite horas muy soleadas).",
+      "Almacenar alejado del sol y la lluvia."
+    ],
+    "esCasero": true,
+    "dificultad": "Media",
+    "faseAplicacion": "Crecimiento, Floración, Fructificación",
+    "ficha": {
+      "Origen": "Bambú tierno",
+      "Frecuencia": "Cada 8-15 días",
+      "Beneficios": "Enraizante y acelerador de ciclos",
+      "Nutrientes": "Hormonas vegetales naturales",
+      "Efectividad": "Alta",
+      "Aplicación": "Foliar"
+    }
+  },
+  {
+    "nombre": "Melaza",
+    "imagen": "assets/fertilizantes/melaza.png",
+    "tipo": "Foliar",
+    "identificacion": "Fuente de energía para microorganismos, activando la descomposición de materia orgánica y mejorando absorción de nutrientes.",
+    "uso": "Mezcle 8 ml por litro de agua o 140 ml por bomba de 17 litros. Riegue hojas y tallos cada 8 días.",
+    "ingredientes": [
+      "1 litro de melaza",
+      "2 litros de agua lluvia o sin cloro"
+    ],
+    "elaboracion": [
+      "Diluya un litro de melaza en 2 litros de agua limpia.",
+      "Mezcle bien hasta que la melaza se disuelva por completo.",
+      "Guárdelo en un recipiente alejado del sol y la lluvia."
+    ],
+    "precauciones": [
+      "Aplique por la mañana o al atardecer.",
+      "Mantener alejado del sol y la lluvia."
+    ],
+    "esCasero": true,
+    "dificultad": "Fácil",
+    "faseAplicacion": "Crecimiento, Floración, Llenado de frutos",
+    "ficha": {
+      "Origen": "Caña de azúcar",
+      "Frecuencia": "Cada 8 días",
+      "Beneficios": "Activa microorganismos",
+      "Nutrientes": "Energía y Carbohidratos",
+      "Efectividad": "Alta",
+      "Aplicación": "Foliar y Riego"
+    }
+  },
+  {
+    "nombre": "Té de cáscaras de huevo",
+    "imagen": "assets/fertilizantes/te_huevo.png",
+    "tipo": "Foliar",
+    "identificacion": "Aporta calcio de manera natural, previniendo su deficiencia y pudrición de frutos.",
+    "uso": "Diluya 100 ml de té por litro de agua o 2 litros por bomba de 17 litros. Aplique cada 8 días.",
+    "ingredientes": [
+      "10 cascarones de huevo secados al sol o tostados",
+      "1 litro de agua lluvia o sin cloro (caliente)",
+      "1 cucharada de vinagre"
+    ],
+    "elaboracion": [
+      "Muela o triture cáscaras de huevo lo más fino posible.",
+      "En un recipiente con un litro de agua caliente agregue el polvo y mezcle, deje enfriar.",
+      "Agréguele una cucharada de vinagre.",
+      "Deje fermentar por 24 horas alejado de la luz del sol.",
+      "Pasadas las 24 horas, cuele y utilice."
+    ],
+    "precauciones": [
+      "Aplique al atardecer.",
+      "Evita deficiencias de calcio en tomate, pepino y chile."
+    ],
+    "esCasero": true,
+    "dificultad": "Fácil",
+    "faseAplicacion": "Crecimiento, Fructificación",
+    "ficha": {
+      "Origen": "Cáscaras de huevo",
+      "Frecuencia": "Cada 8 días",
+      "Beneficios": "Previene pudrición apical",
+      "Nutrientes": "Calcio",
+      "Efectividad": "Alta",
+      "Aplicación": "Foliar"
+    }
   }
 ]
