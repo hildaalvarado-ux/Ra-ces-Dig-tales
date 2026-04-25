@@ -775,20 +775,29 @@ class _DashboardPageState extends State<DashboardPage> {
         return Image.memory(
           base64Decode(imagePath.split(',').last),
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          errorBuilder: (_, __, ___) => const Icon(
+            Icons.image_not_supported_rounded,
+            color: AppColors.greenDarker,
+          ),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
             imagePath,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => const Icon(
+              Icons.image_not_supported_rounded,
+              color: AppColors.greenDarker,
+            ),
           );
         } else {
           return Image.file(
             File(imagePath),
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => const Icon(
+              Icons.image_not_supported_rounded,
+              color: AppColors.greenDarker,
+            ),
           );
         }
       }
@@ -798,12 +807,15 @@ class _DashboardPageState extends State<DashboardPage> {
       return Image.asset(
         assetImagen,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Icon(Icons.local_florist_rounded),
+        errorBuilder: (_, __, ___) => const Icon(
+          Icons.image_not_supported_rounded,
+          color: AppColors.greenDarker,
+        ),
       );
     }
 
     return const Icon(
-      Icons.local_florist_rounded,
+      Icons.image_not_supported_rounded,
       color: AppColors.greenDarker,
     );
   }
