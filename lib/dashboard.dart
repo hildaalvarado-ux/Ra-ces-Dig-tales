@@ -12,6 +12,7 @@ import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
 import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
 import 'datos/fertilizantes.dart';
 import 'datos/plagas.dart';
+import 'datos/enfermedades.dart';
 import 'datos/pesticidas.dart';
 import 'datos/calendario.dart';
 import 'datos/notificaciones.dart';
@@ -140,6 +141,14 @@ class _DashboardPageState extends State<DashboardPage> {
         await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => PlagasPage(userId: widget.userId),
+          ),
+        );
+        break;
+
+      case 'Enfermedades':
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => EnfermedadesPage(userId: widget.userId),
           ),
         );
         break;
@@ -339,6 +348,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           _HoverItem('Fertilizantes', () => _openFeature('Fertilizantes')),
                           _HoverItem('Repelentes', () => _openFeature('Repelentes')),
                           _HoverItem('Insectos', () => _openFeature('Insectos')),
+                          _HoverItem('Enfermedades', () => _openFeature('Enfermedades')),
                         ],
                       ),
 
@@ -435,6 +445,7 @@ class _DashboardPageState extends State<DashboardPage> {
             _DashboardTile(label: 'Fertilizantes', icon: Icons.science_rounded, onTap: () => _openFeature('Fertilizantes')),
             _DashboardTile(label: 'Repelentes', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Repelentes')),
             _DashboardTile(label: 'Insectos', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Insectos')),
+            _DashboardTile(label: 'Enfermedades', icon: Icons.biotech_rounded, onTap: () => _openFeature('Enfermedades')),
             _DashboardTile(label: 'Calendario', icon: Icons.calendar_month_rounded, onTap: () => _openFeature('Calendario')),
             _DashboardTile(label: 'Diario', icon: Icons.menu_book_rounded, onTap: () => _openFeature('Diario')),
           ],
@@ -690,6 +701,14 @@ class _DashboardPageState extends State<DashboardPage> {
                   onTap: () {
                     Navigator.pop(context);
                     _openFeature('Insectos');
+                  },
+                ),
+                _DrawerItem(
+                  icon: Icons.biotech_rounded,
+                  label: 'Enfermedades',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Enfermedades');
                   },
                 ),
 
