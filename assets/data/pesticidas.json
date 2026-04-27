@@ -519,5 +519,84 @@
       "Cochinilla",
       "Pulgones"
     ]
+  },
+  {
+    "nombre": "Fungicida de leche",
+    "imagen": "assets/pesticidas/agua.png",
+    "tipo": "Casero",
+    "identificacion": "Fungicida natural basado en las propiedades de la leche, efectivo contra el Mildiu y la Botrytis.",
+    "uso": "Disuelva 200 ml de leche en 800 ml de agua. Rocíe por ambos lados de las hojas cada 5 días, preferiblemente al amanecer.",
+    "ingredientes": [
+      "200 ml de leche (preferiblemente descremada)",
+      "800 ml de agua"
+    ],
+    "elaboracion": [
+      "Mezcle la leche con el agua en un recipiente.",
+      "Agite suavemente para homogenizar la mezcla.",
+      "Vierta en un rociador."
+    ],
+    "precauciones": [
+      "No aplicar en horas de sol intenso.",
+      "Preparar solo la cantidad que se va a utilizar."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Fungicida",
+      "Efecto": "Contacto",
+      "Formato": "Líquido",
+      "Aplicación": "Foliar"
+    },
+    "insectos": []
+  },
+  {
+    "nombre": "Macerado de jengibre",
+    "imagen": "assets/pesticidas/agua.png",
+    "tipo": "Casero",
+    "identificacion": "Tratamiento natural para combatir la marchitez bacteriana.",
+    "uso": "Aplique al tallo de la planta cada 5 días hasta notar mejoría.",
+    "ingredientes": [
+      "50 gramos de jengibre fresco",
+      "1 litro de agua"
+    ],
+    "elaboracion": [
+      "Ralle el jengibre finamente.",
+      "Agregue el jengibre rallado al litro de agua.",
+      "Hierva la mezcla por 10 minutos.",
+      "Deje enfriar completamente y cuele con una manta fina."
+    ],
+    "precauciones": [
+      "Deje enfriar bien antes de aplicar para evitar quemar la planta."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Bactericida",
+      "Efecto": "Sistémico local",
+      "Formato": "Líquido",
+      "Aplicación": "Al tallo"
+    },
+    "insectos": []
+  },
+  {
+    "nombre": "Microorganismos líquidos",
+    "imagen": "assets/pesticidas/agua.png",
+    "tipo": "Orgánico",
+    "identificacion": "Cultivo de microorganismos benéficos que fortalecen la planta y previenen enfermedades del suelo.",
+    "uso": "Disuelva 100 ml de microorganismos en 1 litro de agua. Aplique al tallo o follaje de forma preventiva cada 8-15 días.",
+    "ingredientes": [
+      "100 ml de microorganismos concentrados",
+      "1 litro de agua"
+    ],
+    "elaboracion": [
+      "Mezcle el concentrado de microorganismos con el agua limpia (sin cloro)."
+    ],
+    "precauciones": [
+      "Aplicar preferiblemente por la tarde.",
+      "Almacenar en un lugar fresco y oscuro."
+    ],
+    "ficha": {
+      "Tipo de repelente": "Preventivo",
+      "Efecto": "Biológico",
+      "Formato": "Líquido",
+      "Aplicación": "Tallo y Foliar"
+    },
+    "insectos": []
   }
 ]
