@@ -7,8 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../data/db_instance.dart';
+import '../data/catalog_manager.dart';
 import '../main.dart';
 import 'help_dialogs.dart';
+import 'plaga_detalle.dart';
+import 'pesticida_detalle.dart';
 
 class ControlOption {
   final String titulo;
@@ -103,6 +106,88 @@ class EnfermedadDetallePage extends StatefulWidget {
 
 class _EnfermedadDetallePageState extends State<EnfermedadDetallePage> {
   int _selectedControlIndex = 0;
+  List<dynamic> _relatedItems = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRelatedData();
+  }
+
+  Future<void> _loadRelatedData() async {
+    try {
+      final pests = await catalogManager.getPests();
+      final pesticides = await catalogManager.getPesticides();
+
+      final String diseaseText = [
+        widget.enfermedad.nombre,
+        widget.enfermedad.descripcion,
+        widget.enfermedad.aparece,
+        widget.enfermedad.prevencion,
+        ...widget.enfermedad.control.map((e) => e.descripcion),
+      ].join(' ').toLowerCase();
+
+      final List<dynamic> related = [];
+
+      // Match Pesticides
+      for (var p in pesticides) {
+        final pName = p.nombre.toLowerCase();
+        bool match = false;
+
+        if (diseaseText.contains(pName)) {
+          match = true;
+        } else {
+          // Check for significant keywords
+          final keywords = [
+            'apichi', 'bordelés', 'ceniza', 'jengibre', 'leche',
+            'bicarbonato', 'sábila', 'albahaca', 'canela', 'lejía',
+            'ajo', 'epacina', 'silico', 'jabón'
+          ];
+          for (var kw in keywords) {
+            if (pName.contains(kw) && diseaseText.contains(kw)) {
+              // Special case: don't match "Caldo Ceniza" if only "Lejía de ceniza" is mentioned
+              if (kw == 'ceniza' && !diseaseText.contains('caldo') && pName.contains('caldo')) continue;
+              if (kw == 'ceniza' && !diseaseText.contains('lejía') && pName.contains('lejía')) continue;
+
+              match = true;
+              break;
+            }
+          }
+        }
+
+        if (match && !related.contains(p)) {
+          related.add(p);
+        }
+      }
+
+      // Match Pests (Vectors)
+      for (var p in pests) {
+        final pName = p.nombre.toLowerCase();
+        if (diseaseText.contains(pName)) {
+          if (!related.contains(p)) {
+            related.add(p);
+          }
+        } else if (widget.enfermedad.nombre.toLowerCase() == 'virosis' &&
+                   (pName == 'mosca blanca' || pName == 'pulgones' || pName == 'trips' || pName == 'chicharrita')) {
+          // Virosis explicitly mentions insect vectors
+          if (!related.contains(p)) {
+            related.add(p);
+          }
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _relatedItems = related;
+          _loading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading related data: $e');
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   Future<void> _share(BuildContext context) async {
     try {
@@ -311,11 +396,135 @@ class _EnfermedadDetallePageState extends State<EnfermedadDetallePage> {
                   children: widget.enfermedad.ficha.entries.map((e) => _InfoRow(label: e.key, value: e.value)).toList(),
                 ),
               ),
+              if (_relatedItems.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _DetailCard(
+                  icon: 'assets/iconos/siembra.png',
+                  title: 'Relacionado con repelente e insectos',
+                  onHelp: () => HelpDialogs.show(context, title: 'Relacionados', text: 'Repelentes recomendados e insectos que pueden transmitir esta enfermedad.'),
+                  child: SizedBox(
+                    height: 160,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _relatedItems.length,
+                      itemBuilder: (context, index) {
+                        final item = _relatedItems[index];
+                        if (item is Pesticida) {
+                          return _RelatedItemLink(
+                            nombre: 'Repelente: ${item.nombre}',
+                            imagen: item.imagen,
+                            imagePath: item.imagePath,
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PesticidaDetallePage(pesticida: item))),
+                          );
+                        } else if (item is Plaga) {
+                          return _RelatedItemLink(
+                            nombre: 'Vector: ${item.nombre}',
+                            imagen: item.imagen,
+                            imagePath: item.imagePath,
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: item))),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _RelatedItemLink extends StatelessWidget {
+  final String nombre;
+  final String imagen;
+  final String? imagePath;
+  final VoidCallback onTap;
+
+  const _RelatedItemLink({
+    required this.nombre,
+    required this.imagen,
+    this.imagePath,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 130,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.greenDark.withOpacity(0.1)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                child: _buildImage(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                nombre,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 11,
+                  color: AppColors.greenDarker,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    if (imagePath != null && imagePath!.isNotEmpty) {
+      if (imagePath!.startsWith('data:image')) {
+        return Image.memory(
+          base64Decode(imagePath!.split(',').last),
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+        );
+      } else {
+        if (kIsWeb) {
+          return Image.network(
+            imagePath!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        } else {
+          return Image.file(
+            File(imagePath!),
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          );
+        }
+      }
+    }
+    if (imagen.isNotEmpty) {
+      return Image.asset(
+        imagen,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_rounded),
+      );
+    }
+    return const Icon(Icons.image_not_supported_rounded, color: AppColors.greenDarker);
   }
 }
 
