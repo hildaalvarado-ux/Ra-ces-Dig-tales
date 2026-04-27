@@ -4,6 +4,7 @@ import '../datos/cultivo_detalle.dart';
 import '../datos/fertilizante_detalle.dart';
 import '../datos/plaga_detalle.dart';
 import '../datos/pesticida_detalle.dart';
+import '../datos/enfermedad_detalle.dart';
 
 class CatalogManager {
   static final CatalogManager _instance = CatalogManager._internal();
@@ -14,6 +15,7 @@ class CatalogManager {
   List<Fertilizante>? _fertilizers;
   List<Plaga>? _pests;
   List<Pesticida>? _pesticides;
+  List<Enfermedad>? _diseases;
 
   Future<List<Cultivo>> getCrops() async {
     if (_crops != null) return _crops!;
@@ -51,12 +53,22 @@ class CatalogManager {
     return _pesticides!;
   }
 
+  Future<List<Enfermedad>> getDiseases() async {
+    if (_diseases != null) return _diseases!;
+    final raw = await rootBundle.loadString('assets/data/enfermedades.json');
+    final cleanJson = raw.replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '');
+    final decoded = jsonDecode(cleanJson) as List;
+    _diseases = decoded.map((e) => Enfermedad.fromJson(Map<String, dynamic>.from(e))).toList();
+    return _diseases!;
+  }
+
   Future<void> loadAll() async {
     await Future.wait([
       getCrops(),
       getFertilizers(),
       getPests(),
       getPesticides(),
+      getDiseases(),
     ]);
   }
 }

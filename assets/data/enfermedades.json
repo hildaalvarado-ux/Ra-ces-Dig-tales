@@ -1,0 +1,258 @@
+[
+  {
+    "nombre": "Mildiu",
+    "tipo": "Hongo",
+    "descripcion": "Enfermedad causada por hongos que produce manchas amarillas visibles en ambos lados de las hojas.",
+    "aparece": "Se presenta en condiciones de alta humedad por exceso de lluvia o de riegos.",
+    "prevencion": "Respetar las distancias de siembra sugeridas (40-50 cm entre plantas, 80-100 cm entre surcos para hortalizas como tomate o pepino; 10 cm entre plantas y 15 cm entre surcos para rábano). Es vital elevar las ramas de la planta para que no toquen el suelo.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Realice poda de las hojas más cercanas al suelo. Disuelva 1 cucharadita de bicarbonato y 1 cucharadita de jabón líquido en un litro de agua; rocíe por ambos lados de las hojas cada 5 días."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Disuelva 200 ml de leche por litro de agua. Rocíe por encima y debajo de las hojas cada 5 días. Se recomienda aplicar al amanecer para obtener mejores resultados."
+      },
+      {
+        "titulo": "Opción 3",
+        "descripcion": "Disuelva una cucharada de cal en dos litros de agua y rocíe la mezcla en las partes dañadas. Puede colocar una capa protectora en el suelo (cartón, zacate u hojas) para prevenir la propagación del hongo."
+      }
+    ],
+    "imagen": "assets/enfermedades/mildiu.png",
+    "ficha": {
+      "Tipo": "Hongo",
+      "Gravedad": "Media",
+      "Humedad": "Excesiva",
+      "Tratamiento": "Bicarbonato / Leche"
+    }
+  },
+  {
+    "nombre": "Mal de talluelo / Damping off",
+    "tipo": "Hongo",
+    "descripcion": "Ataca principalmente en almácigos o plantas recién trasplantadas, causando pudrición y un adelgazamiento característico en la base del tallo.",
+    "aparece": "Surge en almácigos con mucha humedad o cuando las semillas han sido colocadas demasiado juntas.",
+    "prevencion": "Antes de la siembra, desinfecte el sustrato con agua caliente. Evite el riego en exceso para prevenir la aparición de hongos.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Mantenga un buen drenaje en el almácigo. Diluya 8 ml de lejía de ceniza por litro de agua y vierta en el tallo una vez por semana para evitar la podredumbre."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Agregue 1 cucharadita de canela en polvo en 1 litro de agua y hierva por 5 minutos. Una vez frío, vierta en la base del almácigo cada 5 días."
+      }
+    ],
+    "imagen": "assets/enfermedades/damping_off.png",
+    "ficha": {
+      "Tipo": "Hongo",
+      "Etapa": "Almácigo / Trasplante",
+      "Gravedad": "Alta",
+      "Tratamiento": "Lejía de ceniza / Canela"
+    }
+  },
+  {
+    "nombre": "Marchitez bacteriana (Fusarium)",
+    "tipo": "Hongo/Bacteria",
+    "descripcion": "Causa un marchitamiento repentino de toda la planta. Los síntomas suelen ser más visibles durante las etapas de floración y fructificación.",
+    "aparece": "Se manifiesta ante el exceso de calor y mucha humedad ambiental.",
+    "prevencion": "Realice una buena desinfección al preparar el suelo y evite sembrar repetidamente el mismo cultivo en el mismo lugar. Aplique 8 ml de lejía de ceniza en el tallo cada 8 días o microorganismos líquidos durante el ciclo del cultivo.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Arranque de inmediato las plantas enfermas y elimínelas fuera del huerto para evitar contagios."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Ralle 50 gramos de jengibre (un trozo del tamaño del pulgar) y agréguelo a un litro de agua. Hierva por 10 minutos, deje enfriar y aplique al tallo cada 5 días."
+      },
+      {
+        "titulo": "Opción 3",
+        "descripcion": "Aplique 100 ml de microorganismos por litro de agua al tallo una vez al día por la tarde. En casos necesarios, disuelva una bolsita de lejía en un litro de agua y aplique a la raíz hasta notar mejoría."
+      }
+    ],
+    "imagen": "assets/enfermedades/fusarium.png",
+    "ficha": {
+      "Tipo": "Hongo/Bacteria",
+      "Gravedad": "Muy Alta",
+      "Síntoma": "Marchitamiento",
+      "Tratamiento": "Jengibre / Microorganismos"
+    }
+  },
+  {
+    "nombre": "Mancha Bacteriana",
+    "tipo": "Bacteria",
+    "descripcion": "Ataca cultivos como tomate, chile y papa. Forma manchas oscuras con bordes amarillos en las hojas que, al secarse, dejan pequeños agujeros.",
+    "aparece": "Favorecida por lluvias frecuentes, mucho calor y cuando las hojas permanecen mojadas por periodos prolongados.",
+    "prevencion": "Elimine restos de plantas anteriores y evite encharcamientos. No manipule el cultivo con las hojas mojadas. Aplique 20 ml de caldo ceniza por litro de agua cada 8 días.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Pode las hojas o ramas muy afectadas y retírelas del huerto. Diluya 1 litro de caldo bordelés en 1 litro de agua y rocíe toda la planta por la tarde cada 7 días."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Disuelva 3 gramos (un tapón de botella rasado) de cobre en un litro de agua. Aplique en toda la planta al atardecer cada 7 días (máximo 5 aplicaciones)."
+      }
+    ],
+    "imagen": "assets/enfermedades/mancha_bacteriana.png",
+    "ficha": {
+      "Tipo": "Bacteria",
+      "Cultivos": "Tomate, Chile, Papa",
+      "Gravedad": "Alta",
+      "Tratamiento": "Caldo bordelés / Cobre"
+    }
+  },
+  {
+    "nombre": "Antracnosis",
+    "tipo": "Hongo",
+    "descripcion": "Enfermedad producida por hongos que afecta hojas, tallos y frutos causando manchas oscuras circulares o irregulares.",
+    "aparece": "Surge en condiciones de alta humedad o por exceso de riego en las plantas.",
+    "prevencion": "Revise frecuentemente las plantas y realice podas de las hojas más cercanas al suelo. Practique la rotación de cultivos y aplique microorganismos líquidos de forma preventiva.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Realice poda de las hojas afectadas y entiérrelas lejos del cultivo. Aplique caldo bordelés (1 litro por cada litro de agua) en hojas y tallo cada 7 días."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Disuelva bien 1 cucharadita de bicarbonato de sodio en un litro de agua y aplique cada 5 días al atardecer."
+      }
+    ],
+    "imagen": "assets/enfermedades/antracnosis.png",
+    "ficha": {
+      "Tipo": "Hongo",
+      "Afecta": "Hojas, tallos y frutos",
+      "Gravedad": "Media",
+      "Tratamiento": "Caldo bordelés / Bicarbonato"
+    }
+  },
+  {
+    "nombre": "Virosis",
+    "tipo": "Virus",
+    "descripcion": "Enfermedad causada por virus que no tiene cura. Se transmite principalmente a través de insectos vectores.",
+    "aparece": "Depende de la presencia y propagación de los insectos que transportan el virus.",
+    "prevencion": "Controle los insectos vectores aplicando repelente APICHI (5 ml por litro de agua) cada 7 días. Desinfecte el suelo con cal, ceniza y microorganismos durante la preparación.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Elimine las plantas afectadas del huerto para evitar que el virus se propague a las plantas sanas."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Aplique 20 ml de caldo ceniza por litro de agua al atardecer cada 5 días para fortalecer la resistencia."
+      },
+      {
+        "titulo": "Opción 3",
+        "descripcion": "Realice una poda sanitaria y aplique una cucharada de bicarbonato por litro de agua cada 5 días. En casos graves, aplique lejía diluida a la raíz."
+      }
+    ],
+    "imagen": "assets/enfermedades/virosis.png",
+    "ficha": {
+      "Tipo": "Virus",
+      "Cura": "No tiene",
+      "Vector": "Insectos",
+      "Gravedad": "Extrema"
+    }
+  },
+  {
+    "nombre": "Tizón Temprano / Alternaria",
+    "tipo": "Hongo",
+    "descripcion": "Causada por un hongo, se identifica por manchas cafés en forma de anillos concéntricos, iniciando en las hojas más cercanas al suelo.",
+    "aparece": "Común en temperaturas altas o en plantas con poco espacio de ventilación entre ellas.",
+    "prevencion": "Elimine restos de cultivos anteriores y realice podas bajas. Aplique microorganismos de montaña líquidos antes de la siembra.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Pode y elimine las hojas afectadas. Disuelva 1 cucharada de cal en 2 litros de agua y rocíe hojas y tallos para detener el avance."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Mezcle 1 cucharadita de bicarbonato de sodio y una de jabón líquido en 1 litro de agua. Aplique cada 5 días por la tarde."
+      }
+    ],
+    "imagen": "assets/enfermedades/tizon_temprano.png",
+    "ficha": {
+      "Tipo": "Hongo",
+      "Síntoma": "Anillos cafés",
+      "Gravedad": "Media",
+      "Tratamiento": "Cal / Bicarbonato"
+    }
+  },
+  {
+    "nombre": "Tizón Tardío / Phytophthora",
+    "tipo": "Hongo",
+    "descripcion": "Enfermedad muy agresiva que ataca rápidamente hojas, tallos y frutos, pudiendo destruir el cultivo en poco tiempo.",
+    "aparece": "Se presenta ante lluvias frecuentes o en suelos que permanecen húmedos por periodos prolongados.",
+    "prevencion": "Retire restos de plantas afectadas, practique la rotación de cultivos y realice podas a tiempo para mejorar la ventilación.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Pode y retire las partes afectadas. Mezcle 3 litros de caldo bordelés en 1 litro de agua y rocíe hojas y tallos cada 7 días al atardecer."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Aplique 25 ml de silico sulfocálcico por litro de agua cada 7 días al atardecer."
+      }
+    ],
+    "imagen": "assets/enfermedades/tizon_tardio.png",
+    "ficha": {
+      "Tipo": "Hongo",
+      "Agresividad": "Muy Alta",
+      "Humedad": "Saturación",
+      "Tratamiento": "Caldo bordelés / Silico"
+    }
+  },
+  {
+    "nombre": "Nematodos",
+    "tipo": "Nematodo",
+    "descripcion": "Gusanos microscópicos que atacan las raíces, impidiendo la absorción de nutrientes y causando marchitamiento en horas de calor.",
+    "aparece": "Habitan en suelos muy húmedos o donde se ha repetido el mismo cultivo durante varios ciclos.",
+    "prevencion": "Aplique abono bien descompuesto y microorganismos antes y después de la siembra para mantener el equilibrio del suelo.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Machaque 3 dientes de ajo en un litro de agua, deje reposar 24 horas y aplique directo al tallo (mañana o atardecer) cada 7 días."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Exponga el suelo al sol por varias semanas antes de la siembra (solarización), preferiblemente en época de verano."
+      },
+      {
+        "titulo": "Opción 3",
+        "descripcion": "Machaque 5 hojas de floricundia en un litro de agua y aplique al suelo cada 3 días, realizando unas 8 aplicaciones durante el ciclo."
+      }
+    ],
+    "imagen": "assets/enfermedades/nematodos.png",
+    "ficha": {
+      "Tipo": "Nematodo",
+      "Ubicación": "Raíces",
+      "Gravedad": "Alta",
+      "Tratamiento": "Ajo / Solarización"
+    }
+  },
+  {
+    "nombre": "Botrytis",
+    "tipo": "Hongo",
+    "descripcion": "Se presenta en hojas, tallos, flores y frutos, formando manchas grises cubiertas por un vello fino (moho gris).",
+    "aparece": "Favorecida por humedad elevada, poca ventilación y a través de heridas abiertas al realizar podas.",
+    "prevencion": "Evite encharcamientos, realice podas por la mañana para facilitar la cicatrización y desinfecte siempre sus herramientas.",
+    "control": [
+      {
+        "titulo": "Opción 1",
+        "descripcion": "Mezcle 1 cucharadita de bicarbonato en un litro de agua con 100 ml de leche. Aplique cada 7 días al atardecer."
+      },
+      {
+        "titulo": "Opción 2",
+        "descripcion": "Disuelva una cucharada de cal en 2 litros de agua; aplique en hojas y tallos cada 5 días al atardecer. Puede esparcir ceniza en el suelo."
+      }
+    ],
+    "imagen": "assets/enfermedades/botrytis.png",
+    "ficha": {
+      "Tipo": "Hongo",
+      "Síntoma": "Moho gris",
+      "Gravedad": "Media",
+      "Tratamiento": "Bicarbonato+Leche / Cal"
+    }
+  }
+]

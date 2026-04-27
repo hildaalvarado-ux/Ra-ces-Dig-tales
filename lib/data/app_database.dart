@@ -111,6 +111,24 @@ class SharedPesticidas extends Table {
   TextColumn get payloadJson => text()();
 }
 
+class UserEnfermedades extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get nombre => text().withDefault(const Constant(''))();
+  TextColumn get tipo => text().withDefault(const Constant(''))();
+  TextColumn get imagePath => text().nullable()();
+  TextColumn get payloadJson => text()();
+}
+
+class SharedEnfermedades extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get nombre => text().withDefault(const Constant(''))();
+  TextColumn get tipo => text().withDefault(const Constant(''))();
+  TextColumn get imagePath => text().nullable()();
+  TextColumn get payloadJson => text()();
+}
+
 class CropPlans extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get userId => integer()();
@@ -176,6 +194,8 @@ class Observations extends Table {
   SharedPlagas,
   UserPesticidas,
   SharedPesticidas,
+  UserEnfermedades,
+  SharedEnfermedades,
   CropPlans,
   CalendarTasks,
   NotificationLogs,
@@ -185,7 +205,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -268,6 +288,10 @@ class AppDatabase extends _$AppDatabase {
               await m.addColumn(observations, observations.hasTransplant);
             }
           }
+          if (from < 12) {
+            await m.createTable(userEnfermedades);
+            await m.createTable(sharedEnfermedades);
+          }
         },
         beforeOpen: (details) async {
           // Opcional: puedes activar foreign_keys si luego lo ocupas
@@ -341,6 +365,78 @@ class AppDatabase extends _$AppDatabase {
         notificationSound: Value(sound),
       ),
     );
+  }
+
+  // ---------------------------
+  // ENFERMEDADES
+  // ---------------------------
+  Future<List<UserEnfermedade>> getUserEnfermedades(int userId) {
+    return (select(userEnfermedades)..where((t) => t.userId.equals(userId))).get();
+  }
+
+  Future<int> insertUserEnfermedad({
+    required int userId,
+    required String nombre,
+    required String tipo,
+    required String? imagePath,
+    required String payloadJson,
+  }) {
+    return into(userEnfermedades).insert(
+      UserEnfermedadesCompanion.insert(
+        userId: userId,
+        nombre: Value(nombre),
+        tipo: Value(tipo),
+        imagePath: Value(imagePath),
+        payloadJson: payloadJson,
+      ),
+    );
+  }
+
+  Future<void> updateUserEnfermedad({
+    required int id,
+    required String nombre,
+    required String tipo,
+    required String? imagePath,
+    required String payloadJson,
+  }) {
+    return (update(userEnfermedades)..where((t) => t.id.equals(id))).write(
+      UserEnfermedadesCompanion(
+        nombre: Value(nombre),
+        tipo: Value(tipo),
+        imagePath: Value(imagePath),
+        payloadJson: Value(payloadJson),
+      ),
+    );
+  }
+
+  Future<void> deleteUserEnfermedad(int id) {
+    return (delete(userEnfermedades)..where((t) => t.id.equals(id))).go();
+  }
+
+  Future<List<SharedEnfermedade>> getSharedEnfermedades(int userId) {
+    return (select(sharedEnfermedades)..where((t) => t.userId.equals(userId))).get();
+  }
+
+  Future<int> insertSharedEnfermedad({
+    required int userId,
+    required String nombre,
+    required String tipo,
+    required String? imagePath,
+    required String payloadJson,
+  }) {
+    return into(sharedEnfermedades).insert(
+      SharedEnfermedadesCompanion.insert(
+        userId: userId,
+        nombre: Value(nombre),
+        tipo: Value(tipo),
+        imagePath: Value(imagePath),
+        payloadJson: payloadJson,
+      ),
+    );
+  }
+
+  Future<void> deleteSharedEnfermedad(int id) {
+    return (delete(sharedEnfermedades)..where((t) => t.id.equals(id))).go();
   }
 
   // ---------------------------
@@ -908,6 +1004,16 @@ class AppDatabase extends _$AppDatabase {
             .get();
     paths.addAll(sharedPests.map((e) => e.imagePath).whereType<String>());
 
+    final enfermedades =
+        await (select(userEnfermedades)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(enfermedades.map((e) => e.imagePath).whereType<String>());
+
+    final sharedEnfermedadesList =
+        await (select(sharedEnfermedades)..where((t) => t.userId.equals(userId)))
+            .get();
+    paths.addAll(sharedEnfermedadesList.map((e) => e.imagePath).whereType<String>());
+
     final obs =
         await (select(observations)..where((t) => t.userId.equals(userId)))
             .get();
@@ -928,6 +1034,10 @@ class AppDatabase extends _$AppDatabase {
       await (delete(sharedPlagas)..where((t) => t.userId.equals(userId))).go();
       await (delete(userPesticidas)..where((t) => t.userId.equals(userId))).go();
       await (delete(sharedPesticidas)..where((t) => t.userId.equals(userId)))
+          .go();
+      await (delete(userEnfermedades)..where((t) => t.userId.equals(userId)))
+          .go();
+      await (delete(sharedEnfermedades)..where((t) => t.userId.equals(userId)))
           .go();
       await (delete(notificationLogs)..where((t) => t.userId.equals(userId)))
           .go();

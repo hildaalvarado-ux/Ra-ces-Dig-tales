@@ -64,10 +64,12 @@ flutter:
     - assets/data/fertilizantes.json
     - assets/data/plagas.json
     - assets/data/pesticidas.json
+    - assets/data/enfermedades.json
     - assets/cultivos/
     - assets/fertilizantes/
     - assets/plagas/
     - assets/pesticidas/
+    - assets/enfermedades/
     - assets/iconos/
 
 flutter_launcher_icons:
