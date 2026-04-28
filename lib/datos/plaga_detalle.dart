@@ -300,10 +300,16 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
       return Image.asset(
         asset,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded),
+        errorBuilder: (_, __, ___) => Image.asset(
+          'assets/images/logo.png',
+          fit: BoxFit.cover,
+        ),
       );
     }
-    return const Icon(Icons.bug_report_rounded, color: AppColors.greenDarker, size: 64);
+    return Image.asset(
+      'assets/images/logo.png',
+      fit: BoxFit.cover,
+    );
   }
 
   @override

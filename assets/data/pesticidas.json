@@ -1,6 +1,6 @@
 [
   {
-    "imagen": "assets/pesticidas/jabón_barra.png",
+    "imagen": "",
     "nombre": "Repelente de jabón barra",
     "tipo": "Casero",
     "identificacion": "Efectivo contra insectos de cuerpo blando. Actúa debilitando la piel protectora, provocando deshidratación.",
@@ -173,7 +173,7 @@
   },
   {
     "nombre": "Lejía de ceniza",
-    "imagen": "assets/pesticidas/lejia_ceniza.png",
+    "imagen": "assets/pesticidas/legiadeceniza.jpeg",
     "tipo": "Casero",
     "identificacion": "Controla insectos y enfermedades (mal del talluelo, marchitez bacteriana). También desinfecta herramientas.",
     "uso": "Mezcle 10 ml en un litro de agua. Para gusanos use 15 ml/litro. Aplique cada 5 a 7 días.",
@@ -208,7 +208,7 @@
   },
   {
     "nombre": "Repelente de sábila",
-    "imagen": "assets/pesticidas/sabila.png",
+    "imagen": "assets/pesticidas/repelentesabila.jpeg",
     "tipo": "Casero",
     "identificacion": "Efectivo contra pulgones, ácaros, cochinillas, minador, araña roja, trips y algunos hongos.",
     "uso": "Mezcle 2 litros de repelente con 2 litros de agua. Aplique cada 8 días por la mañana o atardecer.",
@@ -242,7 +242,7 @@
   },
   {
     "nombre": "Té de hojas de albahaca",
-    "imagen": "assets/pesticidas/albahaca.png",
+    "imagen": "assets/pesticidas/tealbajaca.jpeg",
     "tipo": "Casero",
     "identificacion": "Excelente repelente contra mosca blanca, pulgones, trips, ácaros y orugas.",
     "uso": "200 ml por litro de agua. Aplique cada 8 días (o cada 4 si hay plaga).",
@@ -278,7 +278,7 @@
   },
   {
     "nombre": "Repelente APICHI",
-    "imagen": "assets/pesticidas/apichi.png",
+    "imagen": "assets/pesticidas/apichi.jpeg",
     "tipo": "Casero",
     "identificacion": "Controla mosca blanca, ácaros, trips, pulgones, picudo del chile y minador.",
     "uso": "5 ml por litro de agua. Aplique cada 8 o 15 días al amanecer o atardecer.",
@@ -318,7 +318,7 @@
   },
   {
     "nombre": "Repelente E.M.5",
-    "imagen": "assets/pesticidas/em5.png",
+    "imagen": "assets/pesticidas/repelenteem5.png",
     "tipo": "Casero",
     "identificacion": "Aporta minerales, controla insectos, nemátodos y hongos.",
     "uso": "15 ml por litro. Aplique cada 10 días al atardecer. Al suelo: 1 L por bomba para nemátodos.",
@@ -357,7 +357,7 @@
   },
   {
     "nombre": "Repelente a base planta epacina",
-    "imagen": "assets/pesticidas/epacina.png",
+    "imagen": "",
     "tipo": "Casero",
     "identificacion": "Desprende fuerte olor a azufre. Funciona contra pulgones, mosca blanca, gusanos de suelo, chinches, etc.",
     "uso": "15 ml por litro de agua. Aplique cada 8 días al atardecer.",
@@ -390,7 +390,7 @@
   },
   {
     "nombre": "Caldo Bordelés",
-    "imagen": "assets/pesticidas/bordeles.png",
+    "imagen": "",
     "tipo": "Mineral",
     "identificacion": "Desinfectante de suelo y fungicida contra Mildiu, Antracnosis, Royas y Tizones.",
     "uso": "1 litro de caldo por 1 litro de agua. Aplique cada 7 días al amanecer o atardecer.",
@@ -421,7 +421,7 @@
   },
   {
     "nombre": "Caldo Ceniza",
-    "imagen": "assets/pesticidas/caldo_ceniza.png",
+    "imagen": "",
     "tipo": "Mineral",
     "identificacion": "Controla pulgones, mosca blanca, trips, cochinilla y hongos. Fortalece la planta con potasio.",
     "uso": "20 ml por litro de agua. Aplique cada 8 días por la mañana o atardecer.",
@@ -457,7 +457,7 @@
   },
   {
     "nombre": "Bicarbonato de sodio",
-    "imagen": "assets/pesticidas/bicarbonato.png",
+    "imagen": "",
     "tipo": "Mineral",
     "identificacion": "Función preventiva y curativa contra mildiu, antracnosis, tizón y virosis.",
     "uso": "1 cda de bicarbonato + 1 cdta de jabón en 1 litro de agua. Aplique cada 7 días al atardecer.",
@@ -488,7 +488,7 @@
   },
   {
     "nombre": "Sílico sulfocálcico",
-    "imagen": "assets/pesticidas/silico.png",
+    "imagen": "",
     "tipo": "Mineral",
     "identificacion": "Aumenta resistencia contra ácaros, cochinilla, pulgones y hongos.",
     "uso": "25 ml por litro de agua. Aplique cada 7 días.",
@@ -522,7 +522,7 @@
   },
   {
     "nombre": "Fungicida de leche",
-    "imagen": "assets/pesticidas/agua.png",
+    "imagen": "",
     "tipo": "Casero",
     "identificacion": "Fungicida natural basado en las propiedades de la leche, efectivo contra el Mildiu y la Botrytis.",
     "uso": "Disuelva 200 ml de leche en 800 ml de agua. Rocíe por ambos lados de las hojas cada 5 días, preferiblemente al amanecer.",
@@ -549,7 +549,7 @@
   },
   {
     "nombre": "Macerado de jengibre",
-    "imagen": "assets/pesticidas/agua.png",
+    "imagen": "",
     "tipo": "Casero",
     "identificacion": "Tratamiento natural para combatir la marchitez bacteriana.",
     "uso": "Aplique al tallo de la planta cada 5 días hasta notar mejoría.",
@@ -576,7 +576,7 @@
   },
   {
     "nombre": "Microorganismos líquidos",
-    "imagen": "assets/pesticidas/agua.png",
+    "imagen": "",
     "tipo": "Orgánico",
     "identificacion": "Cultivo de microorganismos benéficos que fortalecen la planta y previenen enfermedades del suelo.",
     "uso": "Disuelva 100 ml de microorganismos en 1 litro de agua. Aplique al tallo o follaje de forma preventiva cada 8-15 días.",

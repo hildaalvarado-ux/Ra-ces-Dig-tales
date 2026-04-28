@@ -185,18 +185,16 @@ class PesticidaDetallePage extends StatelessWidget {
       return Image.asset(
         pesticida.imagen,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Icon(
-          Icons.eco_rounded,
-          color: AppColors.greenDarker,
-          size: 64,
+        errorBuilder: (_, __, ___) => Image.asset(
+          'assets/images/logo.png',
+          fit: BoxFit.cover,
         ),
       );
     }
 
-    return const Icon(
-      Icons.eco_rounded,
-      color: AppColors.greenDarker,
-      size: 64,
+    return Image.asset(
+      'assets/images/logo.png',
+      fit: BoxFit.cover,
     );
   }
 
