@@ -208,20 +208,20 @@ class FertilizanteDetallePage extends StatelessWidget {
         return Image.memory(
           base64Decode(fertilizante.imagePath!.split(',').last),
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          errorBuilder: (_, __, ___) => const Icon(Icons.science_rounded),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
             fertilizante.imagePath!,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => const Icon(Icons.science_rounded),
           );
         } else {
           return Image.file(
             File(fertilizante.imagePath!),
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => const Icon(Icons.science_rounded),
           );
         }
       }
@@ -233,7 +233,7 @@ class FertilizanteDetallePage extends StatelessWidget {
         errorBuilder: (_, __, ___) => const Icon(Icons.science_rounded),
       );
     }
-    return const Icon(Icons.science_rounded, color: AppColors.greenDarker, size: 64);
+    return const Icon(Icons.science_rounded, color: AppColors.greenDarker);
   }
 
   @override

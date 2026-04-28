@@ -272,11 +272,9 @@ class _EnfermedadTile extends StatelessWidget {
       return Image.asset(
         enfermedad.imagen,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) =>
-            const Icon(Icons.biotech_rounded),
+        errorBuilder: (_, __, ___) => const Icon(Icons.biotech_rounded),
       );
     }
-    return const Icon(Icons.biotech_rounded,
-        color: AppColors.greenDarker);
+    return const Icon(Icons.biotech_rounded, color: AppColors.greenDarker);
   }
 }

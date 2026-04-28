@@ -89,12 +89,14 @@ class _RelatedItemLink extends StatelessWidget {
   final String nombre;
   final String imagen;
   final String? imagePath;
+  final IconData icon;
   final VoidCallback onTap;
 
   const _RelatedItemLink({
     required this.nombre,
     required this.imagen,
     this.imagePath,
+    required this.icon,
     required this.onTap,
   });
 
@@ -146,20 +148,20 @@ class _RelatedItemLink extends StatelessWidget {
         return Image.memory(
           base64Decode(imagePath!.split(',').last),
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          errorBuilder: (_, __, ___) => Icon(icon),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
             imagePath!,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => Icon(icon),
           );
         } else {
           return Image.file(
             File(imagePath!),
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => Icon(icon),
           );
         }
       }
@@ -168,10 +170,10 @@ class _RelatedItemLink extends StatelessWidget {
       return Image.asset(
         imagen,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_rounded),
+        errorBuilder: (_, __, ___) => Icon(icon),
       );
     }
-    return const Icon(Icons.image_not_supported_rounded, color: AppColors.greenDarker);
+    return Icon(icon, color: AppColors.greenDarker);
   }
 }
 
@@ -278,20 +280,20 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
         return Image.memory(
           base64Decode(path.split(',').last),
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
             path,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded),
           );
         } else {
           return Image.file(
             File(path),
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded),
           );
         }
       }
@@ -300,16 +302,10 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
       return Image.asset(
         asset,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Image.asset(
-          'assets/images/logo.png',
-          fit: BoxFit.cover,
-        ),
+        errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded),
       );
     }
-    return Image.asset(
-      'assets/images/logo.png',
-      fit: BoxFit.cover,
-    );
+    return const Icon(Icons.bug_report_rounded, color: AppColors.greenDarker);
   }
 
   @override
@@ -427,6 +423,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
                           nombre: c.nombre,
                           imagen: c.imagen,
                           imagePath: c.imagePath,
+                          icon: Icons.local_florist_rounded,
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CultivoDetallePage(cultivo: c))),
                         );
                       },
@@ -459,6 +456,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
                                 nombre: item.nombre,
                                 imagen: item.imagen,
                                 imagePath: item.imagePath,
+                                icon: Icons.sanitizer_rounded,
                                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PesticidaDetallePage(pesticida: item))),
                               );
                             } else if (item is Fertilizante) {
@@ -466,6 +464,7 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
                                 nombre: item.nombre,
                                 imagen: item.imagen,
                                 imagePath: item.imagePath,
+                                icon: Icons.science_rounded,
                                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FertilizanteDetallePage(fertilizante: item))),
                               );
                             }

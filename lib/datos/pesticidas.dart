@@ -212,15 +212,9 @@ class _PesticidasPageState extends State<PesticidasPage> {
       return Image.asset(
         p.imagen,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Image.asset(
-          'assets/images/logo.png',
-          fit: BoxFit.cover,
-        ),
+        errorBuilder: (_, __, ___) => const Icon(Icons.sanitizer_rounded),
       );
     }
-    return Image.asset(
-      'assets/images/logo.png',
-      fit: BoxFit.cover,
-    );
+    return const Icon(Icons.sanitizer_rounded, color: AppColors.greenDarker);
   }
 }

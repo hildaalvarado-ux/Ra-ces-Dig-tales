@@ -193,7 +193,11 @@ class _FertilizanteTile extends StatelessWidget {
       }
     }
     if (fertilizante.imagen.isNotEmpty) {
-      return Image.asset(fertilizante.imagen, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.science_rounded));
+      return Image.asset(
+        fertilizante.imagen,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const Icon(Icons.science_rounded),
+      );
     }
     return const Icon(Icons.science_rounded, color: AppColors.greenDarker);
   }
