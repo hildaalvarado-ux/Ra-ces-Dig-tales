@@ -198,13 +198,14 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
   }
 
   Widget _buildImage() {
-    if (widget.cultivo.imagePath != null && widget.cultivo.imagePath!.isNotEmpty) {
+    if (widget.cultivo.imagePath != null &&
+        widget.cultivo.imagePath!.isNotEmpty) {
       if (widget.cultivo.imagePath!.startsWith('data:image')) {
         return Image.memory(
           base64Decode(widget.cultivo.imagePath!.split(',').last),
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => const Icon(
-            Icons.image_not_supported_rounded,
+            Icons.local_florist_rounded,
             color: AppColors.greenDarker,
           ),
         );
@@ -214,7 +215,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
             widget.cultivo.imagePath!,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(
-              Icons.image_not_supported_rounded,
+              Icons.local_florist_rounded,
               color: AppColors.greenDarker,
             ),
           );
@@ -223,7 +224,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
             File(widget.cultivo.imagePath!),
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(
-              Icons.image_not_supported_rounded,
+              Icons.local_florist_rounded,
               color: AppColors.greenDarker,
             ),
           );
@@ -236,14 +237,14 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
         widget.cultivo.imagen,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => const Icon(
-          Icons.image_not_supported_rounded,
+          Icons.local_florist_rounded,
           color: AppColors.greenDarker,
         ),
       );
     }
 
     return const Icon(
-      Icons.image_not_supported_rounded,
+      Icons.local_florist_rounded,
       color: AppColors.greenDarker,
     );
   }
@@ -961,8 +962,12 @@ class _RelatedChipState extends State<_RelatedChip> {
   }
 
   Widget _buildThumb() {
+    final IconData fallbackIcon = widget.type == 'cultivo'
+        ? Icons.local_florist_rounded
+        : Icons.bug_report_rounded;
+
     if (!_loaded || _assetPath == null || _assetPath!.isEmpty) {
-      return Icon(widget.type == 'cultivo' ? Icons.local_florist_rounded : Icons.bug_report_rounded, size: 16, color: AppColors.greenDarker);
+      return Icon(fallbackIcon, size: 16, color: AppColors.greenDarker);
     }
 
     return ClipRRect(
@@ -972,7 +977,8 @@ class _RelatedChipState extends State<_RelatedChip> {
         width: 24,
         height: 24,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Icon(widget.type == 'cultivo' ? Icons.local_florist_rounded : Icons.bug_report_rounded, size: 16, color: AppColors.greenDarker),
+        errorBuilder: (_, __, ___) =>
+            Icon(fallbackIcon, size: 16, color: AppColors.greenDarker),
       ),
     );
   }

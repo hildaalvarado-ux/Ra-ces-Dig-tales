@@ -162,20 +162,20 @@ class PesticidaDetallePage extends StatelessWidget {
         return Image.memory(
           base64Decode(pesticida.imagePath!.split(',').last),
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          errorBuilder: (_, __, ___) => const Icon(Icons.sanitizer_rounded),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
             pesticida.imagePath!,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => const Icon(Icons.sanitizer_rounded),
           );
         } else {
           return Image.file(
             File(pesticida.imagePath!),
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => const Icon(Icons.sanitizer_rounded),
           );
         }
       }
@@ -185,17 +185,11 @@ class PesticidaDetallePage extends StatelessWidget {
       return Image.asset(
         pesticida.imagen,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Image.asset(
-          'assets/images/logo.png',
-          fit: BoxFit.cover,
-        ),
+        errorBuilder: (_, __, ___) => const Icon(Icons.sanitizer_rounded),
       );
     }
 
-    return Image.asset(
-      'assets/images/logo.png',
-      fit: BoxFit.cover,
-    );
+    return const Icon(Icons.sanitizer_rounded, color: AppColors.greenDarker);
   }
 
   Color _tipoColor() {

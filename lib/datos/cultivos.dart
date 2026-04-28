@@ -832,7 +832,7 @@ class _CultivoTile extends StatelessWidget {
           base64Decode(cultivo.imagePath!.split(',').last),
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => const Icon(
-            Icons.image_not_supported_rounded,
+            Icons.local_florist_rounded,
             color: AppColors.greenDarker,
           ),
         );
@@ -842,7 +842,7 @@ class _CultivoTile extends StatelessWidget {
             cultivo.imagePath!,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(
-              Icons.image_not_supported_rounded,
+              Icons.local_florist_rounded,
               color: AppColors.greenDarker,
             ),
           );
@@ -851,7 +851,7 @@ class _CultivoTile extends StatelessWidget {
             File(cultivo.imagePath!),
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(
-              Icons.image_not_supported_rounded,
+              Icons.local_florist_rounded,
               color: AppColors.greenDarker,
             ),
           );
@@ -864,14 +864,14 @@ class _CultivoTile extends StatelessWidget {
         cultivo.imagen,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => const Icon(
-          Icons.image_not_supported_rounded,
+          Icons.local_florist_rounded,
           color: AppColors.greenDarker,
         ),
       );
     }
 
     return const Icon(
-      Icons.image_not_supported_rounded,
+      Icons.local_florist_rounded,
       color: AppColors.greenDarker,
     );
   }

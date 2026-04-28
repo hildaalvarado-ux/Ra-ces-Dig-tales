@@ -795,7 +795,7 @@ class _DashboardPageState extends State<DashboardPage> {
           base64Decode(imagePath.split(',').last),
           fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => const Icon(
-            Icons.image_not_supported_rounded,
+            Icons.local_florist_rounded,
             color: AppColors.greenDarker,
           ),
         );
@@ -805,7 +805,7 @@ class _DashboardPageState extends State<DashboardPage> {
             imagePath,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(
-              Icons.image_not_supported_rounded,
+              Icons.local_florist_rounded,
               color: AppColors.greenDarker,
             ),
           );
@@ -814,7 +814,7 @@ class _DashboardPageState extends State<DashboardPage> {
             File(imagePath),
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => const Icon(
-              Icons.image_not_supported_rounded,
+              Icons.local_florist_rounded,
               color: AppColors.greenDarker,
             ),
           );
@@ -827,14 +827,14 @@ class _DashboardPageState extends State<DashboardPage> {
         assetImagen,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => const Icon(
-          Icons.image_not_supported_rounded,
+          Icons.local_florist_rounded,
           color: AppColors.greenDarker,
         ),
       );
     }
 
     return const Icon(
-      Icons.image_not_supported_rounded,
+      Icons.local_florist_rounded,
       color: AppColors.greenDarker,
     );
   }

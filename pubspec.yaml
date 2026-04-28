@@ -68,6 +68,7 @@ flutter:
     - assets/cultivos/
     - assets/fertilizantes/
     - assets/plagas/
+    - assets/plagas/referencia/
     - assets/pesticidas/
     - assets/enfermedades/
     - assets/iconos/

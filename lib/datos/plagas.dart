@@ -241,15 +241,9 @@ class _PlagaTile extends StatelessWidget {
       return Image.asset(
         plaga.imagen,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Image.asset(
-          'assets/images/logo.png',
-          fit: BoxFit.cover,
-        ),
+        errorBuilder: (_, __, ___) => const Icon(Icons.bug_report_rounded),
       );
     }
-    return Image.asset(
-      'assets/images/logo.png',
-      fit: BoxFit.cover,
-    );
+    return const Icon(Icons.bug_report_rounded, color: AppColors.greenDarker);
   }
 }

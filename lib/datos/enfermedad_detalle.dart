@@ -414,6 +414,7 @@ class _EnfermedadDetallePageState extends State<EnfermedadDetallePage> {
                             nombre: 'Repelente: ${item.nombre}',
                             imagen: item.imagen,
                             imagePath: item.imagePath,
+                            icon: Icons.sanitizer_rounded,
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PesticidaDetallePage(pesticida: item))),
                           );
                         } else if (item is Plaga) {
@@ -421,6 +422,7 @@ class _EnfermedadDetallePageState extends State<EnfermedadDetallePage> {
                             nombre: 'Vector: ${item.nombre}',
                             imagen: item.imagen,
                             imagePath: item.imagePath,
+                            icon: Icons.bug_report_rounded,
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: item))),
                           );
                         }
@@ -442,12 +444,14 @@ class _RelatedItemLink extends StatelessWidget {
   final String nombre;
   final String imagen;
   final String? imagePath;
+  final IconData icon;
   final VoidCallback onTap;
 
   const _RelatedItemLink({
     required this.nombre,
     required this.imagen,
     this.imagePath,
+    required this.icon,
     required this.onTap,
   });
 
@@ -499,20 +503,20 @@ class _RelatedItemLink extends StatelessWidget {
         return Image.memory(
           base64Decode(imagePath!.split(',').last),
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+          errorBuilder: (_, __, ___) => Icon(icon),
         );
       } else {
         if (kIsWeb) {
           return Image.network(
             imagePath!,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => Icon(icon),
           );
         } else {
           return Image.file(
             File(imagePath!),
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+            errorBuilder: (_, __, ___) => Icon(icon),
           );
         }
       }
@@ -521,10 +525,10 @@ class _RelatedItemLink extends StatelessWidget {
       return Image.asset(
         imagen,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported_rounded),
+        errorBuilder: (_, __, ___) => Icon(icon),
       );
     }
-    return const Icon(Icons.image_not_supported_rounded, color: AppColors.greenDarker);
+    return Icon(icon, color: AppColors.greenDarker);
   }
 }
 
