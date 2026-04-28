@@ -19,7 +19,7 @@
         "descripcion": "Disuelva una cucharada de cal en dos litros de agua y rocíe la mezcla en las partes dañadas. Puede colocar una capa protectora en el suelo (cartón, zacate u hojas) para prevenir la propagación del hongo."
       }
     ],
-    "imagen": "assets/enfermedades/mildiu.png",
+    "imagen": "assets/enfermedades/mildiu.jpg",
     "ficha": {
       "Tipo": "Hongo",
       "Gravedad": "Media",
@@ -43,7 +43,7 @@
         "descripcion": "Agregue 1 cucharadita de canela en polvo en 1 litro de agua y hierva por 5 minutos. Una vez frío, vierta en la base del almácigo cada 5 días."
       }
     ],
-    "imagen": "assets/enfermedades/damping_off.png",
+    "imagen": "assets/enfermedades/maldetalluelo.jpg",
     "ficha": {
       "Tipo": "Hongo",
       "Etapa": "Almácigo / Trasplante",
@@ -71,7 +71,7 @@
         "descripcion": "Aplique 100 ml de microorganismos por litro de agua al tallo una vez al día por la tarde. En casos necesarios, disuelva una bolsita de lejía en un litro de agua y aplique a la raíz hasta notar mejoría."
       }
     ],
-    "imagen": "assets/enfermedades/fusarium.png",
+    "imagen": "assets/enfermedades/marchitezbacteriana.jpg",
     "ficha": {
       "Tipo": "Hongo/Bacteria",
       "Gravedad": "Muy Alta",
@@ -95,7 +95,7 @@
         "descripcion": "Disuelva 3 gramos (un tapón de botella rasado) de cobre en un litro de agua. Aplique en toda la planta al atardecer cada 7 días (máximo 5 aplicaciones)."
       }
     ],
-    "imagen": "assets/enfermedades/mancha_bacteriana.png",
+    "imagen": "assets/enfermedades/manchabacteriana.jpg",
     "ficha": {
       "Tipo": "Bacteria",
       "Cultivos": "Tomate, Chile, Papa",
@@ -119,7 +119,7 @@
         "descripcion": "Disuelva bien 1 cucharadita de bicarbonato de sodio en un litro de agua y aplique cada 5 días al atardecer."
       }
     ],
-    "imagen": "assets/enfermedades/antracnosis.png",
+    "imagen": "assets/enfermedades/antracnosis.jpg",
     "ficha": {
       "Tipo": "Hongo",
       "Afecta": "Hojas, tallos y frutos",
@@ -147,7 +147,7 @@
         "descripcion": "Realice una poda sanitaria y aplique una cucharada de bicarbonato por litro de agua cada 5 días. En casos graves, aplique lejía diluida a la raíz."
       }
     ],
-    "imagen": "assets/enfermedades/virosis.png",
+    "imagen": "assets/enfermedades/virosis.jpg",
     "ficha": {
       "Tipo": "Virus",
       "Cura": "No tiene",
@@ -171,7 +171,7 @@
         "descripcion": "Mezcle 1 cucharadita de bicarbonato de sodio y una de jabón líquido en 1 litro de agua. Aplique cada 5 días por la tarde."
       }
     ],
-    "imagen": "assets/enfermedades/tizon_temprano.png",
+    "imagen": "assets/enfermedades/tizontemprano.jpg",
     "ficha": {
       "Tipo": "Hongo",
       "Síntoma": "Anillos cafés",
@@ -195,7 +195,7 @@
         "descripcion": "Aplique 25 ml de silico sulfocálcico por litro de agua cada 7 días al atardecer."
       }
     ],
-    "imagen": "assets/enfermedades/tizon_tardio.png",
+    "imagen": "assets/enfermedades/tizontardio.jpg",
     "ficha": {
       "Tipo": "Hongo",
       "Agresividad": "Muy Alta",
@@ -223,7 +223,7 @@
         "descripcion": "Machaque 5 hojas de floricundia en un litro de agua y aplique al suelo cada 3 días, realizando unas 8 aplicaciones durante el ciclo."
       }
     ],
-    "imagen": "assets/enfermedades/nematodos.png",
+    "imagen": "assets/enfermedades/nematodos.jpg",
     "ficha": {
       "Tipo": "Nematodo",
       "Ubicación": "Raíces",
@@ -247,7 +247,7 @@
         "descripcion": "Disuelva una cucharada de cal en 2 litros de agua; aplique en hojas y tallos cada 5 días al atardecer. Puede esparcir ceniza en el suelo."
       }
     ],
-    "imagen": "assets/enfermedades/botrytis.png",
+    "imagen": "assets/enfermedades/botrytis.jpg",
     "ficha": {
       "Tipo": "Hongo",
       "Síntoma": "Moho gris",
