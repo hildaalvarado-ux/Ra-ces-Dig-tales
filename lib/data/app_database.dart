@@ -183,6 +183,17 @@ class Observations extends Table {
   BoolColumn get hasTransplant => boolean().withDefault(const Constant(false))();
 }
 
+class SoilPreparations extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get userId => integer()();
+  TextColumn get cropName => text().nullable()();
+  DateTimeColumn get fechaListaSuelo => dateTime().nullable()();
+  BoolColumn get completado => boolean().withDefault(const Constant(false))();
+  BoolColumn get riesgo => boolean().withDefault(const Constant(false))();
+  TextColumn get status => text().withDefault(const Constant('active'))(); // active, completed
+  TextColumn get payloadJson => text()(); // Stores serialized TareaPreparacion list
+}
+
 @DriftDatabase(tables: [
   Users,
   Sessions,
@@ -199,13 +210,14 @@ class Observations extends Table {
   CropPlans,
   CalendarTasks,
   NotificationLogs,
-  Observations
+  Observations,
+  SoilPreparations
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -291,6 +303,9 @@ class AppDatabase extends _$AppDatabase {
           if (from < 12) {
             await m.createTable(userEnfermedades);
             await m.createTable(sharedEnfermedades);
+          }
+          if (from < 13) {
+            await m.createTable(soilPreparations);
           }
         },
         beforeOpen: (details) async {
@@ -883,6 +898,39 @@ class AppDatabase extends _$AppDatabase {
         .go();
   }
 
+  // ---------------------------
+  // PREPARACIÓN DEL SUELO
+  // ---------------------------
+  Future<List<SoilPreparation>> getUserSoilPreparations(int userId) {
+    return (select(soilPreparations)
+          ..where((t) => t.userId.equals(userId))
+          ..orderBy([(t) => OrderingTerm(expression: t.id, mode: OrderingMode.desc)]))
+        .get();
+  }
+
+  Future<SoilPreparation?> getActiveSoilPreparation(int userId, String? cropName) {
+    final q = select(soilPreparations)
+      ..where((t) => t.userId.equals(userId) & t.status.equals('active'));
+    if (cropName != null) {
+      q.where((t) => t.cropName.equals(cropName));
+    } else {
+      q.where((t) => t.cropName.isNull());
+    }
+    return q.getSingleOrNull();
+  }
+
+  Future<int> insertSoilPreparation(SoilPreparationsCompanion companion) {
+    return into(soilPreparations).insert(companion);
+  }
+
+  Future<void> updateSoilPreparation(SoilPreparationsCompanion companion) {
+    return (update(soilPreparations)..where((t) => t.id.equals(companion.id.value))).write(companion);
+  }
+
+  Future<void> deleteSoilPreparation(int id) {
+    return (delete(soilPreparations)..where((t) => t.id.equals(id))).go();
+  }
+
   // Additional methods for CropPlans
   Future<void> deactivateCropPlan(int planId) {
     return (update(cropPlans)..where((t) => t.id.equals(planId))).write(
@@ -1044,6 +1092,7 @@ class AppDatabase extends _$AppDatabase {
       await (delete(calendarTasks)..where((t) => t.userId.equals(userId))).go();
       await (delete(cropPlans)..where((t) => t.userId.equals(userId))).go();
       await (delete(observations)..where((t) => t.userId.equals(userId))).go();
+      await (delete(soilPreparations)..where((t) => t.userId.equals(userId))).go();
     });
   }
 }

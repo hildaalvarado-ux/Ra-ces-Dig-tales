@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import '../data/db_instance.dart';
 import '../data/app_database.dart';
+import '../data/soil_models.dart';
 import '../main.dart';
 import 'calendario.dart';
 import 'help_dialogs.dart';
@@ -593,6 +595,68 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
     if (result == true) {
       final userId = await appDb.getActiveUserId();
       if (userId == null) return;
+
+      // VALIDATE SOIL PREPARATION
+      final activeSoil = await appDb.getActiveSoilPreparation(userId, widget.cultivo.nombre);
+      if (activeSoil != null && !activeSoil.completado) {
+        final tasks = (jsonDecode(activeSoil.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
+        final pendingTasks = tasks.where((t) => t.estado != 'completado').toList();
+        final remainingDays = activeSoil.fechaListaSuelo != null
+          ? activeSoil.fechaListaSuelo!.difference(DateTime.now()).inDays
+          : 0;
+
+        final choice = await showDialog<String>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                SizedBox(width: 8),
+                Text('Suelo no listo', style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Hay ${pendingTasks.length} tareas pendientes en la preparación del suelo para ${widget.cultivo.nombre}.'),
+                const SizedBox(height: 8),
+                Text('Días restantes estimados: ${remainingDays > 0 ? remainingDays : "Desconocido"}.'),
+                const SizedBox(height: 16),
+                const Text('¿Qué deseas hacer?'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'wait'),
+                child: const Text('ESPERAR (Auto-ajustar fecha)'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, 'risk'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                child: const Text('CONTINUAR BAJO RIESGO', style: TextStyle(color: Colors.white)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'cancel'),
+                child: const Text('CANCELAR'),
+              ),
+            ],
+          ),
+        );
+
+        if (choice == 'cancel' || choice == null) return;
+
+        if (choice == 'wait') {
+          if (activeSoil.fechaListaSuelo != null) {
+            selectedDate = activeSoil.fechaListaSuelo!;
+          }
+        } else if (choice == 'risk') {
+          await appDb.updateSoilPreparation(SoilPreparationsCompanion(
+            id: drift.Value(activeSoil.id),
+            riesgo: const drift.Value(true),
+          ));
+        }
+      }
 
       try {
         await CropPlanGenerator.generate(
