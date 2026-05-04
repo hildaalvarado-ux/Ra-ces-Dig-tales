@@ -19,6 +19,7 @@ import 'datos/notificaciones.dart';
 import 'datos/diario.dart';
 import 'datos/creditos.dart';
 import 'datos/opciones.dart';
+import 'datos/preparacion_suelo.dart';
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -181,6 +182,14 @@ class _DashboardPageState extends State<DashboardPage> {
         await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => DiarioPage(userId: widget.userId),
+          ),
+        );
+        break;
+
+      case 'PreparacionSuelo':
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => PreparacionSueloPage(userId: widget.userId),
           ),
         );
         break;
@@ -446,6 +455,7 @@ class _DashboardPageState extends State<DashboardPage> {
             _DashboardTile(label: 'Repelentes', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Repelentes')),
             _DashboardTile(label: 'Insectos', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Insectos')),
             _DashboardTile(label: 'Enfermedades', icon: Icons.biotech_rounded, onTap: () => _openFeature('Enfermedades')),
+            _DashboardTile(label: 'Preparación de Suelo', icon: Icons.layers_rounded, onTap: () => _openFeature('PreparacionSuelo')),
             _DashboardTile(label: 'Calendario', icon: Icons.calendar_month_rounded, onTap: () => _openFeature('Calendario')),
             _DashboardTile(label: 'Diario', icon: Icons.menu_book_rounded, onTap: () => _openFeature('Diario')),
           ],
@@ -720,6 +730,14 @@ class _DashboardPageState extends State<DashboardPage> {
                   onTap: () {
                     Navigator.pop(context);
                     _openFeature('Notificaciones');
+                  },
+                ),
+                _DrawerItem(
+                  icon: Icons.layers_rounded,
+                  label: 'Preparación de Suelo',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('PreparacionSuelo');
                   },
                 ),
                 _DrawerItem(

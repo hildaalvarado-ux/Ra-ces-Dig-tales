@@ -7463,6 +7463,519 @@ class ObservationsCompanion extends UpdateCompanion<Observation> {
   }
 }
 
+class $SoilPreparationsTable extends SoilPreparations
+    with TableInfo<$SoilPreparationsTable, SoilPreparation> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SoilPreparationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<int> userId = GeneratedColumn<int>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cropNameMeta = const VerificationMeta(
+    'cropName',
+  );
+  @override
+  late final GeneratedColumn<String> cropName = GeneratedColumn<String>(
+    'crop_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fechaListaSueloMeta = const VerificationMeta(
+    'fechaListaSuelo',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fechaListaSuelo =
+      GeneratedColumn<DateTime>(
+        'fecha_lista_suelo',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _completadoMeta = const VerificationMeta(
+    'completado',
+  );
+  @override
+  late final GeneratedColumn<bool> completado = GeneratedColumn<bool>(
+    'completado',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("completado" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _riesgoMeta = const VerificationMeta('riesgo');
+  @override
+  late final GeneratedColumn<bool> riesgo = GeneratedColumn<bool>(
+    'riesgo',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("riesgo" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('active'),
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    cropName,
+    fechaListaSuelo,
+    completado,
+    riesgo,
+    status,
+    payloadJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'soil_preparations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SoilPreparation> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('crop_name')) {
+      context.handle(
+        _cropNameMeta,
+        cropName.isAcceptableOrUnknown(data['crop_name']!, _cropNameMeta),
+      );
+    }
+    if (data.containsKey('fecha_lista_suelo')) {
+      context.handle(
+        _fechaListaSueloMeta,
+        fechaListaSuelo.isAcceptableOrUnknown(
+          data['fecha_lista_suelo']!,
+          _fechaListaSueloMeta,
+        ),
+      );
+    }
+    if (data.containsKey('completado')) {
+      context.handle(
+        _completadoMeta,
+        completado.isAcceptableOrUnknown(data['completado']!, _completadoMeta),
+      );
+    }
+    if (data.containsKey('riesgo')) {
+      context.handle(
+        _riesgoMeta,
+        riesgo.isAcceptableOrUnknown(data['riesgo']!, _riesgoMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SoilPreparation map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SoilPreparation(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_id'],
+      )!,
+      cropName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}crop_name'],
+      ),
+      fechaListaSuelo: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fecha_lista_suelo'],
+      ),
+      completado: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}completado'],
+      )!,
+      riesgo: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}riesgo'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+    );
+  }
+
+  @override
+  $SoilPreparationsTable createAlias(String alias) {
+    return $SoilPreparationsTable(attachedDatabase, alias);
+  }
+}
+
+class SoilPreparation extends DataClass implements Insertable<SoilPreparation> {
+  final int id;
+  final int userId;
+  final String? cropName;
+  final DateTime? fechaListaSuelo;
+  final bool completado;
+  final bool riesgo;
+  final String status;
+  final String payloadJson;
+  const SoilPreparation({
+    required this.id,
+    required this.userId,
+    this.cropName,
+    this.fechaListaSuelo,
+    required this.completado,
+    required this.riesgo,
+    required this.status,
+    required this.payloadJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['user_id'] = Variable<int>(userId);
+    if (!nullToAbsent || cropName != null) {
+      map['crop_name'] = Variable<String>(cropName);
+    }
+    if (!nullToAbsent || fechaListaSuelo != null) {
+      map['fecha_lista_suelo'] = Variable<DateTime>(fechaListaSuelo);
+    }
+    map['completado'] = Variable<bool>(completado);
+    map['riesgo'] = Variable<bool>(riesgo);
+    map['status'] = Variable<String>(status);
+    map['payload_json'] = Variable<String>(payloadJson);
+    return map;
+  }
+
+  SoilPreparationsCompanion toCompanion(bool nullToAbsent) {
+    return SoilPreparationsCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      cropName: cropName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cropName),
+      fechaListaSuelo: fechaListaSuelo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fechaListaSuelo),
+      completado: Value(completado),
+      riesgo: Value(riesgo),
+      status: Value(status),
+      payloadJson: Value(payloadJson),
+    );
+  }
+
+  factory SoilPreparation.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SoilPreparation(
+      id: serializer.fromJson<int>(json['id']),
+      userId: serializer.fromJson<int>(json['userId']),
+      cropName: serializer.fromJson<String?>(json['cropName']),
+      fechaListaSuelo: serializer.fromJson<DateTime?>(json['fechaListaSuelo']),
+      completado: serializer.fromJson<bool>(json['completado']),
+      riesgo: serializer.fromJson<bool>(json['riesgo']),
+      status: serializer.fromJson<String>(json['status']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'userId': serializer.toJson<int>(userId),
+      'cropName': serializer.toJson<String?>(cropName),
+      'fechaListaSuelo': serializer.toJson<DateTime?>(fechaListaSuelo),
+      'completado': serializer.toJson<bool>(completado),
+      'riesgo': serializer.toJson<bool>(riesgo),
+      'status': serializer.toJson<String>(status),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+    };
+  }
+
+  SoilPreparation copyWith({
+    int? id,
+    int? userId,
+    Value<String?> cropName = const Value.absent(),
+    Value<DateTime?> fechaListaSuelo = const Value.absent(),
+    bool? completado,
+    bool? riesgo,
+    String? status,
+    String? payloadJson,
+  }) => SoilPreparation(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    cropName: cropName.present ? cropName.value : this.cropName,
+    fechaListaSuelo: fechaListaSuelo.present
+        ? fechaListaSuelo.value
+        : this.fechaListaSuelo,
+    completado: completado ?? this.completado,
+    riesgo: riesgo ?? this.riesgo,
+    status: status ?? this.status,
+    payloadJson: payloadJson ?? this.payloadJson,
+  );
+  SoilPreparation copyWithCompanion(SoilPreparationsCompanion data) {
+    return SoilPreparation(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      cropName: data.cropName.present ? data.cropName.value : this.cropName,
+      fechaListaSuelo: data.fechaListaSuelo.present
+          ? data.fechaListaSuelo.value
+          : this.fechaListaSuelo,
+      completado: data.completado.present
+          ? data.completado.value
+          : this.completado,
+      riesgo: data.riesgo.present ? data.riesgo.value : this.riesgo,
+      status: data.status.present ? data.status.value : this.status,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SoilPreparation(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('cropName: $cropName, ')
+          ..write('fechaListaSuelo: $fechaListaSuelo, ')
+          ..write('completado: $completado, ')
+          ..write('riesgo: $riesgo, ')
+          ..write('status: $status, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    cropName,
+    fechaListaSuelo,
+    completado,
+    riesgo,
+    status,
+    payloadJson,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SoilPreparation &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.cropName == this.cropName &&
+          other.fechaListaSuelo == this.fechaListaSuelo &&
+          other.completado == this.completado &&
+          other.riesgo == this.riesgo &&
+          other.status == this.status &&
+          other.payloadJson == this.payloadJson);
+}
+
+class SoilPreparationsCompanion extends UpdateCompanion<SoilPreparation> {
+  final Value<int> id;
+  final Value<int> userId;
+  final Value<String?> cropName;
+  final Value<DateTime?> fechaListaSuelo;
+  final Value<bool> completado;
+  final Value<bool> riesgo;
+  final Value<String> status;
+  final Value<String> payloadJson;
+  const SoilPreparationsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.cropName = const Value.absent(),
+    this.fechaListaSuelo = const Value.absent(),
+    this.completado = const Value.absent(),
+    this.riesgo = const Value.absent(),
+    this.status = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+  });
+  SoilPreparationsCompanion.insert({
+    this.id = const Value.absent(),
+    required int userId,
+    this.cropName = const Value.absent(),
+    this.fechaListaSuelo = const Value.absent(),
+    this.completado = const Value.absent(),
+    this.riesgo = const Value.absent(),
+    this.status = const Value.absent(),
+    required String payloadJson,
+  }) : userId = Value(userId),
+       payloadJson = Value(payloadJson);
+  static Insertable<SoilPreparation> custom({
+    Expression<int>? id,
+    Expression<int>? userId,
+    Expression<String>? cropName,
+    Expression<DateTime>? fechaListaSuelo,
+    Expression<bool>? completado,
+    Expression<bool>? riesgo,
+    Expression<String>? status,
+    Expression<String>? payloadJson,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (cropName != null) 'crop_name': cropName,
+      if (fechaListaSuelo != null) 'fecha_lista_suelo': fechaListaSuelo,
+      if (completado != null) 'completado': completado,
+      if (riesgo != null) 'riesgo': riesgo,
+      if (status != null) 'status': status,
+      if (payloadJson != null) 'payload_json': payloadJson,
+    });
+  }
+
+  SoilPreparationsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? userId,
+    Value<String?>? cropName,
+    Value<DateTime?>? fechaListaSuelo,
+    Value<bool>? completado,
+    Value<bool>? riesgo,
+    Value<String>? status,
+    Value<String>? payloadJson,
+  }) {
+    return SoilPreparationsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      cropName: cropName ?? this.cropName,
+      fechaListaSuelo: fechaListaSuelo ?? this.fechaListaSuelo,
+      completado: completado ?? this.completado,
+      riesgo: riesgo ?? this.riesgo,
+      status: status ?? this.status,
+      payloadJson: payloadJson ?? this.payloadJson,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<int>(userId.value);
+    }
+    if (cropName.present) {
+      map['crop_name'] = Variable<String>(cropName.value);
+    }
+    if (fechaListaSuelo.present) {
+      map['fecha_lista_suelo'] = Variable<DateTime>(fechaListaSuelo.value);
+    }
+    if (completado.present) {
+      map['completado'] = Variable<bool>(completado.value);
+    }
+    if (riesgo.present) {
+      map['riesgo'] = Variable<bool>(riesgo.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SoilPreparationsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('cropName: $cropName, ')
+          ..write('fechaListaSuelo: $fechaListaSuelo, ')
+          ..write('completado: $completado, ')
+          ..write('riesgo: $riesgo, ')
+          ..write('status: $status, ')
+          ..write('payloadJson: $payloadJson')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7491,6 +8004,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $ObservationsTable observations = $ObservationsTable(this);
+  late final $SoilPreparationsTable soilPreparations = $SoilPreparationsTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7512,6 +8028,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     calendarTasks,
     notificationLogs,
     observations,
+    soilPreparations,
   ];
 }
 
@@ -11420,6 +11937,269 @@ typedef $$ObservationsTableProcessedTableManager =
       Observation,
       PrefetchHooks Function()
     >;
+typedef $$SoilPreparationsTableCreateCompanionBuilder =
+    SoilPreparationsCompanion Function({
+      Value<int> id,
+      required int userId,
+      Value<String?> cropName,
+      Value<DateTime?> fechaListaSuelo,
+      Value<bool> completado,
+      Value<bool> riesgo,
+      Value<String> status,
+      required String payloadJson,
+    });
+typedef $$SoilPreparationsTableUpdateCompanionBuilder =
+    SoilPreparationsCompanion Function({
+      Value<int> id,
+      Value<int> userId,
+      Value<String?> cropName,
+      Value<DateTime?> fechaListaSuelo,
+      Value<bool> completado,
+      Value<bool> riesgo,
+      Value<String> status,
+      Value<String> payloadJson,
+    });
+
+class $$SoilPreparationsTableFilterComposer
+    extends Composer<_$AppDatabase, $SoilPreparationsTable> {
+  $$SoilPreparationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cropName => $composableBuilder(
+    column: $table.cropName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fechaListaSuelo => $composableBuilder(
+    column: $table.fechaListaSuelo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get completado => $composableBuilder(
+    column: $table.completado,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get riesgo => $composableBuilder(
+    column: $table.riesgo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SoilPreparationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SoilPreparationsTable> {
+  $$SoilPreparationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cropName => $composableBuilder(
+    column: $table.cropName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fechaListaSuelo => $composableBuilder(
+    column: $table.fechaListaSuelo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get completado => $composableBuilder(
+    column: $table.completado,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get riesgo => $composableBuilder(
+    column: $table.riesgo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SoilPreparationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SoilPreparationsTable> {
+  $$SoilPreparationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get cropName =>
+      $composableBuilder(column: $table.cropName, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fechaListaSuelo => $composableBuilder(
+    column: $table.fechaListaSuelo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get completado => $composableBuilder(
+    column: $table.completado,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get riesgo =>
+      $composableBuilder(column: $table.riesgo, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+}
+
+class $$SoilPreparationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SoilPreparationsTable,
+          SoilPreparation,
+          $$SoilPreparationsTableFilterComposer,
+          $$SoilPreparationsTableOrderingComposer,
+          $$SoilPreparationsTableAnnotationComposer,
+          $$SoilPreparationsTableCreateCompanionBuilder,
+          $$SoilPreparationsTableUpdateCompanionBuilder,
+          (
+            SoilPreparation,
+            BaseReferences<
+              _$AppDatabase,
+              $SoilPreparationsTable,
+              SoilPreparation
+            >,
+          ),
+          SoilPreparation,
+          PrefetchHooks Function()
+        > {
+  $$SoilPreparationsTableTableManager(
+    _$AppDatabase db,
+    $SoilPreparationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SoilPreparationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SoilPreparationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SoilPreparationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> userId = const Value.absent(),
+                Value<String?> cropName = const Value.absent(),
+                Value<DateTime?> fechaListaSuelo = const Value.absent(),
+                Value<bool> completado = const Value.absent(),
+                Value<bool> riesgo = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+              }) => SoilPreparationsCompanion(
+                id: id,
+                userId: userId,
+                cropName: cropName,
+                fechaListaSuelo: fechaListaSuelo,
+                completado: completado,
+                riesgo: riesgo,
+                status: status,
+                payloadJson: payloadJson,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int userId,
+                Value<String?> cropName = const Value.absent(),
+                Value<DateTime?> fechaListaSuelo = const Value.absent(),
+                Value<bool> completado = const Value.absent(),
+                Value<bool> riesgo = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                required String payloadJson,
+              }) => SoilPreparationsCompanion.insert(
+                id: id,
+                userId: userId,
+                cropName: cropName,
+                fechaListaSuelo: fechaListaSuelo,
+                completado: completado,
+                riesgo: riesgo,
+                status: status,
+                payloadJson: payloadJson,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SoilPreparationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SoilPreparationsTable,
+      SoilPreparation,
+      $$SoilPreparationsTableFilterComposer,
+      $$SoilPreparationsTableOrderingComposer,
+      $$SoilPreparationsTableAnnotationComposer,
+      $$SoilPreparationsTableCreateCompanionBuilder,
+      $$SoilPreparationsTableUpdateCompanionBuilder,
+      (
+        SoilPreparation,
+        BaseReferences<_$AppDatabase, $SoilPreparationsTable, SoilPreparation>,
+      ),
+      SoilPreparation,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -11456,4 +12236,6 @@ class $AppDatabaseManager {
       $$NotificationLogsTableTableManager(_db, _db.notificationLogs);
   $$ObservationsTableTableManager get observations =>
       $$ObservationsTableTableManager(_db, _db.observations);
+  $$SoilPreparationsTableTableManager get soilPreparations =>
+      $$SoilPreparationsTableTableManager(_db, _db.soilPreparations);
 }
