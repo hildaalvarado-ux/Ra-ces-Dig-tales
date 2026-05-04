@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import '../data/db_instance.dart';
 import '../data/app_database.dart';
 import '../data/soil_models.dart';
+import 'preparacion_suelo.dart';
 import '../main.dart';
 import 'calendario.dart';
 import 'help_dialogs.dart';
@@ -300,6 +301,25 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
 
   Future<void> _showQuickGuide(BuildContext context) async {
     final guia = widget.cultivo.guiaRapida ?? {};
+    final userId = await appDb.getActiveUserId();
+    SoilPreparation? activeSoil;
+    if (userId != null) {
+      activeSoil = await appDb.getActiveSoilPreparation(userId, widget.cultivo.nombre);
+    }
+
+    String soilStatus = 'No iniciado';
+    Color soilColor = Colors.grey;
+    if (activeSoil != null) {
+      if (activeSoil.completado) {
+        soilStatus = 'Listo';
+        soilColor = Colors.green;
+      } else {
+        soilStatus = 'En proceso';
+        soilColor = Colors.orange;
+      }
+    }
+
+    if (!mounted) return;
 
     await showModalBottomSheet(
       context: context,
@@ -358,14 +378,40 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                         ),
                         const SizedBox(height: 24),
                         _buildInteractiveSection(
-                          title: 'FASE 1: PRIMERA SEMANA',
-                          subtitle: 'Preparación y Siembra',
+                          title: 'FASE 1: Preparación y Siembra',
+                          subtitle: 'Base para un cultivo sano',
                           color: Colors.orange.shade800,
                           icon: Icons.looks_one_rounded,
                           items: [
+                            _GuideDetail(Icons.layers, 'Preparación del suelo', 'Estado: $soilStatus'),
                             _GuideDetail(Icons.waves, 'Preparación de la tierra', guia['preparacionTierra'] ?? 'No especificado'),
                             _GuideDetail(Icons.grass, 'Siembra paso a paso', guia['comoSembrar'] ?? 'No especificado'),
                           ],
+                          footer: Column(
+                            children: [
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(color: soilColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                                    child: Text(soilStatus.toUpperCase(), style: TextStyle(color: soilColor, fontSize: 10, fontWeight: FontWeight.bold)),
+                                  ),
+                                  const Spacer(),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      if (userId != null) {
+                                        Navigator.push(context, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId)));
+                                      }
+                                    },
+                                    icon: const Icon(Icons.arrow_forward, size: 16),
+                                    label: const Text('Ver preparación del suelo', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 16),
                         _buildInteractiveSection(
@@ -384,9 +430,94 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                         ),
                         const SizedBox(height: 32),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             Navigator.pop(context);
-                            _showStartPlanDialog(context);
+
+                            final userId = await appDb.getActiveUserId();
+                            if (userId == null) return;
+                            final activeSoil = await appDb.getActiveSoilPreparation(userId, widget.cultivo.nombre);
+
+                            if (activeSoil == null) {
+                              final res = await showDialog<String>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Row(
+                                    children: [
+                                      Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                                      SizedBox(width: 8),
+                                      Text('Suelo no preparado', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                  content: const Text('No has realizado la preparación del suelo. Esto puede afectar tu cultivo.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'go'),
+                                      child: const Text('IR A PREPARACIÓN'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.pop(context, 'risk'),
+                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                                      child: const Text('CONTINUAR BAJO RIESGO', style: TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (res == 'go') {
+                                if (context.mounted) {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId)));
+                                }
+                                return;
+                              } else if (res == null) {
+                                return;
+                              }
+                            } else if (!activeSoil.completado) {
+                              final tasks = (jsonDecode(activeSoil.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
+                              final remainingDays = activeSoil.fechaListaSuelo != null
+                                  ? activeSoil.fechaListaSuelo!.difference(DateTime.now()).inDays
+                                  : 0;
+
+                              final res = await showDialog<String>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Row(
+                                    children: [
+                                      Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                                      SizedBox(width: 8),
+                                      Text('Suelo en proceso', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                  content: Text('Tu suelo aún no está listo (faltan ${remainingDays > 0 ? remainingDays : "X"} días)'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'wait'),
+                                      child: const Text('ESPERAR'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.pop(context, 'risk'),
+                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                                      child: const Text('CONTINUAR BAJO RIESGO', style: TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (res == 'wait') {
+                                if (context.mounted) {
+                                  _showStartPlanDialog(context, initialDate: activeSoil.fechaListaSuelo);
+                                }
+                                return;
+                              } else if (res == 'risk') {
+                                await appDb.updateSoilPreparation(SoilPreparationsCompanion(
+                                  id: drift.Value(activeSoil.id),
+                                  riesgo: const drift.Value(true),
+                                ));
+                              } else {
+                                return;
+                              }
+                            }
+
+                            if (context.mounted) _showStartPlanDialog(context);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.greenDark,
@@ -423,6 +554,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
     required Color color,
     required IconData icon,
     required List<_GuideDetail> items,
+    Widget? footer,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -471,14 +603,17 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                   ],
                 ),
               )),
+          if (footer != null) footer,
         ],
       ),
     );
   }
 
 
-  Future<void> _showStartPlanDialog(BuildContext context) async {
-    DateTime selectedDate = DateTime.now();
+  Future<void> _showStartPlanDialog(BuildContext context, {DateTime? initialDate}) async {
+    DateTime selectedDate = initialDate ?? DateTime.now();
+    DateTime minDate = initialDate ?? DateTime.now().subtract(const Duration(days: 30));
+
     TimeOfDay selectedTime = const TimeOfDay(hour: 7, minute: 0);
     final nicknameCtrl = TextEditingController();
     Color selectedColor = Colors.green;
@@ -549,7 +684,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                         final picked = await showDatePicker(
                           context: context,
                           initialDate: selectedDate,
-                          firstDate: DateTime.now().subtract(const Duration(days: 30)),
+                          firstDate: minDate,
                           lastDate: DateTime.now().add(const Duration(days: 365)),
                         );
                         if (picked != null) setState(() => selectedDate = picked);
@@ -595,68 +730,6 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
     if (result == true) {
       final userId = await appDb.getActiveUserId();
       if (userId == null) return;
-
-      // VALIDATE SOIL PREPARATION
-      final activeSoil = await appDb.getActiveSoilPreparation(userId, widget.cultivo.nombre);
-      if (activeSoil != null && !activeSoil.completado) {
-        final tasks = (jsonDecode(activeSoil.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
-        final pendingTasks = tasks.where((t) => t.estado != 'completado').toList();
-        final remainingDays = activeSoil.fechaListaSuelo != null
-          ? activeSoil.fechaListaSuelo!.difference(DateTime.now()).inDays
-          : 0;
-
-        final choice = await showDialog<String>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Row(
-              children: [
-                Icon(Icons.warning_amber_rounded, color: Colors.orange),
-                SizedBox(width: 8),
-                Text('Suelo no listo', style: TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Hay ${pendingTasks.length} tareas pendientes en la preparación del suelo para ${widget.cultivo.nombre}.'),
-                const SizedBox(height: 8),
-                Text('Días restantes estimados: ${remainingDays > 0 ? remainingDays : "Desconocido"}.'),
-                const SizedBox(height: 16),
-                const Text('¿Qué deseas hacer?'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'wait'),
-                child: const Text('ESPERAR (Auto-ajustar fecha)'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, 'risk'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                child: const Text('CONTINUAR BAJO RIESGO', style: TextStyle(color: Colors.white)),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'cancel'),
-                child: const Text('CANCELAR'),
-              ),
-            ],
-          ),
-        );
-
-        if (choice == 'cancel' || choice == null) return;
-
-        if (choice == 'wait') {
-          if (activeSoil.fechaListaSuelo != null) {
-            selectedDate = activeSoil.fechaListaSuelo!;
-          }
-        } else if (choice == 'risk') {
-          await appDb.updateSoilPreparation(SoilPreparationsCompanion(
-            id: drift.Value(activeSoil.id),
-            riesgo: const drift.Value(true),
-          ));
-        }
-      }
 
       try {
         await CropPlanGenerator.generate(
