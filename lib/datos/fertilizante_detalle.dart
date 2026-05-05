@@ -4,8 +4,7 @@ import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+import '../data/file_management_service.dart';
 import '../main.dart';
 import 'help_dialogs.dart';
 import 'plaga_detalle.dart';
@@ -160,45 +159,35 @@ class FertilizanteDetallePage extends StatelessWidget {
   const FertilizanteDetallePage({super.key, required this.fertilizante});
 
   Future<void> _share(BuildContext context) async {
-    try {
-      final encoder = ZipEncoder();
-      final archive = Archive();
+    await fileManagementService.shareModuleData(
+      module: 'fertilizante',
+      name: fertilizante.nombre,
+      data: fertilizante.toJson(),
+      imagePath: fertilizante.imagePath,
+      text: 'Mira este fertilizante: ${fertilizante.nombre}',
+    );
+  }
 
-      final jsonStr = jsonEncode(fertilizante.toJson());
-      archive.addFile(ArchiveFile('fertilizante.json', jsonStr.length, utf8.encode(jsonStr)));
+  Future<void> _download(BuildContext context) async {
+    final result = await fileManagementService.saveModuleData(
+      module: 'fertilizante',
+      name: fertilizante.nombre,
+      data: fertilizante.toJson(),
+      imagePath: fertilizante.imagePath,
+    );
 
-      if (fertilizante.imagePath != null && fertilizante.imagePath!.isNotEmpty) {
-        if (fertilizante.imagePath!.startsWith('data:image')) {
-          final parts = fertilizante.imagePath!.split(',');
-          final bytes = base64Decode(parts.last);
-          final ext = parts.first.split('/').last.split(';').first;
-          archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
-        } else {
-          final file = File(fertilizante.imagePath!);
-          if (await file.exists()) {
-            final bytes = await file.readAsBytes();
-            final ext = file.path.split('.').last;
-            archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
-          }
-        }
-      }
-
-      final zipData = encoder.encode(archive);
-      if (zipData == null) return;
-
-      if (kIsWeb) {
-        final blob = XFile.fromData(Uint8List.fromList(zipData),
-            name: '${fertilizante.nombre}.rdc', mimeType: 'application/zip');
-        await Share.shareXFiles([blob]);
-      } else {
-        final tempDir = await getTemporaryDirectory();
-        final zipFile = File('${tempDir.path}/${fertilizante.nombre}.rdc');
-        await zipFile.writeAsBytes(zipData);
-        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira este fertilizante: ${fertilizante.nombre}');
-      }
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
+    if (!context.mounted) return;
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Descarga exitosa. Archivo guardado en $result'),
+          backgroundColor: AppColors.greenDark,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al descargar el archivo')),
+      );
     }
   }
 
@@ -246,6 +235,11 @@ class FertilizanteDetallePage extends StatelessWidget {
           foregroundColor: Colors.white,
           title: Text(fertilizante.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
+            IconButton(
+              tooltip: 'Descargar info',
+              onPressed: () => _download(context),
+              icon: const Icon(Icons.download_rounded),
+            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _share(context),

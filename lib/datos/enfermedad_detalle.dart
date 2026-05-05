@@ -4,8 +4,7 @@ import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+import '../data/file_management_service.dart';
 import '../data/db_instance.dart';
 import '../data/catalog_manager.dart';
 import '../main.dart';
@@ -190,45 +189,35 @@ class _EnfermedadDetallePageState extends State<EnfermedadDetallePage> {
   }
 
   Future<void> _share(BuildContext context) async {
-    try {
-      final encoder = ZipEncoder();
-      final archive = Archive();
+    await fileManagementService.shareModuleData(
+      module: 'enfermedad',
+      name: widget.enfermedad.nombre,
+      data: widget.enfermedad.toJson(),
+      imagePath: widget.enfermedad.imagePath,
+      text: 'Mira esta enfermedad: ${widget.enfermedad.nombre}',
+    );
+  }
 
-      final jsonStr = jsonEncode(widget.enfermedad.toJson());
-      archive.addFile(ArchiveFile('enfermedad.json', jsonStr.length, utf8.encode(jsonStr)));
+  Future<void> _download(BuildContext context) async {
+    final result = await fileManagementService.saveModuleData(
+      module: 'enfermedad',
+      name: widget.enfermedad.nombre,
+      data: widget.enfermedad.toJson(),
+      imagePath: widget.enfermedad.imagePath,
+    );
 
-      if (widget.enfermedad.imagePath != null && widget.enfermedad.imagePath!.isNotEmpty) {
-        if (widget.enfermedad.imagePath!.startsWith('data:image')) {
-          final parts = widget.enfermedad.imagePath!.split(',');
-          final bytes = base64Decode(parts.last);
-          final ext = parts.first.split('/').last.split(';').first;
-          archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
-        } else {
-          final file = File(widget.enfermedad.imagePath!);
-          if (await file.exists()) {
-            final bytes = await file.readAsBytes();
-            final ext = file.path.split('.').last;
-            archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
-          }
-        }
-      }
-
-      final zipData = encoder.encode(archive);
-      if (zipData == null) return;
-
-      if (kIsWeb) {
-        final blob = XFile.fromData(Uint8List.fromList(zipData),
-            name: '${widget.enfermedad.nombre}.rdc', mimeType: 'application/zip');
-        await Share.shareXFiles([blob]);
-      } else {
-        final tempDir = await getTemporaryDirectory();
-        final zipFile = File('${tempDir.path}/${widget.enfermedad.nombre}.rdc');
-        await zipFile.writeAsBytes(zipData);
-        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira esta enfermedad: ${widget.enfermedad.nombre}');
-      }
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al compartir: $e')));
+    if (!context.mounted) return;
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Descarga exitosa. Archivo guardado en $result'),
+          backgroundColor: AppColors.greenDark,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al descargar el archivo')),
+      );
     }
   }
 
@@ -276,6 +265,11 @@ class _EnfermedadDetallePageState extends State<EnfermedadDetallePage> {
           foregroundColor: Colors.white,
           title: Text(widget.enfermedad.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
+            IconButton(
+              tooltip: 'Descargar info',
+              onPressed: () => _download(context),
+              icon: const Icon(Icons.download_rounded),
+            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _share(context),

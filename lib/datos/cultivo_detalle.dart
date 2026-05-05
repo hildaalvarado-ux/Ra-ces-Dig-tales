@@ -5,9 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import '../data/file_management_service.dart';
 import '../data/db_instance.dart';
 import '../data/app_database.dart';
 import '../data/soil_models.dart';
@@ -152,50 +151,34 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
   }
 
   Future<void> _shareCrop(BuildContext context) async {
-    try {
-      final encoder = ZipEncoder();
-      final archive = Archive();
+    await fileManagementService.shareModuleData(
+      module: 'cultivo',
+      name: widget.cultivo.nombre,
+      data: widget.cultivo.toJson(),
+      imagePath: widget.cultivo.imagePath,
+      text: 'Mira mi cultivo: ${widget.cultivo.nombre}',
+    );
+  }
 
-      // JSON del cultivo
-      final jsonStr = jsonEncode(widget.cultivo.toJson());
-      archive.addFile(ArchiveFile('cultivo.json', jsonStr.length, utf8.encode(jsonStr)));
+  Future<void> _downloadCrop(BuildContext context) async {
+    final result = await fileManagementService.saveModuleData(
+      module: 'cultivo',
+      name: widget.cultivo.nombre,
+      data: widget.cultivo.toJson(),
+      imagePath: widget.cultivo.imagePath,
+    );
 
-      // Imagen si existe
-      if (widget.cultivo.imagePath != null && widget.cultivo.imagePath!.isNotEmpty) {
-        if (widget.cultivo.imagePath!.startsWith('data:image')) {
-          final parts = widget.cultivo.imagePath!.split(',');
-          final bytes = base64Decode(parts.last);
-          final ext = parts.first.split('/').last.split(';').first;
-          archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
-        } else {
-          final file = File(widget.cultivo.imagePath!);
-          if (await file.exists()) {
-            final bytes = await file.readAsBytes();
-            final ext = file.path.split('.').last;
-            archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
-          }
-        }
-      }
-
-      final zipData = encoder.encode(archive);
-      if (zipData == null) return;
-
-      if (kIsWeb) {
-        // En Web, descargamos el archivo
-        final blob = XFile.fromData(Uint8List.fromList(zipData),
-            name: '${widget.cultivo.nombre}.rdc', mimeType: 'application/zip');
-        await Share.shareXFiles([blob]);
-      } else {
-        final tempDir = await getTemporaryDirectory();
-        final zipFile = File('${tempDir.path}/${widget.cultivo.nombre}.rdc');
-        await zipFile.writeAsBytes(zipData);
-
-        await Share.shareXFiles([XFile(zipFile.path)], text: 'Mira mi cultivo: ${widget.cultivo.nombre}');
-      }
-    } catch (e) {
-      if (!context.mounted) return;
+    if (!context.mounted) return;
+    if (result != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al compartir: $e')),
+        SnackBar(
+          content: Text('Descarga exitosa. Archivo guardado en $result'),
+          backgroundColor: AppColors.greenDark,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al descargar el archivo')),
       );
     }
   }
@@ -773,6 +756,11 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
           foregroundColor: Colors.white,
           title: Text(widget.cultivo.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
+            IconButton(
+              tooltip: 'Descargar info',
+              onPressed: () => _downloadCrop(context),
+              icon: const Icon(Icons.download_rounded),
+            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _shareCrop(context),
