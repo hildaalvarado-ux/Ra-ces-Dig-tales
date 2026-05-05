@@ -240,28 +240,6 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
     );
   }
 
-  Future<void> _download(BuildContext context) async {
-    final result = await fileManagementService.saveModuleData(
-      module: 'plaga',
-      name: widget.plaga.nombre,
-      data: widget.plaga.toJson(),
-      imagePath: widget.plaga.imagePath,
-    );
-
-    if (!context.mounted) return;
-    if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Descarga exitosa. Archivo guardado en $result'),
-          backgroundColor: AppColors.greenDark,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al descargar el archivo')),
-      );
-    }
-  }
 
   Widget _buildImage({String? path, String? asset, double height = 180}) {
     if (path != null && path.isNotEmpty) {
@@ -307,11 +285,6 @@ class _PlagaDetallePageState extends State<PlagaDetallePage> {
           foregroundColor: Colors.white,
           title: Text(widget.plaga.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
-            IconButton(
-              tooltip: 'Descargar info',
-              onPressed: () => _download(context),
-              icon: const Icon(Icons.download_rounded),
-            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _share(context),

@@ -198,28 +198,6 @@ class _EnfermedadDetallePageState extends State<EnfermedadDetallePage> {
     );
   }
 
-  Future<void> _download(BuildContext context) async {
-    final result = await fileManagementService.saveModuleData(
-      module: 'enfermedad',
-      name: widget.enfermedad.nombre,
-      data: widget.enfermedad.toJson(),
-      imagePath: widget.enfermedad.imagePath,
-    );
-
-    if (!context.mounted) return;
-    if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Descarga exitosa. Archivo guardado en $result'),
-          backgroundColor: AppColors.greenDark,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al descargar el archivo')),
-      );
-    }
-  }
 
   Widget _buildImage() {
     if (widget.enfermedad.imagePath != null && widget.enfermedad.imagePath!.isNotEmpty) {
@@ -265,11 +243,6 @@ class _EnfermedadDetallePageState extends State<EnfermedadDetallePage> {
           foregroundColor: Colors.white,
           title: Text(widget.enfermedad.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
-            IconButton(
-              tooltip: 'Descargar info',
-              onPressed: () => _download(context),
-              icon: const Icon(Icons.download_rounded),
-            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _share(context),

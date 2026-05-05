@@ -160,28 +160,6 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
     );
   }
 
-  Future<void> _downloadCrop(BuildContext context) async {
-    final result = await fileManagementService.saveModuleData(
-      module: 'cultivo',
-      name: widget.cultivo.nombre,
-      data: widget.cultivo.toJson(),
-      imagePath: widget.cultivo.imagePath,
-    );
-
-    if (!context.mounted) return;
-    if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Descarga exitosa. Archivo guardado en $result'),
-          backgroundColor: AppColors.greenDark,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al descargar el archivo')),
-      );
-    }
-  }
 
   Widget _buildImage() {
     if (widget.cultivo.imagePath != null &&
@@ -756,11 +734,6 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
           foregroundColor: Colors.white,
           title: Text(widget.cultivo.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
-            IconButton(
-              tooltip: 'Descargar info',
-              onPressed: () => _downloadCrop(context),
-              icon: const Icon(Icons.download_rounded),
-            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _shareCrop(context),
