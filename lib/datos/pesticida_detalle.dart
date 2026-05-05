@@ -5,9 +5,8 @@ import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 
+import '../data/file_management_service.dart';
 import '../main.dart';
 import 'help_dialogs.dart';
 import 'plaga_detalle.dart';
@@ -100,58 +99,34 @@ class PesticidaDetallePage extends StatelessWidget {
   const PesticidaDetallePage({super.key, required this.pesticida});
 
   Future<void> _share(BuildContext context) async {
-    try {
-      final encoder = ZipEncoder();
-      final archive = Archive();
+    await fileManagementService.shareModuleData(
+      module: 'pesticida',
+      name: pesticida.nombre,
+      data: pesticida.toJson(),
+      imagePath: pesticida.imagePath,
+      text: 'Mira este repelente natural: ${pesticida.nombre}',
+    );
+  }
 
-      final jsonStr = jsonEncode(pesticida.toJson());
-      archive.addFile(
-        ArchiveFile(
-          'pesticida.json',
-          utf8.encode(jsonStr).length,
-          utf8.encode(jsonStr),
+  Future<void> _download(BuildContext context) async {
+    final result = await fileManagementService.saveModuleData(
+      module: 'pesticida',
+      name: pesticida.nombre,
+      data: pesticida.toJson(),
+      imagePath: pesticida.imagePath,
+    );
+
+    if (!context.mounted) return;
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Descarga exitosa. Archivo guardado en $result'),
+          backgroundColor: AppColors.greenDark,
         ),
       );
-
-      if (pesticida.imagePath != null && pesticida.imagePath!.isNotEmpty) {
-        if (pesticida.imagePath!.startsWith('data:image')) {
-          final parts = pesticida.imagePath!.split(',');
-          final bytes = base64Decode(parts.last);
-          final ext = parts.first.split('/').last.split(';').first;
-          archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
-        } else {
-          final file = File(pesticida.imagePath!);
-          if (await file.exists()) {
-            final bytes = await file.readAsBytes();
-            final ext = file.path.split('.').last;
-            archive.addFile(ArchiveFile('imagen.$ext', bytes.length, bytes));
-          }
-        }
-      }
-
-      final zipData = encoder.encode(archive);
-      if (zipData == null) return;
-
-      if (kIsWeb) {
-        final blob = XFile.fromData(
-          Uint8List.fromList(zipData),
-          name: '${pesticida.nombre}.rdc',
-          mimeType: 'application/zip',
-        );
-        await Share.shareXFiles([blob]);
-      } else {
-        final tempDir = await getTemporaryDirectory();
-        final zipFile = File('${tempDir.path}/${pesticida.nombre}.rdc');
-        await zipFile.writeAsBytes(zipData);
-        await Share.shareXFiles(
-          [XFile(zipFile.path)],
-          text: 'Mira este repelente natural: ${pesticida.nombre}',
-        );
-      }
-    } catch (e) {
-      if (!context.mounted) return;
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al compartir: $e')),
+        const SnackBar(content: Text('Error al descargar el archivo')),
       );
     }
   }
@@ -213,6 +188,11 @@ class PesticidaDetallePage extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.w900),
           ),
           actions: [
+            IconButton(
+              tooltip: 'Descargar info',
+              onPressed: () => _download(context),
+              icon: const Icon(Icons.download_rounded),
+            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _share(context),
