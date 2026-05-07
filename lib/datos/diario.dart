@@ -1,3 +1,4 @@
+import '../data/common_widgets.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -194,6 +195,18 @@ class _DiarioPageState extends State<DiarioPage> {
                         final latestObs = obsGroup.last;
                         final plan = latestObs.planId != null ? _plans[latestObs.planId] : null;
 
+                        if (index == _sortedGroupKeys.length - 1) {
+                          return Column(
+                            children: [
+                              _GroupedObservationCard(
+                                observations: obsGroup,
+                                plan: plan,
+                                onTap: () => _showHistoryModal(latestObs.cropName, obsGroup),
+                              ),
+                              const CopyrightFooter(),
+                            ],
+                          );
+                        }
                         return _GroupedObservationCard(
                           observations: obsGroup,
                           plan: plan,

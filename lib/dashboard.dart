@@ -20,6 +20,7 @@ import 'datos/diario.dart';
 import 'datos/creditos.dart';
 import 'datos/opciones.dart';
 import 'datos/preparacion_suelo.dart';
+import 'datos/contacto.dart';
 
 class DashboardPage extends StatefulWidget {
   final int userId;
@@ -210,8 +211,15 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         break;
 
-      case 'Favoritos':
       case 'Contacto':
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const ContactoPage(),
+          ),
+        );
+        break;
+
+      case 'Favoritos':
       default:
         // ✅ placeholder temporal para que no se rompa la navegación
         await Navigator.of(context).push(

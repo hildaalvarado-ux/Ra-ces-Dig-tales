@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../data/db_instance.dart';
 import '../data/app_database.dart';
 import '../data/notification_service.dart';
+import '../data/common_widgets.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
 import 'diario.dart';
@@ -251,6 +252,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
                               );
                             },
                           ),
+                const CopyrightFooter(),
               ],
             ),
           ),

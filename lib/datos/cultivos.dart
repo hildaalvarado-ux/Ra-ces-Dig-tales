@@ -14,6 +14,7 @@ import '../data/notification_service.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
 import 'cultivo_form.dart';
+import '../data/common_widgets.dart';
 
 class CultivosPage extends StatefulWidget {
   final int userId;
@@ -590,6 +591,7 @@ class _CultivosPageState extends State<CultivosPage> {
                                     ),
                                   ),
                                 ],
+                                const CopyrightFooter(),
                               ],
                             ),
                 ),
