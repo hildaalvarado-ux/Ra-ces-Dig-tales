@@ -111,7 +111,6 @@ class _ContactoPageState extends State<ContactoPage> {
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
-const CopyrightFooter(),
             child: Form(
               key: _formKey,
               child: Column(
@@ -240,15 +239,30 @@ const CopyrightFooter(),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.security_rounded, color: AppColors.greenDark),
-                        const SizedBox(width: 14),
+                        Checkbox(
+                          value: _aceptoPrivacidad,
+                          onChanged: (val) {
+                            setState(() {
+                              _aceptoPrivacidad = val ?? false;
+                            });
+                          },
+                          activeColor: AppColors.greenDark,
+                        ),
+                        const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
-                            'Tu privacidad es importante. Al enviar este mensaje, tu correo electrónico será utilizado únicamente para dar seguimiento a tu solicitud de acuerdo con nuestras políticas de seguridad y datos personales.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.greenDarker.withOpacity(0.7),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _aceptoPrivacidad = !_aceptoPrivacidad;
+                              });
+                            },
+                            child: Text(
+                              'Tu privacidad es importante. Al enviar este mensaje, tu correo electrónico será utilizado únicamente para dar seguimiento a tu solicitud de acuerdo con nuestras políticas de seguridad y datos personales.',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.greenDarker.withOpacity(0.7),
+                              ),
                             ),
                           ),
                         ),
