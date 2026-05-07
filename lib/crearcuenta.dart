@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
 import 'data/db_instance.dart';
@@ -17,6 +19,16 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
   final _correoCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
+  final _securityAnswerCtrl = TextEditingController();
+
+  String? _selectedQuestion;
+  final List<String> _questions = [
+    '¿Cuál es el nombre de tu primera mascota?',
+    '¿En qué ciudad naciste?',
+    '¿Cuál es tu color favorito?',
+    '¿Cuál es el nombre de tu escuela primaria?',
+    '¿Cuál es el modelo de tu primer coche?',
+  ];
 
   bool _hidePass = true;
   bool _hideConfirm = true;
@@ -38,6 +50,7 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
     _correoCtrl.dispose();
     _passCtrl.dispose();
     _confirmCtrl.dispose();
+    _securityAnswerCtrl.dispose();
     super.dispose();
   }
 
@@ -129,6 +142,12 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
     final username = _usuarioCtrl.text.trim();
     final email = _correoCtrl.text.trim();
     final password = _passCtrl.text;
+    final securityQuestion = _selectedQuestion!;
+    final securityAnswer = _securityAnswerCtrl.text.trim().toLowerCase();
+
+    // Hashing the security answer
+    final bytes = utf8.encode(securityAnswer);
+    final hashedAnswer = sha256.convert(bytes).toString();
 
     setState(() => _saving = true);
     try {
@@ -140,6 +159,8 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
         username: username,
         email: email,
         password: password,
+        securityQuestion: securityQuestion,
+        securityAnswer: hashedAnswer,
       );
 
       if (!mounted) return;
@@ -325,7 +346,7 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
                         TextFormField(
                           controller: _confirmCtrl,
                           obscureText: _hideConfirm,
-                          textInputAction: TextInputAction.done,
+                          textInputAction: TextInputAction.next,
                           enabled: !_saving,
                           decoration: _inputDecoration(
                             label: 'Confirmar contraseña',
@@ -347,6 +368,48 @@ class _CrearCuentaPageState extends State<CrearCuentaPage> {
                             }
                             return null;
                           },
+                        ),
+                        const SizedBox(height: 14),
+
+                        DropdownButtonFormField<String>(
+                          value: _selectedQuestion,
+                          decoration: _inputDecoration(
+                            label: 'Pregunta de seguridad',
+                            hint: 'Selecciona una pregunta',
+                          ),
+                          items: _questions.map((q) {
+                            return DropdownMenuItem(
+                              value: q,
+                              child: Text(
+                                q,
+                                style: const TextStyle(fontSize: 14),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: _saving
+                              ? null
+                              : (v) => setState(() => _selectedQuestion = v),
+                          validator: (v) =>
+                              v == null ? 'Selecciona una pregunta.' : null,
+                        ),
+                        const SizedBox(height: 14),
+
+                        TextFormField(
+                          controller: _securityAnswerCtrl,
+                          textInputAction: TextInputAction.done,
+                          enabled: !_saving,
+                          decoration: _inputDecoration(
+                            label: 'Respuesta de seguridad',
+                            hint: 'Tu respuesta (se usará para recuperar)',
+                          ),
+                          validator: (v) {
+                            final value = (v ?? '').trim();
+                            if (value.isEmpty) return 'Escribe una respuesta.';
+                            if (value.length < 3) return 'Mínimo 3 caracteres.';
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => _saving ? null : _createAccount(),
                         ),
 
                         const SizedBox(height: 18),

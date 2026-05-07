@@ -16,6 +16,12 @@ class Users extends Table {
       boolean().withDefault(const Constant(true))();
   TextColumn get notificationSound =>
       text().withDefault(const Constant('default'))();
+
+  TextColumn get securityQuestion =>
+      text().withDefault(const Constant(''))();
+  TextColumn get securityAnswer =>
+      text().withDefault(const Constant(''))();
+
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
@@ -217,7 +223,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   // ✅ ESTO ES LO QUE TE FALTA:
   // Le dice a Drift qué hacer cuando cambias schemaVersion
@@ -307,6 +313,10 @@ class AppDatabase extends _$AppDatabase {
           if (from < 13) {
             await m.createTable(soilPreparations);
           }
+          if (from < 14) {
+            await m.addColumn(users, users.securityQuestion);
+            await m.addColumn(users, users.securityAnswer);
+          }
         },
         beforeOpen: (details) async {
           // Opcional: puedes activar foreign_keys si luego lo ocupas
@@ -322,6 +332,8 @@ class AppDatabase extends _$AppDatabase {
     required String username,
     required String email,
     required String password,
+    required String securityQuestion,
+    required String securityAnswer,
   }) async {
     return into(users).insert(
       UsersCompanion.insert(
@@ -329,6 +341,8 @@ class AppDatabase extends _$AppDatabase {
         username: username,
         email: email,
         password: password,
+        securityQuestion: Value(securityQuestion),
+        securityAnswer: Value(securityAnswer),
       ),
     );
   }

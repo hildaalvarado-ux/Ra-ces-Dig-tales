@@ -101,6 +101,30 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         requiredDuringInsert: false,
         defaultValue: const Constant('default'),
       );
+  static const VerificationMeta _securityQuestionMeta = const VerificationMeta(
+    'securityQuestion',
+  );
+  @override
+  late final GeneratedColumn<String> securityQuestion = GeneratedColumn<String>(
+    'security_question',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _securityAnswerMeta = const VerificationMeta(
+    'securityAnswer',
+  );
+  @override
+  late final GeneratedColumn<String> securityAnswer = GeneratedColumn<String>(
+    'security_answer',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -123,6 +147,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     avatarPath,
     notificationsEnabled,
     notificationSound,
+    securityQuestion,
+    securityAnswer,
     createdAt,
   ];
   @override
@@ -196,6 +222,24 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         ),
       );
     }
+    if (data.containsKey('security_question')) {
+      context.handle(
+        _securityQuestionMeta,
+        securityQuestion.isAcceptableOrUnknown(
+          data['security_question']!,
+          _securityQuestionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('security_answer')) {
+      context.handle(
+        _securityAnswerMeta,
+        securityAnswer.isAcceptableOrUnknown(
+          data['security_answer']!,
+          _securityAnswerMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -248,6 +292,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}notification_sound'],
       )!,
+      securityQuestion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}security_question'],
+      )!,
+      securityAnswer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}security_answer'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -270,6 +322,8 @@ class User extends DataClass implements Insertable<User> {
   final String? avatarPath;
   final bool notificationsEnabled;
   final String notificationSound;
+  final String securityQuestion;
+  final String securityAnswer;
   final DateTime createdAt;
   const User({
     required this.id,
@@ -280,6 +334,8 @@ class User extends DataClass implements Insertable<User> {
     this.avatarPath,
     required this.notificationsEnabled,
     required this.notificationSound,
+    required this.securityQuestion,
+    required this.securityAnswer,
     required this.createdAt,
   });
   @override
@@ -295,6 +351,8 @@ class User extends DataClass implements Insertable<User> {
     }
     map['notifications_enabled'] = Variable<bool>(notificationsEnabled);
     map['notification_sound'] = Variable<String>(notificationSound);
+    map['security_question'] = Variable<String>(securityQuestion);
+    map['security_answer'] = Variable<String>(securityAnswer);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -311,6 +369,8 @@ class User extends DataClass implements Insertable<User> {
           : Value(avatarPath),
       notificationsEnabled: Value(notificationsEnabled),
       notificationSound: Value(notificationSound),
+      securityQuestion: Value(securityQuestion),
+      securityAnswer: Value(securityAnswer),
       createdAt: Value(createdAt),
     );
   }
@@ -331,6 +391,8 @@ class User extends DataClass implements Insertable<User> {
         json['notificationsEnabled'],
       ),
       notificationSound: serializer.fromJson<String>(json['notificationSound']),
+      securityQuestion: serializer.fromJson<String>(json['securityQuestion']),
+      securityAnswer: serializer.fromJson<String>(json['securityAnswer']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -346,6 +408,8 @@ class User extends DataClass implements Insertable<User> {
       'avatarPath': serializer.toJson<String?>(avatarPath),
       'notificationsEnabled': serializer.toJson<bool>(notificationsEnabled),
       'notificationSound': serializer.toJson<String>(notificationSound),
+      'securityQuestion': serializer.toJson<String>(securityQuestion),
+      'securityAnswer': serializer.toJson<String>(securityAnswer),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -359,6 +423,8 @@ class User extends DataClass implements Insertable<User> {
     Value<String?> avatarPath = const Value.absent(),
     bool? notificationsEnabled,
     String? notificationSound,
+    String? securityQuestion,
+    String? securityAnswer,
     DateTime? createdAt,
   }) => User(
     id: id ?? this.id,
@@ -369,6 +435,8 @@ class User extends DataClass implements Insertable<User> {
     avatarPath: avatarPath.present ? avatarPath.value : this.avatarPath,
     notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
     notificationSound: notificationSound ?? this.notificationSound,
+    securityQuestion: securityQuestion ?? this.securityQuestion,
+    securityAnswer: securityAnswer ?? this.securityAnswer,
     createdAt: createdAt ?? this.createdAt,
   );
   User copyWithCompanion(UsersCompanion data) {
@@ -387,6 +455,12 @@ class User extends DataClass implements Insertable<User> {
       notificationSound: data.notificationSound.present
           ? data.notificationSound.value
           : this.notificationSound,
+      securityQuestion: data.securityQuestion.present
+          ? data.securityQuestion.value
+          : this.securityQuestion,
+      securityAnswer: data.securityAnswer.present
+          ? data.securityAnswer.value
+          : this.securityAnswer,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -402,6 +476,8 @@ class User extends DataClass implements Insertable<User> {
           ..write('avatarPath: $avatarPath, ')
           ..write('notificationsEnabled: $notificationsEnabled, ')
           ..write('notificationSound: $notificationSound, ')
+          ..write('securityQuestion: $securityQuestion, ')
+          ..write('securityAnswer: $securityAnswer, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -417,6 +493,8 @@ class User extends DataClass implements Insertable<User> {
     avatarPath,
     notificationsEnabled,
     notificationSound,
+    securityQuestion,
+    securityAnswer,
     createdAt,
   );
   @override
@@ -431,6 +509,8 @@ class User extends DataClass implements Insertable<User> {
           other.avatarPath == this.avatarPath &&
           other.notificationsEnabled == this.notificationsEnabled &&
           other.notificationSound == this.notificationSound &&
+          other.securityQuestion == this.securityQuestion &&
+          other.securityAnswer == this.securityAnswer &&
           other.createdAt == this.createdAt);
 }
 
@@ -443,6 +523,8 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<String?> avatarPath;
   final Value<bool> notificationsEnabled;
   final Value<String> notificationSound;
+  final Value<String> securityQuestion;
+  final Value<String> securityAnswer;
   final Value<DateTime> createdAt;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -453,6 +535,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.avatarPath = const Value.absent(),
     this.notificationsEnabled = const Value.absent(),
     this.notificationSound = const Value.absent(),
+    this.securityQuestion = const Value.absent(),
+    this.securityAnswer = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -464,6 +548,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.avatarPath = const Value.absent(),
     this.notificationsEnabled = const Value.absent(),
     this.notificationSound = const Value.absent(),
+    this.securityQuestion = const Value.absent(),
+    this.securityAnswer = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : fullName = Value(fullName),
        username = Value(username),
@@ -478,6 +564,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? avatarPath,
     Expression<bool>? notificationsEnabled,
     Expression<String>? notificationSound,
+    Expression<String>? securityQuestion,
+    Expression<String>? securityAnswer,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -490,6 +578,8 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (notificationsEnabled != null)
         'notifications_enabled': notificationsEnabled,
       if (notificationSound != null) 'notification_sound': notificationSound,
+      if (securityQuestion != null) 'security_question': securityQuestion,
+      if (securityAnswer != null) 'security_answer': securityAnswer,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -503,6 +593,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<String?>? avatarPath,
     Value<bool>? notificationsEnabled,
     Value<String>? notificationSound,
+    Value<String>? securityQuestion,
+    Value<String>? securityAnswer,
     Value<DateTime>? createdAt,
   }) {
     return UsersCompanion(
@@ -514,6 +606,8 @@ class UsersCompanion extends UpdateCompanion<User> {
       avatarPath: avatarPath ?? this.avatarPath,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       notificationSound: notificationSound ?? this.notificationSound,
+      securityQuestion: securityQuestion ?? this.securityQuestion,
+      securityAnswer: securityAnswer ?? this.securityAnswer,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -545,6 +639,12 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (notificationSound.present) {
       map['notification_sound'] = Variable<String>(notificationSound.value);
     }
+    if (securityQuestion.present) {
+      map['security_question'] = Variable<String>(securityQuestion.value);
+    }
+    if (securityAnswer.present) {
+      map['security_answer'] = Variable<String>(securityAnswer.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -562,6 +662,8 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('avatarPath: $avatarPath, ')
           ..write('notificationsEnabled: $notificationsEnabled, ')
           ..write('notificationSound: $notificationSound, ')
+          ..write('securityQuestion: $securityQuestion, ')
+          ..write('securityAnswer: $securityAnswer, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -8042,6 +8144,8 @@ typedef $$UsersTableCreateCompanionBuilder =
       Value<String?> avatarPath,
       Value<bool> notificationsEnabled,
       Value<String> notificationSound,
+      Value<String> securityQuestion,
+      Value<String> securityAnswer,
       Value<DateTime> createdAt,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -8054,6 +8158,8 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String?> avatarPath,
       Value<bool> notificationsEnabled,
       Value<String> notificationSound,
+      Value<String> securityQuestion,
+      Value<String> securityAnswer,
       Value<DateTime> createdAt,
     });
 
@@ -8102,6 +8208,16 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get notificationSound => $composableBuilder(
     column: $table.notificationSound,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get securityQuestion => $composableBuilder(
+    column: $table.securityQuestion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get securityAnswer => $composableBuilder(
+    column: $table.securityAnswer,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8160,6 +8276,16 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get securityQuestion => $composableBuilder(
+    column: $table.securityQuestion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get securityAnswer => $composableBuilder(
+    column: $table.securityAnswer,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -8205,6 +8331,16 @@ class $$UsersTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get securityQuestion => $composableBuilder(
+    column: $table.securityQuestion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get securityAnswer => $composableBuilder(
+    column: $table.securityAnswer,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 }
@@ -8245,6 +8381,8 @@ class $$UsersTableTableManager
                 Value<String?> avatarPath = const Value.absent(),
                 Value<bool> notificationsEnabled = const Value.absent(),
                 Value<String> notificationSound = const Value.absent(),
+                Value<String> securityQuestion = const Value.absent(),
+                Value<String> securityAnswer = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
@@ -8255,6 +8393,8 @@ class $$UsersTableTableManager
                 avatarPath: avatarPath,
                 notificationsEnabled: notificationsEnabled,
                 notificationSound: notificationSound,
+                securityQuestion: securityQuestion,
+                securityAnswer: securityAnswer,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -8267,6 +8407,8 @@ class $$UsersTableTableManager
                 Value<String?> avatarPath = const Value.absent(),
                 Value<bool> notificationsEnabled = const Value.absent(),
                 Value<String> notificationSound = const Value.absent(),
+                Value<String> securityQuestion = const Value.absent(),
+                Value<String> securityAnswer = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
@@ -8277,6 +8419,8 @@ class $$UsersTableTableManager
                 avatarPath: avatarPath,
                 notificationsEnabled: notificationsEnabled,
                 notificationSound: notificationSound,
+                securityQuestion: securityQuestion,
+                securityAnswer: securityAnswer,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0

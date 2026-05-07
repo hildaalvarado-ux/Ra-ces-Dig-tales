@@ -3,6 +3,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'crearcuenta.dart';
 import 'login.dart';
+import 'recuperar_pass.dart';
 
 // ✅ NUEVO: para leer sesión
 import 'data/db_instance.dart';
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
         '/bienvenida': (_) => const BienvenidaPage(),
         '/crear-cuenta': (_) => const CrearCuentaPage(),
         '/login': (_) => const LoginPage(),
+        '/recuperar-pass': (_) => const RecuperarPassPage(),
       },
 
       // ✅ Inicia SIEMPRE en splash

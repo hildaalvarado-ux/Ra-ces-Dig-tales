@@ -215,7 +215,24 @@ class _LoginPageState extends State<LoginPage> {
                           onFieldSubmitted: (_) => _loading ? null : _doLogin(),
                         ),
 
-                        const SizedBox(height: 18),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: _loading
+                                ? null
+                                : () => Navigator.pushNamed(context, '/recuperar-pass'),
+                            child: Text(
+                              '¿Olvidaste tu contraseña?',
+                              style: TextStyle(
+                                color: AppColors.greenDark.withOpacity(0.85),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
 
                         SizedBox(
                           width: double.infinity,
