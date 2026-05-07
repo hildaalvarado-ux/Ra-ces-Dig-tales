@@ -1,3 +1,4 @@
+import '../data/common_widgets.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -211,6 +212,7 @@ class _PesticidasPageState extends State<PesticidasPage> {
                                 ),
                               ),
                             ),
+                          const CopyrightFooter(),
                         ],
                       ),
               ),

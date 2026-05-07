@@ -1,3 +1,4 @@
+import '../data/common_widgets.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
 import 'perfil.dart';
@@ -115,16 +116,7 @@ class OpcionesPage extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 40),
-                Center(
-                  child: Text(
-                    'Raíces Digitales v1.0.0',
-                    style: TextStyle(
-                      color: AppColors.greenSoft.withOpacity(0.5),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
+                const CopyrightFooter(),
               ],
             ),
           ),
