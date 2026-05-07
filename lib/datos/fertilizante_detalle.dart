@@ -168,28 +168,6 @@ class FertilizanteDetallePage extends StatelessWidget {
     );
   }
 
-  Future<void> _download(BuildContext context) async {
-    final result = await fileManagementService.saveModuleData(
-      module: 'fertilizante',
-      name: fertilizante.nombre,
-      data: fertilizante.toJson(),
-      imagePath: fertilizante.imagePath,
-    );
-
-    if (!context.mounted) return;
-    if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Descarga exitosa. Archivo guardado en $result'),
-          backgroundColor: AppColors.greenDark,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al descargar el archivo')),
-      );
-    }
-  }
 
   Widget _buildImage() {
     if (fertilizante.imagePath != null && fertilizante.imagePath!.isNotEmpty) {
@@ -235,11 +213,6 @@ class FertilizanteDetallePage extends StatelessWidget {
           foregroundColor: Colors.white,
           title: Text(fertilizante.nombre, style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
-            IconButton(
-              tooltip: 'Descargar info',
-              onPressed: () => _download(context),
-              icon: const Icon(Icons.download_rounded),
-            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _share(context),

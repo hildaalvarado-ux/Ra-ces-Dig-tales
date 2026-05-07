@@ -108,28 +108,6 @@ class PesticidaDetallePage extends StatelessWidget {
     );
   }
 
-  Future<void> _download(BuildContext context) async {
-    final result = await fileManagementService.saveModuleData(
-      module: 'pesticida',
-      name: pesticida.nombre,
-      data: pesticida.toJson(),
-      imagePath: pesticida.imagePath,
-    );
-
-    if (!context.mounted) return;
-    if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Descarga exitosa. Archivo guardado en $result'),
-          backgroundColor: AppColors.greenDark,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al descargar el archivo')),
-      );
-    }
-  }
 
   Widget _buildImage() {
     if (pesticida.imagePath != null && pesticida.imagePath!.isNotEmpty) {
@@ -188,11 +166,6 @@ class PesticidaDetallePage extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.w900),
           ),
           actions: [
-            IconButton(
-              tooltip: 'Descargar info',
-              onPressed: () => _download(context),
-              icon: const Icon(Icons.download_rounded),
-            ),
             IconButton(
               tooltip: 'Compartir',
               onPressed: () => _share(context),

@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/db_instance.dart';
 import '../data/catalog_manager.dart';
+import '../data/image_utils.dart';
 import '../main.dart';
 import 'fertilizante_detalle.dart';
 
@@ -79,6 +81,66 @@ class _FertilizantesPageState extends State<FertilizantesPage> {
   List<Fertilizante> get _filteredAgregados => _applyFilters(_agregados);
   List<Fertilizante> get _filteredCompartidos => _applyFilters(_compartidos);
 
+  Future<void> _importFromFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['rdc'],
+        withData: true,
+      );
+
+      if (result == null || result.files.isEmpty) return;
+
+      final picked = result.files.first;
+      final bytes = picked.bytes ?? (picked.path != null ? await File(picked.path!).readAsBytes() : null);
+
+      if (bytes == null) throw Exception('No se pudieron leer los bytes del archivo');
+
+      final jsonContent = utf8.decode(bytes);
+      final data = jsonDecode(jsonContent) as Map<String, dynamic>;
+      final temp = Fertilizante.fromJson(data);
+
+      String? savedImagePath;
+      if (data['image_exported'] != null) {
+        final imageUri = data['image_exported'] as String;
+        final parts = imageUri.split(',');
+        if (parts.length >= 2) {
+          final mime = parts[0].split(':')[1].split(';')[0];
+          final ext = mime.split('/')[1];
+          final imgBytes = base64Decode(parts[1]);
+          savedImagePath = await ImageUtils.saveImageBytes(
+            imgBytes,
+            'fertilizantes_images',
+            ext,
+          );
+        }
+      }
+
+      await appDb.insertSharedFertilizante(
+        userId: widget.userId,
+        nombre: temp.nombre,
+        tipo: temp.tipo,
+        imagePath: savedImagePath,
+        payloadJson: jsonEncode(temp.toJson()),
+      );
+
+      await _loadData();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Importado correctamente: ${temp.nombre}'),
+          backgroundColor: AppColors.greenDark,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al importar: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBackground(
@@ -120,7 +182,16 @@ class _FertilizantesPageState extends State<FertilizantesPage> {
                               ..._filteredCompartidos.map((f) => _FertilizanteTile(fertilizante: f)),
                             ],
                             if (_filteredCatalogo.isNotEmpty) ...[
-                              _buildSectionHeader('Catálogo'),
+                              _buildSectionHeader(
+                                'Catálogo',
+                                action: IconButton(
+                                  visualDensity: VisualDensity.compact,
+                                  tooltip: 'Importar desde archivo .rdc',
+                                  icon: const Icon(Icons.download_rounded, size: 20),
+                                  onPressed: _importFromFile,
+                                  color: AppColors.greenDark,
+                                ),
+                              ),
                               ..._filteredCatalogo.map((f) => _FertilizanteTile(fertilizante: f)),
                             ],
                             if (_filteredCatalogo.isEmpty && _filteredAgregados.isEmpty && _filteredCompartidos.isEmpty)
@@ -139,12 +210,23 @@ class _FertilizantesPageState extends State<FertilizantesPage> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, {Widget? action}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title.toUpperCase(),
-        style: TextStyle(color: AppColors.greenDarker.withOpacity(0.6), fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              color: AppColors.greenDarker.withOpacity(0.6),
+              fontWeight: FontWeight.w900,
+              fontSize: 12,
+              letterSpacing: 1.2,
+            ),
+          ),
+          if (action != null) action,
+        ],
       ),
     );
   }

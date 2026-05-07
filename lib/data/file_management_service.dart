@@ -133,7 +133,7 @@ class FileManagementService {
       final Map<String, dynamic> exportData = Map.from(data);
       exportData['image_exported'] = await _prepareImageData(imagePath);
 
-      final fileName = '${name.replaceAll(' ', '_').toLowerCase()}_info.json';
+      final fileName = '${name.replaceAll(' ', '_').toLowerCase()}.rdc';
       final filePath = p.join(modulePath, fileName);
       final file = File(filePath);
 
@@ -156,23 +156,15 @@ class FileManagementService {
     String? text,
   }) async {
     try {
-      if (!await _requestPermissions()) {
-        await Share.share(text ?? 'Mira este $name');
-        return;
-      }
-
-      final modulePath = await getModulePath('compartido');
-      if (modulePath == null) {
-        await Share.share(text ?? 'Mira este $name');
-        return;
-      }
+      // Para compartir siempre intentamos usar un archivo temporal en cache
+      final tempDir = await getTemporaryDirectory();
+      final fileName = '${name.replaceAll(' ', '_').toLowerCase()}.rdc';
+      final filePath = p.join(tempDir.path, fileName);
+      final file = File(filePath);
 
       final Map<String, dynamic> exportData = Map.from(data);
       exportData['image_exported'] = await _prepareImageData(imagePath);
 
-      final fileName = '${name.replaceAll(' ', '_').toLowerCase()}_shared.json';
-      final filePath = p.join(modulePath, fileName);
-      final file = File(filePath);
       await file.writeAsString(jsonEncode(exportData));
 
       await Share.shareXFiles(
@@ -181,7 +173,8 @@ class FileManagementService {
       );
     } catch (e) {
       debugPrint('Error sharing module data: $e');
-      await Share.share(text ?? 'Mira este $name');
+      // Fallback a texto si algo falla
+      await Share.share(text ?? 'Mira mi ${moduleFolders[module] ?? module}: $name');
     }
   }
 }

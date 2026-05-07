@@ -249,60 +249,35 @@ class _CultivosPageState extends State<CultivosPage> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['rdc', 'zip'],
-        withData: kIsWeb,
+        allowedExtensions: ['rdc'],
+        withData: true,
       );
 
       if (result == null || result.files.isEmpty) return;
 
       final picked = result.files.first;
-      late final Uint8List bytes;
+      final bytes = picked.bytes ?? (picked.path != null ? await File(picked.path!).readAsBytes() : null);
 
-      if (kIsWeb) {
-        if (picked.bytes == null) {
-          throw Exception('No se pudieron leer los bytes del archivo');
-        }
-        bytes = picked.bytes!;
-      } else {
-        if (picked.path == null) {
-          throw Exception('No se encontró la ruta del archivo');
-        }
-        bytes = await File(picked.path!).readAsBytes();
-      }
+      if (bytes == null) throw Exception('No se pudieron leer los bytes del archivo');
 
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      String? jsonContent;
-      Uint8List? imageBytes;
-      String? imageExt;
-
-      for (final item in archive) {
-        if (!item.isFile) continue;
-
-        final content = item.content as List<int>;
-
-        if (item.name == 'cultivo.json') {
-          jsonContent = utf8.decode(content);
-        } else if (item.name.startsWith('imagen.')) {
-          imageBytes = Uint8List.fromList(content);
-          imageExt = item.name.split('.').last;
-        }
-      }
-
-      if (jsonContent == null) {
-        throw Exception('No se encontró el archivo cultivo.json');
-      }
-
+      final jsonContent = utf8.decode(bytes);
       final data = jsonDecode(jsonContent) as Map<String, dynamic>;
       final tempCultivo = Cultivo.fromJson(data);
 
       String? savedImagePath;
-      if (imageBytes != null && imageExt != null) {
-        savedImagePath = await ImageUtils.saveImageBytes(
-          imageBytes,
-          'cultivos_images',
-          imageExt,
-        );
+      if (data['image_exported'] != null) {
+        final imageUri = data['image_exported'] as String;
+        final parts = imageUri.split(',');
+        if (parts.length >= 2) {
+          final mime = parts[0].split(':')[1].split(';')[0];
+          final ext = mime.split('/')[1];
+          final imgBytes = base64Decode(parts[1]);
+          savedImagePath = await ImageUtils.saveImageBytes(
+            imgBytes,
+            'cultivos_images',
+            ext,
+          );
+        }
       }
 
       await appDb.insertSharedCultivo(
@@ -312,7 +287,7 @@ class _CultivosPageState extends State<CultivosPage> {
         cosechaMeses: tempCultivo.cosechaMeses,
         estacion: tempCultivo.estacion,
         imagePath: savedImagePath,
-        payloadJson: jsonContent,
+        payloadJson: jsonEncode(tempCultivo.toJson()),
       );
 
       await _loadData();
@@ -321,6 +296,7 @@ class _CultivosPageState extends State<CultivosPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Importado correctamente: ${tempCultivo.nombre}'),
+          backgroundColor: AppColors.greenDark,
         ),
       );
     } catch (e) {
@@ -433,16 +409,6 @@ class _CultivosPageState extends State<CultivosPage> {
               tooltip: 'Nuevo cultivo',
               onPressed: () => _abrirFormulario(),
               icon: const Icon(Icons.add_rounded),
-            ),
-            IconButton(
-              tooltip: 'Importar cultivo (.rdc)',
-              onPressed: _importFromFile,
-              icon: const Icon(Icons.download_rounded),
-            ),
-            IconButton(
-              tooltip: 'Importar desde texto',
-              onPressed: _importFromJsonPaste,
-              icon: const Icon(Icons.paste_rounded),
             ),
           ],
         ),
@@ -598,7 +564,16 @@ class _CultivosPageState extends State<CultivosPage> {
                                   const SizedBox(height: 10),
                                 ],
                                 if (_filteredCatalogo.isNotEmpty) ...[
-                                  _buildSectionHeader('Catálogo'),
+                                  _buildSectionHeader(
+                                    'Catálogo',
+                                    action: IconButton(
+                                      visualDensity: VisualDensity.compact,
+                                      tooltip: 'Importar desde archivo .rdc',
+                                      icon: const Icon(Icons.download_rounded, size: 20),
+                                      onPressed: _importFromFile,
+                                      color: AppColors.greenDark,
+                                    ),
+                                  ),
                                   ..._filteredCatalogo.map(
                                     (c) => Padding(
                                       padding:
@@ -626,17 +601,23 @@ class _CultivosPageState extends State<CultivosPage> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, {Widget? action}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        title.toUpperCase(),
-        style: TextStyle(
-          color: AppColors.greenDarker.withOpacity(0.6),
-          fontWeight: FontWeight.w900,
-          fontSize: 12,
-          letterSpacing: 1.2,
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              color: AppColors.greenDarker.withOpacity(0.6),
+              fontWeight: FontWeight.w900,
+              fontSize: 12,
+              letterSpacing: 1.2,
+            ),
+          ),
+          if (action != null) action,
+        ],
       ),
     );
   }
