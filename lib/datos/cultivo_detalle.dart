@@ -451,10 +451,19 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                                   Navigator.push(context, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId, initialCropName: widget.cultivo.nombre)));
                                 }
                                 return;
+                              } else if (res == 'risk') {
+                                // Create a dummy active preparation marked with risk
+                                final tasks = SoilCatalog.procesos.map((p) => TareaPreparacion(tipo: p['tipo'])).toList();
+                                await appDb.insertSoilPreparation(SoilPreparationsCompanion.insert(
+                                  userId: userId,
+                                  cropName: drift.Value(widget.cultivo.nombre),
+                                  riesgo: const drift.Value(true),
+                                  payloadJson: jsonEncode(tasks.map((e) => e.toJson()).toList()),
+                                ));
                               } else if (res == null) {
                                 return;
                               }
-                            } else if (!activeSoil.completado) {
+                            } else if (!activeSoil.completado && !activeSoil.riesgo) {
                               final tasks = (jsonDecode(activeSoil.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
                               final remainingDays = activeSoil.fechaListaSuelo != null
                                   ? activeSoil.fechaListaSuelo!.difference(DateTime.now()).inDays
