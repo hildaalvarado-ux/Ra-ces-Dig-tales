@@ -8,6 +8,7 @@ import 'data/db_instance.dart'; // conexión a tu BD (Drift)
 import 'data/app_database.dart';
 import 'data/image_utils.dart';
 import 'data/notification_service.dart';
+import 'data/soil_models.dart';
 import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
 import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
 import 'datos/fertilizantes.dart';
@@ -574,6 +575,85 @@ class _DashboardPageState extends State<DashboardPage> {
           title: 'Hay tareas pendientes',
           subtitle: 'Diario • hoy',
           onOpen: () => _openFeature('Notificaciones'),
+        ),
+        const SizedBox(height: 24),
+        Text('Preparaciones de suelo en curso', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 18)),
+        const SizedBox(height: 12),
+        FutureBuilder<List<SoilPreparation>>(
+          future: appDb.getUserSoilPreparations(widget.userId),
+          builder: (context, snapshot) {
+            final activePreps = (snapshot.data ?? []).where((p) => p.status == 'active').toList();
+            if (activePreps.isEmpty) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.7), borderRadius: BorderRadius.circular(18), border: Border.all(color: AppColors.greenDark.withOpacity(0.1))),
+                child: const Text('No hay preparaciones de suelo en curso.', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600)),
+              );
+            }
+            return Column(
+              children: activePreps.map((prep) {
+                final tasks = (jsonDecode(prep.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
+                final progress = tasks.progress;
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.greenDark.withOpacity(0.2), width: 2),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(color: AppColors.greenDark.withOpacity(0.1), shape: BoxShape.circle),
+                            child: const Icon(Icons.layers_rounded, color: AppColors.greenDark),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(prep.cropName ?? 'Preparación General', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.greenDarker)),
+                                Text(tasks.statusMessage, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.greenSoft)),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SoilPreparationDetailPage(preparation: prep))).then((_) => setState(() {})),
+                            icon: const Icon(Icons.chevron_right, color: AppColors.greenDark),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          backgroundColor: Colors.grey.shade200,
+                          color: AppColors.greenDark,
+                          minHeight: 8,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('${(progress * 100).toInt()}% completado', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                          Text(tasks.timeRemainingMessage, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: AppColors.greenDark)),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            );
+          },
         ),
       ],
     );

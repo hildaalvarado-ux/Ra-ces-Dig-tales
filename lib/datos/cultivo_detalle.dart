@@ -270,12 +270,17 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
 
     String soilStatus = 'No iniciado';
     Color soilColor = Colors.grey;
+    String soilProgress = '';
     if (activeSoil != null) {
-      if (activeSoil.completado) {
+      final tasks = (jsonDecode(activeSoil.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
+      final progress = tasks.progress;
+      soilProgress = '${(progress * 100).toInt()}%';
+
+      if (activeSoil.completado || progress >= 1.0) {
         soilStatus = 'Listo';
         soilColor = Colors.green;
       } else {
-        soilStatus = 'En proceso';
+        soilStatus = tasks.statusMessage;
         soilColor = Colors.orange;
       }
     }
@@ -344,7 +349,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                           color: Colors.orange.shade800,
                           icon: Icons.looks_one_rounded,
                           items: [
-                            _GuideDetail(Icons.layers, 'Preparación del suelo', 'Estado: $soilStatus'),
+                            _GuideDetail(Icons.layers, 'Preparación del suelo', 'Estado: $soilStatus ${soilProgress.isNotEmpty ? "($soilProgress)" : ""}'),
                             _GuideDetail(Icons.waves, 'Preparación de la tierra', guia['preparacionTierra'] ?? 'No especificado'),
                             _GuideDetail(Icons.grass, 'Siembra paso a paso', guia['comoSembrar'] ?? 'No especificado'),
                           ],
@@ -353,17 +358,34 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                               const SizedBox(height: 12),
                               Row(
                                 children: [
+                                  if (activeSoil != null)
+                                    Expanded(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: LinearProgressIndicator(
+                                          value: (jsonDecode(activeSoil.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList().progress,
+                                          backgroundColor: Colors.grey.shade200,
+                                          color: soilColor,
+                                          minHeight: 6,
+                                        ),
+                                      ),
+                                    ),
+                                  const SizedBox(width: 12),
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(color: soilColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
                                     child: Text(soilStatus.toUpperCase(), style: TextStyle(color: soilColor, fontSize: 10, fontWeight: FontWeight.bold)),
                                   ),
-                                  const Spacer(),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
                                   TextButton.icon(
                                     onPressed: () {
                                       Navigator.pop(context);
                                       if (userId != null) {
-                                        Navigator.push(context, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId)));
+                                        Navigator.push(context, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId, initialCropName: widget.cultivo.nombre)));
                                       }
                                     },
                                     icon: const Icon(Icons.arrow_forward, size: 16),
@@ -426,7 +448,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
 
                               if (res == 'go') {
                                 if (context.mounted) {
-                                  Navigator.push(context, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId)));
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId, initialCropName: widget.cultivo.nombre)));
                                 }
                                 return;
                               } else if (res == null) {
@@ -473,7 +495,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                                   id: drift.Value(activeSoil.id),
                                   riesgo: const drift.Value(true),
                                 ));
-                              } else {
+                              } else if (res == null) {
                                 return;
                               }
                             }
