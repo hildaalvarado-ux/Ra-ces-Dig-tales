@@ -10,7 +10,8 @@ import 'cultivo_detalle.dart';
 
 class PreparacionSueloPage extends StatefulWidget {
   final int userId;
-  const PreparacionSueloPage({super.key, required this.userId});
+  final String? initialCropName;
+  const PreparacionSueloPage({super.key, required this.userId, this.initialCropName});
 
   @override
   State<PreparacionSueloPage> createState() => _PreparacionSueloPageState();
@@ -26,57 +27,91 @@ class _PreparacionSueloPageState extends State<PreparacionSueloPage> {
     _loadData();
   }
 
+  bool _initializedWithCrop = false;
+
   Future<void> _loadData() async {
     setState(() => _loading = true);
     final list = await appDb.getUserSoilPreparations(widget.userId);
+
+    if (widget.initialCropName != null && !_initializedWithCrop) {
+      _initializedWithCrop = true;
+      // Check if there is an active preparation for this crop
+      final active = await appDb.getActiveSoilPreparation(widget.userId, widget.initialCropName);
+      if (active != null) {
+        if (mounted) {
+          setState(() {
+            _preparations = list;
+            _loading = false;
+          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => SoilPreparationDetailPage(preparation: active),
+            ),
+          ).then((_) => _loadData());
+          return;
+        }
+      } else {
+        // Auto-create if it doesn't exist
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _createNewPreparation(preselectedCrop: widget.initialCropName);
+        });
+      }
+    }
+
     setState(() {
       _preparations = list;
       _loading = false;
     });
   }
 
-  void _createNewPreparation() async {
-    String? selectedCrop;
+  void _createNewPreparation({String? preselectedCrop}) async {
+    String? selectedCrop = preselectedCrop;
     final crops = await appDb.getUserCultivos(widget.userId);
     final catalogRaw = await DefaultAssetBundle.of(context).loadString('assets/data/cultivos.json');
     final catalog = (jsonDecode(catalogRaw) as List).map((e) => Cultivo.fromJson(e)).toList();
 
     if (!mounted) return;
 
-    final result = await showDialog<String>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Nueva Preparación', style: TextStyle(fontWeight: FontWeight.bold)),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('¿Para qué cultivo es esta preparación? (Opcional)'),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Cultivo'),
-                  items: [
-                    const DropdownMenuItem(value: null, child: Text('General / Varios')),
-                    ...catalog.map((e) => DropdownMenuItem(value: e.nombre, child: Text(e.nombre))),
-                    ...crops.map((e) => DropdownMenuItem(value: e.nombre, child: Text('${e.nombre} (Mío)'))),
-                  ],
-                  onChanged: (v) => selectedCrop = v,
-                ),
-              ],
+    String? result;
+    if (preselectedCrop != null) {
+      result = preselectedCrop;
+    } else {
+      result = await showDialog<String>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Nueva Preparación', style: TextStyle(fontWeight: FontWeight.bold)),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('¿Para qué cultivo es esta preparación? (Opcional)'),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Cultivo'),
+                    items: [
+                      const DropdownMenuItem(value: null, child: Text('General / Varios')),
+                      ...catalog.map((e) => DropdownMenuItem(value: e.nombre, child: Text(e.nombre))),
+                      ...crops.map((e) => DropdownMenuItem(value: e.nombre, child: Text('${e.nombre} (Mío)'))),
+                    ],
+                    onChanged: (v) => selectedCrop = v,
+                  ),
+                ],
+              ),
             ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context, selectedCrop ?? 'General'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark),
-              child: const Text('CREAR', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, selectedCrop ?? 'General'),
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark),
+                child: const Text('CREAR', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     if (result != null) {
       final tasks = SoilCatalog.procesos.map((p) => TareaPreparacion(tipo: p['tipo'])).toList();
@@ -293,8 +328,7 @@ class _PreparationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tasks = (jsonDecode(preparation.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
-    final completedCount = tasks.where((t) => t.estado == 'completado').length;
-    final progress = tasks.isEmpty ? 0.0 : completedCount / tasks.length;
+    final progress = tasks.progress;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -317,19 +351,30 @@ class _PreparationCard extends StatelessWidget {
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.greenDarker),
                     ),
                   ),
-                  _StatusChip(status: preparation.status),
+                  _StatusChip(status: preparation.status, progress: progress),
                 ],
               ),
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                  const Icon(Icons.info_outline, size: 16, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      tasks.statusMessage,
+                      style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w600, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Icon(Icons.access_time, size: 16, color: Colors.grey),
                   const SizedBox(width: 8),
                   Text(
-                    preparation.fechaListaSuelo != null
-                        ? 'Listo el: ${DateFormat('dd/MM/yyyy').format(preparation.fechaListaSuelo!)}'
-                        : 'Fecha estimada: Pendiente',
-                    style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w600),
+                    tasks.timeRemainingMessage,
+                    style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                 ],
               ),
@@ -368,11 +413,12 @@ class _PreparationCard extends StatelessWidget {
 
 class _StatusChip extends StatelessWidget {
   final String status;
-  const _StatusChip({required this.status});
+  final double progress;
+  const _StatusChip({required this.status, required this.progress});
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted = status == 'completed';
+    final isCompleted = status == 'completed' || progress >= 1.0;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -380,7 +426,7 @@ class _StatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        isCompleted ? 'COMPLETADO' : 'EN PROCESO',
+        isCompleted ? 'LISTO' : 'EN PROCESO',
         style: TextStyle(
           color: isCompleted ? Colors.green.shade800 : Colors.blue.shade800,
           fontSize: 10,
@@ -430,7 +476,8 @@ class _SoilPreparationDetailPageState extends State<SoilPreparationDetailPage> {
       }
     }
 
-    if (_tasks.every((t) => t.estado == 'completado') && _status != 'completed') {
+    final isAllDone = _tasks.every((t) => t.estado == 'completado' || t.estado == 'omitido');
+    if (isAllDone && _status != 'completed') {
       _status = 'completed';
       changed = true;
     }
@@ -443,21 +490,21 @@ class _SoilPreparationDetailPageState extends State<SoilPreparationDetailPage> {
   Future<void> _save() async {
     DateTime? maxFechaFin;
     for (var t in _tasks) {
-      if (t.fechaFin != null) {
+      if (t.fechaFin != null && t.estado == 'en_proceso') {
         if (maxFechaFin == null || t.fechaFin!.isAfter(maxFechaFin)) {
           maxFechaFin = t.fechaFin;
         }
       }
     }
 
-    final completed = _tasks.every((t) => t.estado == 'completado');
+    final completed = _tasks.every((t) => t.estado == 'completado' || t.estado == 'omitido');
 
     await appDb.updateSoilPreparation(SoilPreparationsCompanion(
       id: drift.Value(widget.preparation.id),
       fechaListaSuelo: drift.Value(maxFechaFin),
       completado: drift.Value(completed),
       riesgo: drift.Value(_riesgo),
-      status: drift.Value(_status),
+      status: drift.Value(completed ? 'completed' : 'active'),
       payloadJson: drift.Value(jsonEncode(_tasks.map((e) => e.toJson()).toList())),
     ));
     if (mounted) setState(() {});
@@ -584,10 +631,7 @@ class _SoilPreparationDetailPageState extends State<SoilPreparationDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final completedCount = _tasks.where((t) => t.estado == 'completado').length;
-    final progress = _tasks.isEmpty ? 0.0 : completedCount / _tasks.length;
-    DateTime? maxDate;
-    for (var t in _tasks) if (t.fechaFin != null && (maxDate == null || t.fechaFin!.isAfter(maxDate))) maxDate = t.fechaFin;
+    final progress = _tasks.progress;
 
     return AppBackground(
       child: Scaffold(
@@ -638,13 +682,24 @@ class _SoilPreparationDetailPageState extends State<SoilPreparationDetailPage> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.event_available, color: AppColors.greenSoft, size: 20),
+                      const Icon(Icons.info_outline, color: AppColors.greenSoft, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _tasks.statusMessage,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time, color: AppColors.greenSoft, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        maxDate != null
-                            ? 'Suelo listo el: ${DateFormat('dd/MM/yyyy').format(maxDate)}'
-                            : 'Selecciona métodos para estimar fecha',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        _tasks.timeRemainingMessage,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ],
                   ),
@@ -665,6 +720,12 @@ class _SoilPreparationDetailPageState extends State<SoilPreparationDetailPage> {
                     disinfectionCompleted: disinfectionCompleted,
                     onSelect: () => _selectMethod(index),
                     onInfo: () => _showInfo(index),
+                    onOmit: () {
+                      setState(() {
+                        _tasks[index] = t.copyWith(estado: 'omitido');
+                      });
+                      _save();
+                    },
                   );
                 },
               ),
@@ -682,6 +743,7 @@ class _TaskCard extends StatelessWidget {
   final bool disinfectionCompleted;
   final VoidCallback onSelect;
   final VoidCallback onInfo;
+  final VoidCallback onOmit;
 
   const _TaskCard({
     required this.task,
@@ -689,6 +751,7 @@ class _TaskCard extends StatelessWidget {
     required this.disinfectionCompleted,
     required this.onSelect,
     required this.onInfo,
+    required this.onOmit,
   });
 
   @override
@@ -703,6 +766,10 @@ class _TaskCard extends StatelessWidget {
       case 'en_proceso':
         statusColor = Colors.blue;
         statusText = 'En proceso';
+        break;
+      case 'omitido':
+        statusColor = Colors.orange;
+        statusText = 'Omitido';
         break;
       default:
         statusColor = Colors.grey;
@@ -770,6 +837,11 @@ class _TaskCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
+                if (task.estado != 'completado' && task.estado != 'omitido')
+                  TextButton(
+                    onPressed: onOmit,
+                    child: const Text('OMITIR', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                  ),
                 if (task.metodoSeleccionado != null)
                   IconButton(
                     onPressed: onInfo,

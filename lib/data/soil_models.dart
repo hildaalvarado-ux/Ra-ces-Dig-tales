@@ -6,7 +6,7 @@ class TareaPreparacion {
   final int duracionDias;
   final DateTime? fechaInicio;
   final DateTime? fechaFin;
-  final String estado; // "pendiente", "en_proceso", "completado"
+  final String estado; // "pendiente", "en_proceso", "completado", "omitido"
 
   TareaPreparacion({
     required this.tipo,
@@ -46,10 +46,67 @@ class TareaPreparacion {
     tipo: tipo ?? this.tipo,
     metodoSeleccionado: metodoSeleccionado ?? this.metodoSeleccionado,
     duracionDias: duracionDias ?? this.duracionDias,
-    fechaInicio: fechaInicio ?? this.fechaInicio,
-    fechaFin: fechaFin ?? this.fechaFin,
+    fechaInicio: (estado == 'omitido' || estado == 'pendiente') ? null : (fechaInicio ?? this.fechaInicio),
+    fechaFin: (estado == 'omitido' || estado == 'pendiente') ? null : (fechaFin ?? this.fechaFin),
     estado: estado ?? this.estado,
   );
+}
+
+extension TareaPreparacionListExt on List<TareaPreparacion> {
+  double get progress {
+    if (isEmpty) return 0.0;
+    final relevantTasks = where((t) => t.estado != 'omitido').toList();
+    if (relevantTasks.isEmpty) return 1.0;
+    final completedCount = relevantTasks.where((t) => t.estado == 'completado').length;
+    return completedCount / relevantTasks.length;
+  }
+
+  String get statusMessage {
+    if (isEmpty) return 'Sin tareas';
+    final relevantTasks = where((t) => t.estado != 'omitido').toList();
+    if (relevantTasks.every((t) => t.estado == 'completado')) return 'Suelo listo';
+
+    final currentTask = firstWhere((t) => t.estado == 'en_proceso',
+        orElse: () => firstWhere((t) => t.estado == 'pendiente', orElse: () => last));
+
+    if (currentTask.estado == 'en_proceso') {
+      return 'En proceso: ${currentTask.tipo}';
+    } else if (currentTask.estado == 'pendiente') {
+      return 'Pendiente: ${currentTask.tipo}';
+    }
+    return 'En proceso';
+  }
+
+  String get timeRemainingMessage {
+    final relevantTasksWithDate = where((t) => t.estado == 'en_proceso' && t.fechaFin != null).toList();
+    if (relevantTasksWithDate.isEmpty) {
+      final allFinished = every((t) => t.estado == 'completado' || t.estado == 'omitido');
+      if (allFinished) return 'Completado';
+      return 'Fecha estimada: Pendiente';
+    }
+
+    DateTime? maxDate;
+    for (var t in this) {
+      if (t.fechaFin != null && (maxDate == null || t.fechaFin!.isAfter(maxDate))) {
+        maxDate = t.fechaFin;
+      }
+    }
+
+    if (maxDate == null) return 'Pendiente';
+
+    final now = DateTime.now();
+    final diff = maxDate.difference(now);
+
+    if (diff.isNegative) return 'Listo';
+
+    if (diff.inDays > 0) {
+      return 'Listo en ${diff.inDays} ${diff.inDays == 1 ? 'día' : 'días'}';
+    } else if (diff.inHours > 0) {
+      return 'Listo en ${diff.inHours} ${diff.inHours == 1 ? 'hora' : 'horas'}';
+    } else {
+      return 'Listo en menos de una hora';
+    }
+  }
 }
 
 class MetodoPreparacion {
