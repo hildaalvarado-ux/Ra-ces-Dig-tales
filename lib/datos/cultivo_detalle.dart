@@ -268,19 +268,24 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
       activeSoil = await appDb.getActiveSoilPreparation(userId, widget.cultivo.nombre);
     }
 
-    String soilStatus = 'No iniciado';
+    String soilStatus = 'No iniciada';
     Color soilColor = Colors.grey;
     String soilProgress = '';
     if (activeSoil != null) {
-      final tasks = (jsonDecode(activeSoil.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
+      final tasks = (jsonDecode(activeSoil.payloadJson) as List)
+          .map((e) => TareaPreparacion.fromJson(e))
+          .toList();
       final progress = tasks.progress;
       soilProgress = '${(progress * 100).toInt()}%';
 
       if (activeSoil.completado || progress >= 1.0) {
-        soilStatus = 'Listo';
+        soilStatus = 'Finalizada';
         soilColor = Colors.green;
+      } else if (tasks.any((t) => t.estado == 'en_proceso' || t.estado == 'completado')) {
+        soilStatus = 'En proceso';
+        soilColor = Colors.blue;
       } else {
-        soilStatus = tasks.statusMessage;
+        soilStatus = 'Pendiente';
         soilColor = Colors.orange;
       }
     }
@@ -420,6 +425,8 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                             if (userId == null) return;
                             final activeSoil = await appDb.getActiveSoilPreparation(userId, widget.cultivo.nombre);
 
+                            bool isRisk = activeSoil?.riesgo ?? false;
+
                             if (activeSoil == null) {
                               final res = await showDialog<String>(
                                 context: context,
@@ -452,6 +459,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                                 }
                                 return;
                               } else if (res == 'risk') {
+                                isRisk = true;
                                 // Create a dummy active preparation marked with risk
                                 final tasks = SoilCatalog.procesos.map((p) => TareaPreparacion(tipo: p['tipo'])).toList();
                                 await appDb.insertSoilPreparation(SoilPreparationsCompanion.insert(
@@ -464,7 +472,6 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                                 return;
                               }
                             } else if (!activeSoil.completado && !activeSoil.riesgo) {
-                              final tasks = (jsonDecode(activeSoil.payloadJson) as List).map((e) => TareaPreparacion.fromJson(e)).toList();
                               final remainingDays = activeSoil.fechaListaSuelo != null
                                   ? activeSoil.fechaListaSuelo!.difference(DateTime.now()).inDays
                                   : 0;
@@ -500,6 +507,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                                 }
                                 return;
                               } else if (res == 'risk') {
+                                isRisk = true;
                                 await appDb.updateSoilPreparation(SoilPreparationsCompanion(
                                   id: drift.Value(activeSoil.id),
                                   riesgo: const drift.Value(true),
@@ -509,7 +517,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                               }
                             }
 
-                            if (context.mounted) _showStartPlanDialog(context);
+                            if (context.mounted) _showStartPlanDialog(context, isRisk: isRisk);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.greenDark,
@@ -602,7 +610,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
   }
 
 
-  Future<void> _showStartPlanDialog(BuildContext context, {DateTime? initialDate}) async {
+  Future<void> _showStartPlanDialog(BuildContext context, {DateTime? initialDate, bool isRisk = false}) async {
     DateTime selectedDate = initialDate ?? DateTime.now();
     DateTime minDate = initialDate ?? DateTime.now().subtract(const Duration(days: 30));
 
@@ -732,6 +740,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
           nickname: nicknameCtrl.text.trim().isEmpty ? null : nicknameCtrl.text.trim(),
           colorValue: selectedColor.value,
           isAlmacigoOverride: isAlmacigo,
+          isRisk: isRisk,
         );
 
         if (context.mounted) {
