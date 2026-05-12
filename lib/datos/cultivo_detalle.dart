@@ -419,8 +419,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                         const SizedBox(height: 32),
                         ElevatedButton(
                           onPressed: () async {
-                            Navigator.pop(context);
-
+                            final btmSheetContext = context;
                             final userId = await appDb.getActiveUserId();
                             if (userId == null) return;
                             final activeSoil = await appDb.getActiveSoilPreparation(userId, widget.cultivo.nombre);
@@ -454,8 +453,9 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                               );
 
                               if (res == 'go') {
-                                if (context.mounted) {
-                                  Navigator.push(context, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId, initialCropName: widget.cultivo.nombre)));
+                                if (btmSheetContext.mounted) {
+                                  Navigator.pop(btmSheetContext); // Close guide
+                                  Navigator.push(btmSheetContext, MaterialPageRoute(builder: (_) => PreparacionSueloPage(userId: userId, initialCropName: widget.cultivo.nombre)));
                                 }
                                 return;
                               } else if (res == 'risk') {
@@ -502,8 +502,8 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                               );
 
                               if (res == 'wait') {
-                                if (context.mounted) {
-                                  _showStartPlanDialog(context, initialDate: activeSoil.fechaListaSuelo);
+                                if (btmSheetContext.mounted) {
+                                  _showStartPlanDialog(btmSheetContext, initialDate: activeSoil.fechaListaSuelo);
                                 }
                                 return;
                               } else if (res == 'risk') {
@@ -517,7 +517,9 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                               }
                             }
 
-                            if (context.mounted) _showStartPlanDialog(context, isRisk: isRisk);
+                            if (btmSheetContext.mounted) {
+                              _showStartPlanDialog(btmSheetContext, isRisk: isRisk);
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.greenDark,
@@ -750,7 +752,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
 
           // Using rootNavigator: true to ensure we jump out of any modal bottom sheets if they exist
           Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId)),
+            MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId, initialDate: selectedDate)),
             (route) => route.isFirst, // Goes back to Dashboard or whatever is the first route below this
           );
         }

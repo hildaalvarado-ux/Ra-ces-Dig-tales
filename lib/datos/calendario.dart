@@ -14,7 +14,8 @@ import 'diario.dart';
 
 class CalendarioPage extends StatefulWidget {
   final int userId;
-  const CalendarioPage({super.key, required this.userId});
+  final DateTime? initialDate;
+  const CalendarioPage({super.key, required this.userId, this.initialDate});
 
   @override
   State<CalendarioPage> createState() => _CalendarioPageState();
@@ -22,7 +23,7 @@ class CalendarioPage extends StatefulWidget {
 
 class _CalendarioPageState extends State<CalendarioPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime.now();
+  late DateTime _focusedDay;
   DateTime? _selectedDay;
 
   Map<DateTime, List<CalendarTask>> _tasks = {};
@@ -33,6 +34,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   @override
   void initState() {
     super.initState();
+    _focusedDay = widget.initialDate ?? DateTime.now();
     _selectedDay = _focusedDay;
     _loadTasks();
   }
