@@ -16,6 +16,7 @@ import 'datos/plagas.dart';
 import 'datos/enfermedades.dart';
 import 'datos/pesticidas.dart';
 import 'datos/calendario.dart';
+import 'datos/ayuda.dart';
 import 'datos/notificaciones.dart';
 import 'datos/diario.dart';
 import 'datos/creditos.dart';
@@ -417,8 +418,10 @@ class _DashboardPageState extends State<DashboardPage> {
                       // En móvil, solo dejamos el botón ayuda (opcional)
                       IconButton(
                         tooltip: 'Ayuda',
-                        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Próximamente: ayuda')),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const AyudaPage(),
+                          ),
                         ),
                         icon: const Icon(Icons.help_outline_rounded),
                       ),
@@ -449,27 +452,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GridView(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: gridCount,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: aspect,
-          ),
-          children: [
-            _DashboardTile(label: 'Cultivos', icon: Icons.local_florist_rounded, onTap: () => _openFeature('Cultivos')),
-            _DashboardTile(label: 'Fertilizantes', icon: Icons.science_rounded, onTap: () => _openFeature('Fertilizantes')),
-            _DashboardTile(label: 'Repelentes', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Repelentes')),
-            _DashboardTile(label: 'Insectos', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Insectos')),
-            _DashboardTile(label: 'Enfermedades', icon: Icons.biotech_rounded, onTap: () => _openFeature('Enfermedades')),
-            _DashboardTile(label: 'Preparación de Suelo', icon: Icons.layers_rounded, onTap: () => _openFeature('PreparacionSuelo')),
-            _DashboardTile(label: 'Calendario', icon: Icons.calendar_month_rounded, onTap: () => _openFeature('Calendario')),
-            _DashboardTile(label: 'Diario', icon: Icons.menu_book_rounded, onTap: () => _openFeature('Diario')),
-          ],
-        ),
-        const SizedBox(height: 24),
+        // 1️⃣ Cultivos en tu huerta
         Text('Cultivos en tu huerta', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 18)),
         const SizedBox(height: 12),
         FutureBuilder<List<CropPlan>>(
@@ -562,21 +545,8 @@ class _DashboardPageState extends State<DashboardPage> {
           },
         ),
         const SizedBox(height: 24),
-        Text(
-          'Notificaciones',
-          style: TextStyle(
-            color: AppColors.greenDarker,
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-          ),
-        ),
-        const SizedBox(height: 10),
-        _NotificationCard(
-          title: 'Hay tareas pendientes',
-          subtitle: 'Diario • hoy',
-          onOpen: () => _openFeature('Notificaciones'),
-        ),
-        const SizedBox(height: 24),
+
+        // 2️⃣ Preparaciones de suelo en curso
         Text('Preparaciones de suelo en curso', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 18)),
         const SizedBox(height: 12),
         FutureBuilder<List<SoilPreparation>>(
@@ -648,6 +618,113 @@ class _DashboardPageState extends State<DashboardPage> {
                           Text(tasks.timeRemainingMessage, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: AppColors.greenDark)),
                         ],
                       ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+
+        // 3️⃣ Notificaciones
+        Text(
+          'Notificaciones',
+          style: TextStyle(
+            color: AppColors.greenDarker,
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _NotificationCard(
+          title: 'Hay tareas pendientes',
+          subtitle: 'Diario • hoy',
+          onOpen: () => _openFeature('Notificaciones'),
+        ),
+        const SizedBox(height: 24),
+
+        // 4️⃣ Cultivos finalizados
+        _buildFinalizedCropsSection(),
+
+        const SizedBox(height: 24),
+        GridView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: gridCount,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: aspect,
+          ),
+          children: [
+            _DashboardTile(label: 'Cultivos', icon: Icons.local_florist_rounded, onTap: () => _openFeature('Cultivos')),
+            _DashboardTile(label: 'Fertilizantes', icon: Icons.science_rounded, onTap: () => _openFeature('Fertilizantes')),
+            _DashboardTile(label: 'Repelentes', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Repelentes')),
+            _DashboardTile(label: 'Insectos', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Insectos')),
+            _DashboardTile(label: 'Enfermedades', icon: Icons.biotech_rounded, onTap: () => _openFeature('Enfermedades')),
+            _DashboardTile(label: 'Preparación de Suelo', icon: Icons.layers_rounded, onTap: () => _openFeature('PreparacionSuelo')),
+            _DashboardTile(label: 'Calendario', icon: Icons.calendar_month_rounded, onTap: () => _openFeature('Calendario')),
+            _DashboardTile(label: 'Diario', icon: Icons.menu_book_rounded, onTap: () => _openFeature('Diario')),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFinalizedCropsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Cultivos finalizados', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 18)),
+        const SizedBox(height: 12),
+        FutureBuilder<List<CropPlan>>(
+          future: appDb.getFinalizedCropPlans(widget.userId),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.7), borderRadius: BorderRadius.circular(18), border: Border.all(color: AppColors.greenDark.withOpacity(0.1))),
+                child: const Text('No tienes cultivos finalizados todavía.', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600)),
+              );
+            }
+            final plans = snapshot.data!;
+            return Column(
+              children: plans.map((plan) {
+                final cultivoData = jsonDecode(plan.payloadJson);
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: Colors.grey.withOpacity(0.3), width: 2),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.grey.withOpacity(0.2),
+                        child: ClipOval(
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: _buildCropImage(cultivoData['imagePath'], cultivoData['imagen'] ?? ''),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(plan.nickname ?? plan.cropName, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.greenDarker)),
+                            const Text('Cosechado / Finalizado', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.check_circle_rounded, color: AppColors.greenDark),
                     ],
                   ),
                 );

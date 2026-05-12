@@ -954,8 +954,17 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> finalizeCropPlan(int planId) {
     return (update(cropPlans)..where((t) => t.id.equals(planId))).write(
-      const CropPlansCompanion(status: Value('finalized')),
+      const CropPlansCompanion(
+        status: Value('finalized'),
+        active: Value(false),
+      ),
     );
+  }
+
+  Future<List<CropPlan>> getFinalizedCropPlans(int userId) {
+    return (select(cropPlans)
+          ..where((t) => t.userId.equals(userId) & t.status.equals('finalized')))
+        .get();
   }
 
   Future<void> deleteTasksByPlan(int planId) {
