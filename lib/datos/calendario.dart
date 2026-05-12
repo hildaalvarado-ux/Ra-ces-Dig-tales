@@ -869,8 +869,14 @@ class CropPlanGenerator {
     String? nickname,
     int? colorValue,
     bool? isAlmacigoOverride,
+    bool isRisk = false,
   }) async {
     try {
+      final payload = cultivo.toJson();
+      if (isRisk) {
+        payload['isRisk'] = true;
+      }
+
       final planId = await appDb.insertCropPlan(CropPlansCompanion.insert(
       userId: userId,
       cropName: cultivo.nombre,
@@ -878,7 +884,7 @@ class CropPlanGenerator {
       colorValue: drift.Value(colorValue),
       startDate: startDate,
       preferredTime: '${preferredTime.hour.toString().padLeft(2, '0')}:${preferredTime.minute.toString().padLeft(2, '0')}',
-      payloadJson: jsonEncode(cultivo.toJson()),
+      payloadJson: jsonEncode(payload),
     ));
 
     final tasks = <CalendarTasksCompanion>[];
