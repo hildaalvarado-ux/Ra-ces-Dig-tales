@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 
 import '../data/db_instance.dart';
 import '../data/image_utils.dart';
+import '../data/crop_models.dart';
 import '../data/catalog_manager.dart';
 import '../data/notification_service.dart';
 import '../main.dart';

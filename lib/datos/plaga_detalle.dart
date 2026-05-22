@@ -8,6 +8,7 @@ import '../data/file_management_service.dart';
 import '../data/db_instance.dart';
 import '../data/catalog_manager.dart';
 import '../main.dart';
+import '../data/crop_models.dart';
 import 'help_dialogs.dart';
 import 'cultivo_detalle.dart';
 import 'pesticida_detalle.dart';

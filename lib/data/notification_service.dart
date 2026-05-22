@@ -6,6 +6,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:drift/drift.dart';
 import 'app_database.dart';
 import 'db_instance.dart';
+import 'crop_models.dart';
 import '../main.dart';
 import '../datos/calendario.dart';
 

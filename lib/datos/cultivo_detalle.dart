@@ -9,98 +9,15 @@ import 'package:intl/intl.dart';
 import '../data/file_management_service.dart';
 import '../data/db_instance.dart';
 import '../data/app_database.dart';
+import '../data/crop_models.dart';
+import '../data/crop_service.dart';
 import '../data/soil_models.dart';
 import 'preparacion_suelo.dart';
+import 'plan_dialog.dart';
 import '../main.dart';
 import 'calendario.dart';
 import 'help_dialogs.dart';
 import 'plaga_detalle.dart';
-
-class Cultivo {
-  final int? id; // null si es del catálogo
-  final String nombre;
-  final String imagen; // ruta del asset
-  final String? imagePath; // ruta del archivo local o base64 (web)
-  final String cientifico;
-  final int cosechaMeses;
-  final String tipo;
-  final String estacion;
-  final String identificacion;
-  final String siembra;
-  final Map<String, String> ficha;
-  final List<String> plagas;
-  final List<String> beneficiosos;
-  final List<String> perjudiciales;
-  final Map<String, dynamic>? guiaRapida;
-
-  const Cultivo({
-    this.id,
-    required this.nombre,
-    required this.imagen,
-    this.imagePath,
-    required this.cientifico,
-    required this.cosechaMeses,
-    required this.tipo,
-    required this.estacion,
-    required this.identificacion,
-    required this.siembra,
-    required this.ficha,
-    required this.plagas,
-    this.beneficiosos = const [],
-    this.perjudiciales = const [],
-    this.guiaRapida,
-  });
-
-  Map<String, dynamic> toJson() => {
-        if (id != null) 'id': id,
-        'nombre': nombre,
-        'imagen': imagen,
-        if (imagePath != null) 'imagePath': imagePath,
-        'cientifico': cientifico,
-        'cosechaMeses': cosechaMeses,
-        'tipo': tipo,
-        'estacion': estacion,
-        'identificacion': identificacion,
-        'siembra': siembra,
-        'ficha': ficha,
-        'insectos': plagas,
-        'beneficiosos': beneficiosos,
-        'perjudiciales': perjudiciales,
-        if (guiaRapida != null) 'guiaRapida': guiaRapida,
-      };
-
-  static Cultivo fromJson(Map<String, dynamic> j) {
-    final ficha = (j['ficha'] as Map?)?.map(
-          (k, v) => MapEntry(k.toString(), v.toString()),
-        ) ??
-        <String, String>{};
-
-    final plagas = (j['insectos'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
-    final ben = (j['beneficiosos'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
-    final per = (j['perjudiciales'] as List?)?.map((e) => e.toString()).toList() ?? <String>[];
-    final guia = j['guiaRapida'] as Map<String, dynamic>?;
-
-    return Cultivo(
-      id: j['id'] as int?,
-      nombre: (j['nombre'] ?? '').toString(),
-      imagen: (j['imagen'] ?? '').toString(),
-      imagePath: (j['imagePath'] ?? j['image_path'])?.toString(),
-      cientifico: (j['cientifico'] ?? '').toString(),
-      cosechaMeses: (j['cosechaMeses'] ?? 0) is int
-          ? (j['cosechaMeses'] as int)
-          : int.tryParse('${j['cosechaMeses']}') ?? 0,
-      tipo: (j['tipo'] ?? '').toString(),
-      estacion: (j['estacion'] ?? '').toString(),
-      identificacion: (j['identificacion'] ?? '').toString(),
-      siembra: (j['siembra'] ?? '').toString(),
-      ficha: ficha,
-      plagas: plagas,
-      beneficiosos: ben,
-      perjudiciales: per,
-      guiaRapida: guia,
-    );
-  }
-}
 
 class _GuideDetail {
   final IconData icon;
@@ -503,7 +420,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
 
                               if (res == 'wait') {
                                 if (btmSheetContext.mounted) {
-                                  _showStartPlanDialog(btmSheetContext, initialDate: activeSoil.fechaListaSuelo);
+                                  showStartPlanDialog(btmSheetContext, cultivo: widget.cultivo, initialDate: activeSoil.fechaListaSuelo);
                                 }
                                 return;
                               } else if (res == 'risk') {
@@ -518,7 +435,7 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                             }
 
                             if (btmSheetContext.mounted) {
-                              _showStartPlanDialog(btmSheetContext, isRisk: isRisk);
+                              showStartPlanDialog(btmSheetContext, cultivo: widget.cultivo, isRisk: isRisk);
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -612,159 +529,6 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
   }
 
 
-  Future<void> _showStartPlanDialog(BuildContext context, {DateTime? initialDate, bool isRisk = false}) async {
-    DateTime selectedDate = initialDate ?? DateTime.now();
-    DateTime minDate = initialDate ?? DateTime.now().subtract(const Duration(days: 30));
-
-    TimeOfDay selectedTime = const TimeOfDay(hour: 7, minute: 0);
-    final nicknameCtrl = TextEditingController();
-    Color selectedColor = Colors.green;
-    bool isAlmacigo = widget.cultivo.guiaRapida?['usaAlmacigo'] == true;
-
-    final colors = [
-      Colors.green,
-      Colors.blue,
-      Colors.red,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
-      Colors.brown,
-      Colors.pink,
-    ];
-
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Programar Cultivo', style: TextStyle(fontWeight: FontWeight.bold)),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Dale un nombre y color a este cultivo para identificarlo en el calendario:'),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: nicknameCtrl,
-                      decoration: InputDecoration(
-                        labelText: 'Apodo (ej: Lechuga de la abuela)',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Color en el calendario:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: colors.map((c) {
-                        return GestureDetector(
-                          onTap: () => setState(() => selectedColor = c),
-                          child: Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: c,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: selectedColor == c ? Colors.black : Colors.transparent,
-                                width: 2.5,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(),
-                    ListTile(
-                      title: const Text('Fecha de inicio'),
-                      subtitle: Text(DateFormat('dd/MM/yyyy').format(selectedDate)),
-                      trailing: const Icon(Icons.calendar_month),
-                      onTap: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: selectedDate,
-                          firstDate: minDate,
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
-                        );
-                        if (picked != null) setState(() => selectedDate = picked);
-                      },
-                    ),
-                    ListTile(
-                      title: const Text('Hora de tareas'),
-                      subtitle: Text(selectedTime.format(context)),
-                      trailing: const Icon(Icons.access_time),
-                      onTap: () async {
-                        final picked = await showTimePicker(
-                          context: context,
-                          initialTime: selectedTime,
-                        );
-                        if (picked != null) setState(() => selectedTime = picked);
-                      },
-                    ),
-                    const Divider(),
-                    CheckboxListTile(
-                      title: const Text('¿Sembrar en almácigo?', style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: const Text('Si se selecciona, el plan incluirá una tarea de trasplante.'),
-                      value: isAlmacigo,
-                      activeColor: AppColors.greenDark,
-                      onChanged: (v) => setState(() => isAlmacigo = v ?? false),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark, foregroundColor: Colors.white),
-                  child: const Text('GENERAR PLAN'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    if (result == true) {
-      final userId = await appDb.getActiveUserId();
-      if (userId == null) return;
-
-      try {
-        await CropPlanGenerator.generate(
-          userId: userId,
-          cultivo: widget.cultivo,
-          startDate: selectedDate,
-          preferredTime: selectedTime,
-          nickname: nicknameCtrl.text.trim().isEmpty ? null : nicknameCtrl.text.trim(),
-          colorValue: selectedColor.value,
-          isAlmacigoOverride: isAlmacigo,
-          isRisk: isRisk,
-        );
-
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Plan para ${widget.cultivo.nombre} generado con éxito.')),
-          );
-
-          // Using rootNavigator: true to ensure we jump out of any modal bottom sheets if they exist
-          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => CalendarioPage(userId: userId, initialDate: selectedDate)),
-            (route) => route.isFirst, // Goes back to Dashboard or whatever is the first route below this
-          );
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error al generar el plan: $e')),
-          );
-        }
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
