@@ -75,31 +75,13 @@ class _CalendarioPageState extends State<CalendarioPage> {
       // Mark all logs related to this task as completed/read
       await appDb.updateNotificationStatusByTask(task.id, 'completed');
 
-      // If it's a harvest task, ask to finalize the plan
+      // If it's a harvest task, automatically finalize the plan
       if (task.type.toLowerCase() == 'cosecha' && task.planId != null) {
         final plan = _plans[task.planId];
         if (plan != null && plan.status == 'active') {
-          final finalize = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('¿Cosecha completada?', style: TextStyle(fontWeight: FontWeight.bold)),
-              content: Text('¿Deseas marcar el plan "${plan.nickname ?? plan.cropName}" como FINALIZADO? \n\nEsto lo moverá al historial de planes.'),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('MANTENER ACTIVO')),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark),
-                  child: const Text('SÍ, FINALIZAR', style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-          );
-
-          if (finalize == true) {
-            await appDb.finalizeCropPlan(plan.id);
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cultivo finalizado con éxito.')));
-            }
+          await appDb.finalizeCropPlan(plan.id);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cultivo finalizado con éxito.')));
           }
         }
       }
