@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../datos/cultivo_detalle.dart';
+import 'crop_models.dart';
 import '../datos/fertilizante_detalle.dart';
 import '../datos/plaga_detalle.dart';
 import '../datos/pesticida_detalle.dart';

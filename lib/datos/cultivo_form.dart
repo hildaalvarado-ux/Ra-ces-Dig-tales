@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../data/image_utils.dart';
+import '../data/crop_models.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
 

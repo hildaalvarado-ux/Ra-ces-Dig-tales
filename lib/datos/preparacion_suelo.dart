@@ -4,9 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
 import '../data/app_database.dart';
 import '../data/db_instance.dart';
+import '../data/crop_models.dart';
 import '../data/soil_models.dart';
+import '../data/catalog_manager.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
+import 'plan_dialog.dart';
 
 class PreparacionSueloPage extends StatefulWidget {
   final int userId;
@@ -449,6 +452,8 @@ class _SoilPreparationDetailPageState extends State<SoilPreparationDetailPage> {
   late List<TareaPreparacion> _tasks;
   late bool _riesgo;
   late String _status;
+  Cultivo? _associatedCrop;
+  bool _loadingCrop = false;
 
   @override
   void initState() {
@@ -456,6 +461,53 @@ class _SoilPreparationDetailPageState extends State<SoilPreparationDetailPage> {
     _riesgo = widget.preparation.riesgo;
     _status = widget.preparation.status;
     _loadTasks();
+    _loadAssociatedCrop();
+  }
+
+  Future<void> _loadAssociatedCrop() async {
+    if (widget.preparation.cropName == null) return;
+    setState(() => _loadingCrop = true);
+
+    try {
+      // Search in catalog
+      final catalog = await catalogManager.getCrops();
+      final fromCatalog = catalog.where((c) => c.nombre == widget.preparation.cropName);
+      if (fromCatalog.isNotEmpty) {
+        if (mounted) setState(() => _associatedCrop = fromCatalog.first);
+        return;
+      }
+
+      // Search in user crops
+      final userId = await appDb.getActiveUserId();
+      if (userId != null) {
+        final userCrops = await appDb.getUserCultivos(userId);
+        final fromUser = userCrops.where((c) => c.nombre == widget.preparation.cropName);
+        if (fromUser.isNotEmpty) {
+          final row = fromUser.first;
+          final data = jsonDecode(row.payloadJson) as Map<String, dynamic>;
+          data['id'] = row.id;
+          data['imagePath'] = row.imagePath;
+          if (mounted) setState(() => _associatedCrop = Cultivo.fromJson(data));
+          return;
+        }
+
+        // Search in shared
+        final sharedCrops = await appDb.getSharedCultivos(userId);
+        final fromShared = sharedCrops.where((c) => c.nombre == widget.preparation.cropName);
+        if (fromShared.isNotEmpty) {
+          final row = fromShared.first;
+          final data = jsonDecode(row.payloadJson) as Map<String, dynamic>;
+          data['id'] = row.id;
+          data['imagePath'] = row.imagePath;
+          if (mounted) setState(() => _associatedCrop = Cultivo.fromJson(data));
+          return;
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading associated crop: $e');
+    } finally {
+      if (mounted) setState(() => _loadingCrop = false);
+    }
   }
 
   void _loadTasks() {
@@ -703,6 +755,22 @@ class _SoilPreparationDetailPageState extends State<SoilPreparationDetailPage> {
                       ),
                     ],
                   ),
+                  if ((_status == 'completed' || progress >= 1.0) && _associatedCrop != null) ...[
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => showStartPlanDialog(context, cultivo: _associatedCrop!, isRisk: _riesgo),
+                        icon: const Icon(Icons.calendar_today_rounded, color: Colors.white),
+                        label: const Text('GENERAR PLAN DE CULTIVO', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.greenDark,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

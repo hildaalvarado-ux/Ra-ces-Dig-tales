@@ -8,6 +8,7 @@ import 'data/db_instance.dart'; // conexión a tu BD (Drift)
 import 'data/app_database.dart';
 import 'data/image_utils.dart';
 import 'data/notification_service.dart';
+import 'data/crop_models.dart';
 import 'data/soil_models.dart';
 import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
 import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
