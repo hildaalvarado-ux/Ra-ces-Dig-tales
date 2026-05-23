@@ -11,12 +11,10 @@ class ContactoPage extends StatefulWidget {
 }
 
 class _ContactoPageState extends State<ContactoPage> {
-  final TextEditingController _mensajeCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _aceptoPrivacidad = false;
 
   Future<void> _enviarCorreo() async {
-    if (!_formKey.currentState!.validate()) return;
     if (!_aceptoPrivacidad) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -27,7 +25,7 @@ class _ContactoPageState extends State<ContactoPage> {
       return;
     }
 
-    final String body = Uri.encodeComponent(_mensajeCtrl.text);
+    final String body = Uri.encodeComponent('');
     final String subject = Uri.encodeComponent('Comentario desde Raíces Digitales');
     // Nuevo correo oficial de soporte
     final Uri mailUri = Uri.parse('mailto:soporteraicesdigitales@gmail.com?subject=$subject&body=$body');
@@ -68,9 +66,12 @@ class _ContactoPageState extends State<ContactoPage> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Row(
             children: [
-              Icon(Icons.volunteer_activism_rounded, color: AppColors.greenDark, size: 30),
+              Icon(Icons.check_circle_rounded, color: AppColors.greenDark, size: 30),
               SizedBox(width: 10),
-              Text('¡Muchas gracias!', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker)),
+              Expanded(
+                child: Text('¡Correo enviado con éxito!',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.greenDarker)),
+              ),
             ],
           ),
           content: const Text(
@@ -81,7 +82,6 @@ class _ContactoPageState extends State<ContactoPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _mensajeCtrl.clear();
                 setState(() {
                   _aceptoPrivacidad = false;
                 });
@@ -143,88 +143,30 @@ class _ContactoPageState extends State<ContactoPage> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                      border: Border.all(
-                        color: AppColors.greenDark.withOpacity(0.1),
-                        width: 1,
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton.icon(
+                      onPressed: _enviarCorreo,
+                      icon: const Icon(
+                        Icons.send_rounded,
                       ),
-                    ),
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          children: [
-                            Icon(Icons.edit_note_rounded, color: AppColors.greenDark, size: 28),
-                            SizedBox(width: 8),
-                            Text(
-                              'Escribe tu comentario',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.greenDarker,
-                                fontSize: 17,
-                              ),
-                            ),
-                          ],
+                      label: const Text(
+                        'ENVIAR COMENTARIO',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.8,
+                          fontSize: 15,
                         ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _mensajeCtrl,
-                          minLines: 5,
-                          maxLines: 8,
-                          validator: (v) => (v == null || v.isEmpty) ? 'Por favor escribe un mensaje' : null,
-                          decoration: InputDecoration(
-                            hintText: 'Escribe tu comentario aquí...',
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.all(16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: AppColors.greenDark.withOpacity(0.1),
-                              ),
-                            ),
-                          ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.greenDarker,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
                         ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton.icon(
-                            onPressed: _enviarCorreo,
-                            icon: const Icon(
-                              Icons.send_rounded,
-                            ),
-                            label: const Text(
-                              'ENVIAR COMENTARIO',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.8,
-                                fontSize: 15,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  AppColors.greenDarker,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              elevation: 2,
-                            ),
-                          ),
-                        ),
-                      ],
+                        elevation: 2,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),

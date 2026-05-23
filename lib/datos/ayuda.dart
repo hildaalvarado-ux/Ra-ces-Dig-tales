@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
+import 'contacto.dart';
 
 class AyudaPage extends StatelessWidget {
   const AyudaPage({super.key});
@@ -247,9 +248,9 @@ class _FAQSection extends StatelessWidget {
         const SizedBox(height: 12),
         ElevatedButton.icon(
           onPressed: () {
-            // Próximamente contacto
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Módulo de contacto próximamente.')),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ContactoPage()),
             );
           },
           icon: const Icon(Icons.mail_rounded),
