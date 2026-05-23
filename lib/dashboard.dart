@@ -453,6 +453,28 @@ class _DashboardPageState extends State<DashboardPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        GridView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: gridCount,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: aspect,
+          ),
+          children: [
+            _DashboardTile(label: 'Cultivos', icon: Icons.local_florist_rounded, onTap: () => _openFeature('Cultivos')),
+            _DashboardTile(label: 'Fertilizantes', icon: Icons.science_rounded, onTap: () => _openFeature('Fertilizantes')),
+            _DashboardTile(label: 'Repelentes', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Repelentes')),
+            _DashboardTile(label: 'Insectos', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Insectos')),
+            _DashboardTile(label: 'Enfermedades', icon: Icons.biotech_rounded, onTap: () => _openFeature('Enfermedades')),
+            _DashboardTile(label: 'Preparación de Suelo', icon: Icons.layers_rounded, onTap: () => _openFeature('PreparacionSuelo')),
+            _DashboardTile(label: 'Calendario', icon: Icons.calendar_month_rounded, onTap: () => _openFeature('Calendario')),
+            _DashboardTile(label: 'Diario', icon: Icons.menu_book_rounded, onTap: () => _openFeature('Diario')),
+          ],
+        ),
+        const SizedBox(height: 24),
+
         // 1️⃣ Cultivos en tu huerta
         Text('Cultivos en tu huerta', style: TextStyle(color: AppColors.greenDarker, fontWeight: FontWeight.w900, fontSize: 18)),
         const SizedBox(height: 12),
@@ -647,28 +669,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
         // 4️⃣ Cultivos finalizados
         _buildFinalizedCropsSection(),
-
-        const SizedBox(height: 24),
-        GridView(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: gridCount,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: aspect,
-          ),
-          children: [
-            _DashboardTile(label: 'Cultivos', icon: Icons.local_florist_rounded, onTap: () => _openFeature('Cultivos')),
-            _DashboardTile(label: 'Fertilizantes', icon: Icons.science_rounded, onTap: () => _openFeature('Fertilizantes')),
-            _DashboardTile(label: 'Repelentes', icon: Icons.sanitizer_rounded, onTap: () => _openFeature('Repelentes')),
-            _DashboardTile(label: 'Insectos', icon: Icons.bug_report_rounded, onTap: () => _openFeature('Insectos')),
-            _DashboardTile(label: 'Enfermedades', icon: Icons.biotech_rounded, onTap: () => _openFeature('Enfermedades')),
-            _DashboardTile(label: 'Preparación de Suelo', icon: Icons.layers_rounded, onTap: () => _openFeature('PreparacionSuelo')),
-            _DashboardTile(label: 'Calendario', icon: Icons.calendar_month_rounded, onTap: () => _openFeature('Calendario')),
-            _DashboardTile(label: 'Diario', icon: Icons.menu_book_rounded, onTap: () => _openFeature('Diario')),
-          ],
-        ),
       ],
     );
   }
