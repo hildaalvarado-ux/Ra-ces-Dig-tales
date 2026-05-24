@@ -10,6 +10,7 @@ import '../data/catalog_manager.dart';
 import '../data/image_utils.dart';
 import '../main.dart';
 import 'plaga_detalle.dart';
+import 'plaga_form.dart';
 
 class PlagasPage extends StatefulWidget {
   final int userId;
@@ -84,6 +85,62 @@ class _PlagasPageState extends State<PlagasPage> {
   List<Plaga> get _filteredAgregados => _applyFilters(_agregados);
   List<Plaga> get _filteredCompartidos => _applyFilters(_compartidos);
 
+  Future<void> _abrirFormulario({Plaga? plaga}) async {
+    final res = await Navigator.push<Plaga>(
+      context,
+      MaterialPageRoute(builder: (_) => PlagaFormPage(plaga: plaga)),
+    );
+
+    if (res == null) return;
+
+    if (plaga == null) {
+      await appDb.insertUserPlaga(
+        userId: widget.userId,
+        nombre: res.nombre,
+        cientifico: res.cientifico,
+        imagePath: res.imagePath,
+        payloadJson: jsonEncode(res.toJson()),
+      );
+    } else {
+      await appDb.updateUserPlaga(
+        id: plaga.id!,
+        nombre: res.nombre,
+        cientifico: res.cientifico,
+        imagePath: res.imagePath,
+        payloadJson: jsonEncode(res.toJson()),
+      );
+    }
+    await _loadUserPlagas();
+  }
+
+  Future<void> _eliminar(Plaga p, {bool shared = false}) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Eliminar insecto'),
+        content: Text('¿Quieres eliminar "${p.nombre}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('No')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if (!ok) return;
+
+    if (shared) {
+      await appDb.deleteSharedPlaga(p.id!);
+      await _loadSharedPlagas();
+    } else {
+      await appDb.deleteUserPlaga(p.id!);
+      await _loadUserPlagas();
+    }
+  }
+
   Future<void> _importFromFile() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -153,9 +210,16 @@ class _PlagasPageState extends State<PlagasPage> {
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
           title: const Text(
-            'Insectos', // ✅ CAMBIADO
+            'Insectos',
             style: TextStyle(fontWeight: FontWeight.w900),
           ),
+          actions: [
+            IconButton(
+              tooltip: 'Nuevo insecto',
+              onPressed: () => _abrirFormulario(),
+              icon: const Icon(Icons.add_rounded),
+            ),
+          ],
         ),
         body: SafeArea(
           child: Padding(
@@ -166,7 +230,7 @@ class _PlagasPageState extends State<PlagasPage> {
                   controller: _searchCtrl,
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
-                    hintText: 'Buscar insecto...', // ✅ CAMBIADO
+                    hintText: 'Buscar insecto...',
                     filled: true,
                     fillColor: Colors.white.withOpacity(0.85),
                     prefixIcon: const Icon(Icons.search_rounded),
@@ -182,14 +246,21 @@ class _PlagasPageState extends State<PlagasPage> {
                       : ListView(
                           children: [
                             if (_filteredAgregados.isNotEmpty) ...[
-                              _buildSectionHeader('Mis insectos'), // ✅
+                              _buildSectionHeader('Mis insectos'),
                               ..._filteredAgregados
-                                  .map((p) => _PlagaTile(plaga: p)),
+                                  .map((p) => _PlagaTile(
+                                    plaga: p,
+                                    onEdit: () => _abrirFormulario(plaga: p),
+                                    onDelete: () => _eliminar(p),
+                                  )),
                             ],
                             if (_filteredCompartidos.isNotEmpty) ...[
                               _buildSectionHeader('Compartidos'),
                               ..._filteredCompartidos
-                                  .map((p) => _PlagaTile(plaga: p)),
+                                  .map((p) => _PlagaTile(
+                                    plaga: p,
+                                    onDelete: () => _eliminar(p, shared: true),
+                                  )),
                             ],
                             if (_filteredCatalogo.isNotEmpty) ...[
                               _buildSectionHeader(
@@ -212,7 +283,7 @@ class _PlagasPageState extends State<PlagasPage> {
                                 child: Padding(
                                   padding: EdgeInsets.all(20.0),
                                   child: Text(
-                                      'No se encontraron insectos'), // ✅
+                                      'No se encontraron insectos'),
                                 ),
                               ),
                             const CopyrightFooter(),
@@ -251,7 +322,10 @@ class _PlagasPageState extends State<PlagasPage> {
 
 class _PlagaTile extends StatelessWidget {
   final Plaga plaga;
-  const _PlagaTile({required this.plaga});
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  const _PlagaTile({required this.plaga, this.onEdit, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -283,6 +357,16 @@ class _PlagaTile extends StatelessWidget {
           plaga.cientifico,
           style: const TextStyle(fontStyle: FontStyle.italic),
         ),
+        trailing: (onEdit != null || onDelete != null) ? PopupMenuButton<String>(
+          onSelected: (v) {
+            if (v == 'edit') onEdit?.call();
+            if (v == 'delete') onDelete?.call();
+          },
+          itemBuilder: (_) => [
+            if (onEdit != null) const PopupMenuItem(value: 'edit', child: Text('Editar')),
+            if (onDelete != null) const PopupMenuItem(value: 'delete', child: Text('Eliminar')),
+          ],
+        ) : null,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
