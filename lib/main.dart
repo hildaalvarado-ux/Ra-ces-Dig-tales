@@ -18,9 +18,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('es_ES', null);
   await notificationService.init();
+
+  final settingsProvider = SettingsProvider();
+
   runApp(
     ChangeNotifierProvider(
-      create: (_) => SettingsProvider(),
+      create: (_) => settingsProvider,
       child: const MyApp(),
     ),
   );

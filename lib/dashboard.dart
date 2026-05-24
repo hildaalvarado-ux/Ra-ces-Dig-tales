@@ -499,7 +499,8 @@ class _DashboardPageState extends State<DashboardPage> {
         FutureBuilder<List<CropPlan>>(
           future: appDb.getUserCropPlans(widget.userId),
           builder: (context, snapshot) {
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            final plans = (snapshot.data ?? []).where((plan) => plan.status != 'finalized').toList();
+            if (plans.isEmpty) {
               return Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -507,7 +508,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: const Text('No tienes cultivos programados.\nVe a la sección de cultivos para iniciar tu plan.', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600)),
               );
             }
-            final plans = snapshot.data!;
             return Column(
               children: plans.map((plan) {
                 final start = plan.startDate;
