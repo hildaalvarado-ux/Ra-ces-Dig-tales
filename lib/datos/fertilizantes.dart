@@ -10,6 +10,7 @@ import '../data/catalog_manager.dart';
 import '../data/image_utils.dart';
 import '../main.dart';
 import 'fertilizante_detalle.dart';
+import 'fertilizante_form.dart';
 
 class FertilizantesPage extends StatefulWidget {
   final int userId;
@@ -82,6 +83,62 @@ class _FertilizantesPageState extends State<FertilizantesPage> {
   List<Fertilizante> get _filteredAgregados => _applyFilters(_agregados);
   List<Fertilizante> get _filteredCompartidos => _applyFilters(_compartidos);
 
+  Future<void> _abrirFormulario({Fertilizante? fertilizante}) async {
+    final res = await Navigator.push<Fertilizante>(
+      context,
+      MaterialPageRoute(builder: (_) => FertilizanteFormPage(fertilizante: fertilizante)),
+    );
+
+    if (res == null) return;
+
+    if (fertilizante == null) {
+      await appDb.insertUserFertilizante(
+        userId: widget.userId,
+        nombre: res.nombre,
+        tipo: res.tipo,
+        imagePath: res.imagePath,
+        payloadJson: jsonEncode(res.toJson()),
+      );
+    } else {
+      await appDb.updateUserFertilizante(
+        id: fertilizante.id!,
+        nombre: res.nombre,
+        tipo: res.tipo,
+        imagePath: res.imagePath,
+        payloadJson: jsonEncode(res.toJson()),
+      );
+    }
+    await _loadUserFertilizantes();
+  }
+
+  Future<void> _eliminar(Fertilizante f, {bool shared = false}) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Eliminar fertilizante'),
+        content: Text('¿Quieres eliminar "${f.nombre}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('No')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if (!ok) return;
+
+    if (shared) {
+      await appDb.deleteSharedFertilizante(f.id!);
+      await _loadSharedFertilizantes();
+    } else {
+      await appDb.deleteUserFertilizante(f.id!);
+      await _loadUserFertilizantes();
+    }
+  }
+
   Future<void> _importFromFile() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -151,6 +208,13 @@ class _FertilizantesPageState extends State<FertilizantesPage> {
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
           title: const Text('Fertilizantes', style: TextStyle(fontWeight: FontWeight.w900)),
+          actions: [
+            IconButton(
+              tooltip: 'Nuevo fertilizante',
+              onPressed: () => _abrirFormulario(),
+              icon: const Icon(Icons.add_rounded),
+            ),
+          ],
         ),
         body: SafeArea(
           child: Padding(
@@ -176,11 +240,18 @@ class _FertilizantesPageState extends State<FertilizantesPage> {
                           children: [
                             if (_filteredAgregados.isNotEmpty) ...[
                               _buildSectionHeader('Mis fertilizantes'),
-                              ..._filteredAgregados.map((f) => _FertilizanteTile(fertilizante: f)),
+                              ..._filteredAgregados.map((f) => _FertilizanteTile(
+                                fertilizante: f,
+                                onEdit: () => _abrirFormulario(fertilizante: f),
+                                onDelete: () => _eliminar(f),
+                              )),
                             ],
                             if (_filteredCompartidos.isNotEmpty) ...[
                               _buildSectionHeader('Compartidos'),
-                              ..._filteredCompartidos.map((f) => _FertilizanteTile(fertilizante: f)),
+                              ..._filteredCompartidos.map((f) => _FertilizanteTile(
+                                fertilizante: f,
+                                onDelete: () => _eliminar(f, shared: true),
+                              )),
                             ],
                             if (_filteredCatalogo.isNotEmpty) ...[
                               _buildSectionHeader(
@@ -236,7 +307,10 @@ class _FertilizantesPageState extends State<FertilizantesPage> {
 
 class _FertilizanteTile extends StatelessWidget {
   final Fertilizante fertilizante;
-  const _FertilizanteTile({required this.fertilizante});
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  const _FertilizanteTile({required this.fertilizante, this.onEdit, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -259,6 +333,16 @@ class _FertilizanteTile extends StatelessWidget {
         ),
         title: Text(fertilizante.nombre, style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker)),
         subtitle: Text(fertilizante.tipo),
+        trailing: (onEdit != null || onDelete != null) ? PopupMenuButton<String>(
+          onSelected: (v) {
+            if (v == 'edit') onEdit?.call();
+            if (v == 'delete') onDelete?.call();
+          },
+          itemBuilder: (_) => [
+            if (onEdit != null) const PopupMenuItem(value: 'edit', child: Text('Editar')),
+            if (onDelete != null) const PopupMenuItem(value: 'delete', child: Text('Eliminar')),
+          ],
+        ) : null,
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FertilizanteDetallePage(fertilizante: fertilizante))),
       ),
     );

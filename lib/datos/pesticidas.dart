@@ -9,6 +9,7 @@ import '../data/catalog_manager.dart';
 import '../data/image_utils.dart';
 import '../main.dart';
 import 'pesticida_detalle.dart';
+import 'pesticida_form.dart';
 
 class PesticidasPage extends StatefulWidget {
   final int userId;
@@ -81,6 +82,62 @@ class _PesticidasPageState extends State<PesticidasPage> {
     return list.where((p) =>
         p.nombre.toLowerCase().contains(q) ||
         p.tipo.toLowerCase().contains(q)).toList();
+  }
+
+  Future<void> _abrirFormulario({Pesticida? pesticida}) async {
+    final res = await Navigator.push<Pesticida>(
+      context,
+      MaterialPageRoute(builder: (_) => PesticidaFormPage(pesticida: pesticida)),
+    );
+
+    if (res == null) return;
+
+    if (pesticida == null) {
+      await appDb.insertUserPesticida(
+        userId: widget.userId,
+        nombre: res.nombre,
+        tipo: res.tipo,
+        imagePath: res.imagePath,
+        payloadJson: jsonEncode(res.toJson()),
+      );
+    } else {
+      await appDb.updateUserPesticida(
+        id: pesticida.id!,
+        nombre: res.nombre,
+        tipo: res.tipo,
+        imagePath: res.imagePath,
+        payloadJson: jsonEncode(res.toJson()),
+      );
+    }
+    await _loadUserPesticidas();
+  }
+
+  Future<void> _eliminar(Pesticida p, {bool shared = false}) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Eliminar repelente'),
+        content: Text('¿Quieres eliminar "${p.nombre}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('No')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if (!ok) return;
+
+    if (shared) {
+      await appDb.deleteSharedPesticida(p.id!);
+      await _loadSharedPesticidas();
+    } else {
+      await appDb.deleteUserPesticida(p.id!);
+      await _loadUserPesticidas();
+    }
   }
 
   Future<void> _importFromFile() async {
@@ -156,6 +213,13 @@ class _PesticidasPageState extends State<PesticidasPage> {
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
           title: const Text('Repelentes', style: TextStyle(fontWeight: FontWeight.w900)),
+          actions: [
+            IconButton(
+              tooltip: 'Nuevo repelente',
+              onPressed: () => _abrirFormulario(),
+              icon: const Icon(Icons.add_rounded),
+            ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(14),
@@ -182,11 +246,11 @@ class _PesticidasPageState extends State<PesticidasPage> {
                         children: [
                           if (agregados.isNotEmpty) ...[
                             _buildSectionHeader('Mis Repelentes'),
-                            ...agregados.map((p) => _tile(p)),
+                            ...agregados.map((p) => _tile(p, onEdit: () => _abrirFormulario(pesticida: p), onDelete: () => _eliminar(p))),
                           ],
                           if (compartidos.isNotEmpty) ...[
                             _buildSectionHeader('Compartidos'),
-                            ...compartidos.map((p) => _tile(p)),
+                            ...compartidos.map((p) => _tile(p, onDelete: () => _eliminar(p, shared: true))),
                           ],
                           if (catalogo.isNotEmpty) ...[
                             _buildSectionHeader(
@@ -236,7 +300,7 @@ class _PesticidasPageState extends State<PesticidasPage> {
     );
   }
 
-  Widget _tile(Pesticida p) => Card(
+  Widget _tile(Pesticida p, {VoidCallback? onEdit, VoidCallback? onDelete}) => Card(
         margin: const EdgeInsets.only(bottom: 10),
         color: Colors.white.withOpacity(0.82),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -258,6 +322,16 @@ class _PesticidasPageState extends State<PesticidasPage> {
             style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.greenDarker),
           ),
           subtitle: Text(p.tipo),
+          trailing: (onEdit != null || onDelete != null) ? PopupMenuButton<String>(
+            onSelected: (v) {
+              if (v == 'edit') onEdit?.call();
+              if (v == 'delete') onDelete?.call();
+            },
+            itemBuilder: (_) => [
+              if (onEdit != null) const PopupMenuItem(value: 'edit', child: Text('Editar')),
+              if (onDelete != null) const PopupMenuItem(value: 'delete', child: Text('Eliminar')),
+            ],
+          ) : null,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(

@@ -4,95 +4,60 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../data/image_utils.dart';
-import '../data/crop_models.dart';
-import '../data/catalog_manager.dart';
-import '../data/common_widgets.dart';
-import '../data/db_instance.dart';
 import '../main.dart';
-import 'cultivo_detalle.dart';
 import 'plaga_detalle.dart';
 
-class CultivoFormPage extends StatefulWidget {
-  final Cultivo? cultivo;
-  const CultivoFormPage({super.key, this.cultivo});
+class PlagaFormPage extends StatefulWidget {
+  final Plaga? plaga;
+  const PlagaFormPage({super.key, this.plaga});
 
   @override
-  State<CultivoFormPage> createState() => _CultivoFormPageState();
+  State<PlagaFormPage> createState() => _PlagaFormPageState();
 }
 
-class _CultivoFormPageState extends State<CultivoFormPage> {
+class _PlagaFormPageState extends State<PlagaFormPage> {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _nombreCtrl;
   late TextEditingController _cientificoCtrl;
-  late TextEditingController _cosechaMesesCtrl;
+  late TextEditingController _descripcionCtrl;
   late TextEditingController _identificacionCtrl;
-  late TextEditingController _siembraCtrl;
+  late TextEditingController _sintomasCtrl;
+  late TextEditingController _danosCtrl;
+  late TextEditingController _causasCtrl;
+  late TextEditingController _controlCtrl;
 
-  // Almácigo settings
-  bool _usaAlmacigo = false;
-  late TextEditingController _tiempoAlmacigoCtrl;
-
-  String _tipo = 'Vegetal';
-  String _estacion = 'Todas';
   String? _imagePath;
-
   final Map<String, TextEditingController> _fichaCtrls = {};
   final List<String> _fichaKeys = [];
 
-  List<String> _plagasOptions = [];
-  List<String> _cropOptions = [];
-  List<String> _selectedPlagas = [];
-  List<String> _selectedBeneficiosos = [];
-  List<String> _selectedPerjudiciales = [];
-
   final List<String> _defaultFichaKeys = [
-    'Temporada de siembra',
-    'Época de siembra',
-    'Tipo de siembra',
-    'Profundidad de semilla',
-    'Distancia entre plantas',
-    'Fase lunar',
-    'Clima ideal',
-    'Resistencia al frío',
-    'Temperatura mínima',
-    'Temperatura máxima',
-    'Riego',
-    'Luz solar',
-    'Cosecha en',
-    'Temporada de cosecha',
-    'Época de cosecha',
+    'Ciclo de vida',
+    'Época de aparición',
+    'Condiciones favorables',
+    'Huéspedes principales',
   ];
 
   @override
   void initState() {
     super.initState();
-    _loadOptions();
-    final c = widget.cultivo;
+    final p = widget.plaga;
 
-    _nombreCtrl = TextEditingController(text: c?.nombre ?? '');
-    _cientificoCtrl = TextEditingController(text: c?.cientifico ?? '');
-    _cosechaMesesCtrl = TextEditingController(text: c?.cosechaMeses.toString() ?? '0');
-    _identificacionCtrl = TextEditingController(text: c?.identificacion ?? '');
-    _siembraCtrl = TextEditingController(text: c?.siembra ?? '');
+    _nombreCtrl = TextEditingController(text: p?.nombre ?? '');
+    _cientificoCtrl = TextEditingController(text: p?.cientifico ?? '');
+    _descripcionCtrl = TextEditingController(text: p?.descripcion ?? '');
+    _identificacionCtrl = TextEditingController(text: p?.identificacion ?? '');
+    _sintomasCtrl = TextEditingController(text: p?.sintomas ?? '');
+    _danosCtrl = TextEditingController(text: p?.danos ?? '');
+    _causasCtrl = TextEditingController(text: p?.causas ?? '');
+    _controlCtrl = TextEditingController(text: p?.control ?? '');
 
-    final guia = c?.guiaRapida ?? {};
-    _usaAlmacigo = guia['usaAlmacigo'] == true;
-    _tiempoAlmacigoCtrl = TextEditingController(text: (guia['tiempoAlmacigo'] ?? 0).toString());
-
-    if (c != null) {
-      _tipo = c.tipo;
-      _estacion = c.estacion;
-      _imagePath = c.imagePath;
-      _selectedPlagas = List.from(c.plagas);
-      _selectedBeneficiosos = List.from(c.beneficiosos);
-      _selectedPerjudiciales = List.from(c.perjudiciales);
-
-      // Unir llaves por defecto con las existentes en el cultivo
-      final allKeys = {..._defaultFichaKeys, ...c.ficha.keys};
+    if (p != null) {
+      _imagePath = p.imagePath;
+      final allKeys = {..._defaultFichaKeys, ...p.ficha.keys};
       for (var key in allKeys) {
         _fichaKeys.add(key);
-        _fichaCtrls[key] = TextEditingController(text: c.ficha[key] ?? '');
+        _fichaCtrls[key] = TextEditingController(text: p.ficha[key] ?? '');
       }
     } else {
       for (var key in _defaultFichaKeys) {
@@ -102,44 +67,16 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
     }
   }
 
-  Future<void> _loadOptions() async {
-    final userId = await appDb.getActiveUserId();
-
-    // Load Pests
-    final catPests = await catalogManager.getPests();
-    final userPests = userId != null ? await appDb.getUserPlagas(userId) : [];
-    final sharedPests = userId != null ? await appDb.getSharedPlagas(userId) : [];
-
-    // Load Crops
-    final catCrops = await catalogManager.getCrops();
-    final userCrops = userId != null ? await appDb.getUserCultivos(userId) : [];
-    final sharedCrops = userId != null ? await appDb.getSharedCultivos(userId) : [];
-
-    if (mounted) {
-      setState(() {
-        _plagasOptions = <String>{
-          ...catPests.map((e) => e.nombre),
-          ...userPests.map((e) => e.nombre),
-          ...sharedPests.map((e) => e.nombre),
-        }.toList()..sort();
-
-        _cropOptions = <String>{
-          ...catCrops.map((e) => e.nombre),
-          ...userCrops.map((e) => e.nombre),
-          ...sharedCrops.map((e) => e.nombre),
-        }.toList()..sort();
-      });
-    }
-  }
-
   @override
   void dispose() {
     _nombreCtrl.dispose();
     _cientificoCtrl.dispose();
-    _cosechaMesesCtrl.dispose();
+    _descripcionCtrl.dispose();
     _identificacionCtrl.dispose();
-    _siembraCtrl.dispose();
-    _tiempoAlmacigoCtrl.dispose();
+    _sintomasCtrl.dispose();
+    _danosCtrl.dispose();
+    _causasCtrl.dispose();
+    _controlCtrl.dispose();
     for (var ctrl in _fichaCtrls.values) {
       ctrl.dispose();
     }
@@ -155,8 +92,8 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
         content: TextField(
           controller: keyCtrl,
           decoration: const InputDecoration(
-            labelText: 'Nombre del campo (ej: pH del suelo)',
-            hintText: 'Ingrese el nombre de la información adicional',
+            labelText: 'Nombre del campo',
+            hintText: 'Ej: Distribución geográfica',
           ),
           autofocus: true,
         ),
@@ -208,7 +145,7 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
                 title: const Text('Cámara'),
                 onTap: () async {
                   Navigator.pop(context);
-                  final path = await ImageUtils.pickAndSaveImage('cultivos_images', source: ImageSource.camera);
+                  final path = await ImageUtils.pickAndSaveImage('plagas_images', source: ImageSource.camera);
                   if (path != null) setState(() => _imagePath = path);
                 },
               ),
@@ -217,16 +154,7 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
                 title: const Text('Galería'),
                 onTap: () async {
                   Navigator.pop(context);
-                  final path = await ImageUtils.pickAndSaveImage('cultivos_images', source: ImageSource.gallery);
-                  if (path != null) setState(() => _imagePath = path);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.folder_rounded, color: AppColors.greenDark),
-                title: const Text('Archivos'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final path = await ImageUtils.pickAndSaveImageFromFiles('cultivos_images');
+                  final path = await ImageUtils.pickAndSaveImage('plagas_images', source: ImageSource.gallery);
                   if (path != null) setState(() => _imagePath = path);
                 },
               ),
@@ -250,26 +178,20 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
   void _save() {
     if (!_formKey.currentState!.validate()) return;
 
-    final guia = Map<String, dynamic>.from(widget.cultivo?.guiaRapida ?? {});
-    guia['usaAlmacigo'] = _usaAlmacigo;
-    guia['tiempoAlmacigo'] = int.tryParse(_tiempoAlmacigoCtrl.text.trim()) ?? 0;
-
-    final nuevo = Cultivo(
-      id: widget.cultivo?.id,
+    final nuevo = Plaga(
+      id: widget.plaga?.id,
       nombre: _nombreCtrl.text.trim(),
       cientifico: _cientificoCtrl.text.trim(),
-      imagen: widget.cultivo?.imagen ?? '',
+      imagen: widget.plaga?.imagen ?? '',
       imagePath: _imagePath,
-      cosechaMeses: int.tryParse(_cosechaMesesCtrl.text.trim()) ?? 0,
-      tipo: _tipo,
-      estacion: _estacion,
+      imagenVisual: widget.plaga?.imagenVisual,
+      descripcion: _descripcionCtrl.text.trim(),
       identificacion: _identificacionCtrl.text.trim(),
-      siembra: _siembraCtrl.text.trim(),
+      sintomas: _sintomasCtrl.text.trim(),
+      danos: _danosCtrl.text.trim(),
+      causas: _causasCtrl.text.trim(),
+      control: _controlCtrl.text.trim(),
       ficha: _fichaCtrls.map((k, v) => MapEntry(k, v.text.trim())),
-      plagas: _selectedPlagas,
-      beneficiosos: _selectedBeneficiosos,
-      perjudiciales: _selectedPerjudiciales,
-      guiaRapida: guia,
     );
 
     Navigator.pop(context, nuevo);
@@ -283,7 +205,7 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
         appBar: AppBar(
           backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
-          title: Text(widget.cultivo == null ? 'Nuevo Cultivo' : 'Editar Cultivo',
+          title: Text(widget.plaga == null ? 'Nuevo Insecto' : 'Editar Insecto',
               style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
             IconButton(
@@ -299,8 +221,6 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
               padding: const EdgeInsets.all(16),
               children: [
                 _buildSectionTitle('Información Básica'),
-
-                // ✅ Imagen del cultivo
                 Center(
                   child: GestureDetector(
                     onTap: _pickImage,
@@ -342,51 +262,16 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
                 _buildTextField(_nombreCtrl, 'Nombre', required: true),
                 _buildTextField(_cientificoCtrl, 'Nombre Científico'),
-                _buildTextField(_cosechaMesesCtrl, 'Meses hasta cosecha', isNumber: true),
-
-                const SizedBox(height: 10),
-                _buildDropdown('Tipo', _tipo,
-                  ['Raíz', 'Hoja', 'Frutal', 'Legumbre', 'Aromáticas', 'Vegetal'],
-                  (v) => setState(() => _tipo = v!)),
-
-                _buildDropdown('Estación', _estacion,
-                  ['Todas', 'Otoño', 'Invierno', 'Primavera', 'Verano'],
-                  (v) => setState(() => _estacion = v!)),
-
+                _buildTextField(_descripcionCtrl, 'Descripción', maxLines: 3),
                 const SizedBox(height: 20),
-                _buildSectionTitle('Configuración de Almácigo'),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      SwitchListTile(
-                        title: const Text('¿Requiere almácigo?', style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: const Text('Activa esta opción si el cultivo se inicia en semillero antes de trasplantar.'),
-                        value: _usaAlmacigo,
-                        activeColor: AppColors.greenDark,
-                        onChanged: (v) => setState(() => _usaAlmacigo = v),
-                      ),
-                      if (_usaAlmacigo)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: _buildTextField(_tiempoAlmacigoCtrl, 'Días en almácigo hasta trasplante', isNumber: true),
-                        ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-                _buildSectionTitle('Detalles'),
+                _buildSectionTitle('Detalles de Campo'),
                 _buildTextField(_identificacionCtrl, 'Identificación', maxLines: 3),
-                _buildTextField(_siembraCtrl, 'Instrucciones de Siembra', maxLines: 3),
-
+                _buildTextField(_sintomasCtrl, 'Síntomas', maxLines: 3),
+                _buildTextField(_danosCtrl, 'Daños', maxLines: 3),
+                _buildTextField(_causasCtrl, 'Causas de aparición', maxLines: 3),
+                _buildTextField(_controlCtrl, 'Métodos de control', maxLines: 5),
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -409,28 +294,6 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
                     ),
                   ],
                 )),
-
-                const SizedBox(height: 20),
-                SearchableMultiSelect(
-                  title: 'Insectos',
-                  options: _plagasOptions,
-                  initialSelected: _selectedPlagas,
-                  onSelected: (list) => _selectedPlagas = list,
-                ),
-                const SizedBox(height: 10),
-                SearchableMultiSelect(
-                  title: 'Cultivos Beneficiosos',
-                  options: _cropOptions,
-                  initialSelected: _selectedBeneficiosos,
-                  onSelected: (list) => _selectedBeneficiosos = list,
-                ),
-                const SizedBox(height: 10),
-                SearchableMultiSelect(
-                  title: 'Cultivos Perjudiciales',
-                  options: _cropOptions,
-                  initialSelected: _selectedPerjudiciales,
-                  onSelected: (list) => _selectedPerjudiciales = list,
-                ),
                 const SizedBox(height: 40),
               ],
             ),
@@ -455,13 +318,12 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
   }
 
   Widget _buildTextField(TextEditingController ctrl, String label,
-      {bool required = false, bool isNumber = false, int maxLines = 1}) {
+      {bool required = false, int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: ctrl,
         maxLines: maxLines,
-        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           labelText: label,
           filled: true,
@@ -469,23 +331,6 @@ class _CultivoFormPageState extends State<CultivoFormPage> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         validator: required ? (v) => v == null || v.isEmpty ? 'Requerido' : null : null,
-      ),
-    );
-  }
-
-  Widget _buildDropdown(String label, String value, List<String> items, ValueChanged<String?> onChanged) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: DropdownButtonFormField<String>(
-        value: value,
-        decoration: InputDecoration(
-          labelText: label,
-          filled: true,
-          fillColor: Colors.white.withOpacity(0.8),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-        onChanged: onChanged,
       ),
     );
   }
