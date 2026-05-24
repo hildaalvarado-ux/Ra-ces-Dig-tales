@@ -86,6 +86,18 @@ class CreditosPage extends StatelessWidget {
                 const SizedBox(height: 40),
 
                 _buildSectionTitle('COLABORADORES / ENTREVISTADOS'),
+                const SizedBox(height: 8),
+                const _FadeInAnimation(
+                  delay: 450,
+                  child: Text(
+                    'Participaron con guías y contenido técnico a la app por medio de entrevistas',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.greenSoft,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
 
                 Wrap(
@@ -97,11 +109,10 @@ class CreditosPage extends StatelessWidget {
                       const _FadeInAnimation(
                         delay: 500,
                         child: _CreditCard(
-                          name: 'Pendiente',
-                          role: 'Especialista en agricultura',
-                          description: 'Participará en entrevistas para mejorar el sistema',
-                          icon: '👩‍🌾',
-                          isPlaceholder: true,
+                          name: 'Miguel Angel Ayala',
+                          role: 'Técnico y conocimiento experimental',
+                          description: 'Asesoría técnica agrícola',
+                          icon: '👨‍🌾',
                         ),
                       ),
                     ),
@@ -110,11 +121,10 @@ class CreditosPage extends StatelessWidget {
                       const _FadeInAnimation(
                         delay: 600,
                         child: _CreditCard(
-                          name: 'Pendiente',
-                          role: 'Técnico agrícola',
-                          description: 'Participará en entrevistas para mejorar el sistema',
-                          icon: '👨‍🌾',
-                          isPlaceholder: true,
+                          name: 'Marvin Leonidas Pineda Romero',
+                          role: 'Ingeniero Agroecólogo',
+                          description: 'Validación de contenido técnico',
+                          icon: '👨‍🔬',
                         ),
                       ),
                     ),
@@ -123,11 +133,10 @@ class CreditosPage extends StatelessWidget {
                       const _FadeInAnimation(
                         delay: 700,
                         child: _CreditCard(
-                          name: 'Pendiente',
-                          role: 'Experto en cultivos',
-                          description: 'Participará en entrevistas para mejorar el sistema',
-                          icon: '👩‍🌾',
-                          isPlaceholder: true,
+                          name: 'Elmer Romero',
+                          role: 'Ingeniero Agroecólogo',
+                          description: 'Soporte especializado en agroecología',
+                          icon: '👨‍🔬',
                         ),
                       ),
                     ),
@@ -151,7 +160,7 @@ class CreditosPage extends StatelessWidget {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '© 2024 Raíces Digitales',
+                          '© 2026 Raíces Digitales',
                           style: TextStyle(
                             color: AppColors.greenSoft,
                             fontWeight: FontWeight.w600,
