@@ -17,6 +17,7 @@ class PerfilPage extends StatefulWidget {
 class _PerfilPageState extends State<PerfilPage> {
   User? _user;
   bool _loading = true;
+  bool _showPassword = false;
 
   @override
   void initState() {
@@ -79,45 +80,61 @@ class _PerfilPageState extends State<PerfilPage> {
     final passCtrl = TextEditingController();
     final confirmCtrl = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    bool hidePass = true;
+    bool hideConfirm = true;
 
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cambiar contraseña'),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: passCtrl,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Nueva contraseña'),
-                validator: (v) => (v?.length ?? 0) < 6 ? 'Mínimo 6 caracteres' : null,
-              ),
-              TextFormField(
-                controller: confirmCtrl,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirmar contraseña'),
-                validator: (v) => v != passCtrl.text ? 'No coinciden' : null,
-              ),
-            ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Cambiar contraseña'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: passCtrl,
+                  obscureText: hidePass,
+                  decoration: InputDecoration(
+                    labelText: 'Nueva contraseña',
+                    suffixIcon: IconButton(
+                      icon: Icon(hidePass ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () => setDialogState(() => hidePass = !hidePass),
+                    ),
+                  ),
+                  validator: (v) => (v?.length ?? 0) < 6 ? 'Mínimo 6 caracteres' : null,
+                ),
+                TextFormField(
+                  controller: confirmCtrl,
+                  obscureText: hideConfirm,
+                  decoration: InputDecoration(
+                    labelText: 'Confirmar contraseña',
+                    suffixIcon: IconButton(
+                      icon: Icon(hideConfirm ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () => setDialogState(() => hideConfirm = !hideConfirm),
+                    ),
+                  ),
+                  validator: (v) => v != passCtrl.text ? 'No coinciden' : null,
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('CANCELAR'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  Navigator.pop(context, true);
+                }
+              },
+              child: const Text('CAMBIAR'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('CANCELAR'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.pop(context, true);
-              }
-            },
-            child: const Text('CAMBIAR'),
-          ),
-        ],
       ),
     );
 
@@ -257,9 +274,16 @@ class _PerfilPageState extends State<PerfilPage> {
                           _InfoCard(
                             icon: Icons.lock_outline_rounded,
                             title: 'Contraseña',
-                            value: '••••••••',
+                            value: _showPassword ? (_user?.password ?? '') : '••••••••',
                             onEdit: _changePassword,
                             actionLabel: 'Cambiar',
+                            trailing: IconButton(
+                              icon: Icon(
+                                _showPassword ? Icons.visibility_off : Icons.visibility,
+                                color: AppColors.greenAccent,
+                              ),
+                              onPressed: () => setState(() => _showPassword = !_showPassword),
+                            ),
                           ),
                         ],
                       ),
@@ -278,6 +302,7 @@ class _InfoCard extends StatelessWidget {
   final String value;
   final VoidCallback? onEdit;
   final String actionLabel;
+  final Widget? trailing;
 
   const _InfoCard({
     required this.icon,
@@ -285,6 +310,7 @@ class _InfoCard extends StatelessWidget {
     required this.value,
     this.onEdit,
     this.actionLabel = 'Editar',
+    this.trailing,
   });
 
   @override
@@ -337,6 +363,7 @@ class _InfoCard extends StatelessWidget {
               ],
             ),
           ),
+          if (trailing != null) trailing!,
           if (onEdit != null)
             TextButton(
               onPressed: onEdit,

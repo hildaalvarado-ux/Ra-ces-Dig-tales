@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum AppTextSize { pequeno, normal, grande }
 
 class SettingsProvider extends ChangeNotifier {
   AppTextSize _textSize = AppTextSize.normal;
+
+  SettingsProvider() {
+    _loadSettings();
+  }
 
   AppTextSize get textSize => _textSize;
 
@@ -18,8 +23,19 @@ class SettingsProvider extends ChangeNotifier {
     }
   }
 
-  void setTextSize(AppTextSize size) {
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sizeIndex = prefs.getInt('textSize');
+    if (sizeIndex != null) {
+      _textSize = AppTextSize.values[sizeIndex];
+      notifyListeners();
+    }
+  }
+
+  Future<void> setTextSize(AppTextSize size) async {
     _textSize = size;
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('textSize', size.index);
   }
 }
