@@ -23,7 +23,7 @@ class CopyrightFooter extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              '© 2024 Raíces Digitales',
+              '© 2026 Raíces Digitales',
               style: TextStyle(
                 color: AppColors.greenSoft,
                 fontWeight: FontWeight.w600,

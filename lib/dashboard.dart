@@ -434,9 +434,27 @@ class _DashboardPageState extends State<DashboardPage> {
             // ✅ CONTENIDO PRINCIPAL DEL DASHBOARD
             // ==========================================================
             body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                child: _buildBodyContent(w),
+              child: Stack(
+                children: [
+                  // Logo de fondo con opacidad
+                  Positioned.fill(
+                    child: Center(
+                      child: Opacity(
+                        opacity: 0.05,
+                        child: Image.asset(
+                          'assets/images/logosp.png',
+                          width: 300,
+                          height: 300,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    child: _buildBodyContent(w),
+                  ),
+                ],
               ),
             ),
           );
@@ -960,7 +978,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 14),
             child: Text(
-              'Raíces Digitales • v1.0',
+              'Raíces Digitales © 2026 • v1.0',
               style: TextStyle(
                 color: AppColors.greenDarker.withOpacity(0.70),
                 fontWeight: FontWeight.w700,
