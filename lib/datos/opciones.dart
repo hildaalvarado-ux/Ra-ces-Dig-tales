@@ -147,7 +147,7 @@ class OpcionesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const AyudaPage(),
+                        builder: (_) => AyudaPage(userId: userId),
                       ),
                     );
                   },

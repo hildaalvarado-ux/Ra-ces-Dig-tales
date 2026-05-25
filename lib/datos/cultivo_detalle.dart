@@ -377,14 +377,6 @@ class _CultivoDetallePageState extends State<CultivoDetallePage> {
                                 return;
                               } else if (res == 'risk') {
                                 isRisk = true;
-                                // Create a dummy active preparation marked with risk
-                                final tasks = SoilCatalog.procesos.map((p) => TareaPreparacion(tipo: p['tipo'])).toList();
-                                await appDb.insertSoilPreparation(SoilPreparationsCompanion.insert(
-                                  userId: userId,
-                                  cropName: drift.Value(widget.cultivo.nombre),
-                                  riesgo: const drift.Value(true),
-                                  payloadJson: jsonEncode(tasks.map((e) => e.toJson()).toList()),
-                                ));
                               } else if (res == null) {
                                 return;
                               }
