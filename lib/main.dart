@@ -413,17 +413,19 @@ class AppBackground extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [AppColors.bg, AppColors.bg2],
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.bg, AppColors.bg2],
+                ),
               ),
             ),
           ),
-          const _BackgroundDecorations(),
-          child,
+          const Positioned.fill(child: _BackgroundDecorations()),
+          Positioned.fill(child: child),
         ],
       ),
     );

@@ -196,6 +196,7 @@ class _RendimientoPageState extends State<RendimientoPage> {
                     value: _dbSize,
                     icon: Icons.storage_rounded,
                     color: Colors.blue,
+                    subtitle: kIsWeb ? 'El navegador gestiona el almacenamiento automáticamente' : null,
                   ),
                   const SizedBox(height: 12),
                   _UsageCard(
@@ -203,6 +204,7 @@ class _RendimientoPageState extends State<RendimientoPage> {
                     value: _imagesSize,
                     icon: Icons.image_rounded,
                     color: Colors.orange,
+                    subtitle: kIsWeb ? 'Las imágenes se guardan como datos locales en el navegador' : null,
                   ),
 
                   const SizedBox(height: 32),
@@ -248,8 +250,15 @@ class _UsageCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
+  final String? subtitle;
 
-  const _UsageCard({required this.title, required this.value, required this.icon, required this.color});
+  const _UsageCard({
+    required this.title,
+    required this.value,
+    required this.icon,
+    required this.color,
+    this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -276,6 +285,13 @@ class _UsageCard extends StatelessWidget {
               children: [
                 Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[600])),
                 Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.greenDarker)),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle!,
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey.shade500),
+                  ),
+                ],
               ],
             ),
           ),
