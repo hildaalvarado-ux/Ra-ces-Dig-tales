@@ -61,44 +61,51 @@ class _ContactoPageState extends State<ContactoPage> {
 
       // ANDROID / IOS
       if (Platform.isAndroid || Platform.isIOS) {
-        // Intentar abrir app Gmail directamente
-        final Uri gmailApp = Uri.parse(
-          'googlegmail://co?to=$correo&subject=$asunto&body=$mensaje',
+        final String encodedSubject = Uri.decodeComponent(asunto);
+        final String encodedBody = Uri.decodeComponent(mensaje);
+
+        final Uri mailtoUri = Uri(
+          scheme: 'mailto',
+          path: correo,
+          queryParameters: {
+            'subject': encodedSubject,
+            'body': encodedBody,
+          },
         );
 
-        // Fallback mailto
-        final Uri mailto = Uri.parse(
-          'mailto:$correo?subject=$asunto&body=$mensaje',
-        );
+        // En iOS, el usuario pidió priorizar Gmail si está disponible
+        if (Platform.isIOS) {
+          final Uri gmailApp = Uri.parse(
+            'googlegmail://co?to=$correo&subject=$asunto&body=$mensaje',
+          );
 
-        if (await canLaunchUrl(gmailApp)) {
+          if (await canLaunchUrl(gmailApp)) {
+            await launchUrl(
+              gmailApp,
+              mode: LaunchMode.externalApplication,
+            );
+
+            if (mounted) {
+              _mostrarDialogoGracias();
+            }
+            return;
+          }
+        }
+
+        // Para Android (y iOS si no tiene Gmail o no se usó arriba), mailto es el estándar
+        // que abrirá el selector o la app por defecto (incluyendo Gmail si es la seleccionada)
+        if (await canLaunchUrl(mailtoUri)) {
           await launchUrl(
-            gmailApp,
+            mailtoUri,
             mode: LaunchMode.externalApplication,
           );
 
           if (mounted) {
             _mostrarDialogoGracias();
           }
-
-          return;
+        } else {
+          throw 'No se encontró una aplicación de correo instalada para realizar esta acción.';
         }
-
-        // Si no tiene Gmail instalada
-        if (await canLaunchUrl(mailto)) {
-          await launchUrl(
-            mailto,
-            mode: LaunchMode.externalApplication,
-          );
-
-          if (mounted) {
-            _mostrarDialogoGracias();
-          }
-
-          return;
-        }
-
-        throw 'No se encontró una aplicación de correo';
       }
     } catch (e) {
       if (mounted) {
