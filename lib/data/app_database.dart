@@ -221,6 +221,7 @@ class SoilPreparations extends Table {
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
+  AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
   int get schemaVersion => 14;
