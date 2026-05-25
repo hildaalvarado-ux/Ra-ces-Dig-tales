@@ -474,7 +474,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   Positioned.fill(
                     child: Center(
                       child: Opacity(
-                        opacity: 0.05,
+                        opacity: 0.60,
                         child: Image.asset(
                           'assets/images/logosp.png',
                           width: 300,
