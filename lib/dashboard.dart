@@ -385,6 +385,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         text: 'Mi huerta',
                         items: [
                           _HoverItem('Notificaciones', () => _openFeature('Notificaciones')),
+                          _HoverItem('Preparación de Suelo', () => _openFeature('PreparacionSuelo')),
                           _HoverItem('Diario', () => _openFeature('Diario')),
                         ],
                       ),
@@ -392,7 +393,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       _HoverMenu(
                         text: 'Otros',
                         items: [
-                          _HoverItem('Opciones', () => _openFeature('Opciones')),
+                          _HoverItem('Configuración', () => _openFeature('Configuración')),
                           _HoverItem('Contacto', () => _openFeature('Contacto')),
                           _HoverItem('Créditos', () => _openFeature('Créditos')),
                         ],
@@ -852,6 +853,14 @@ class _DashboardPageState extends State<DashboardPage> {
                   icon: Icons.home_rounded,
                   label: 'Inicio',
                   onTap: () => Navigator.pop(context),
+                ),
+                _DrawerItem(
+                  icon: Icons.star_rounded,
+                  label: 'Favoritos',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openFeature('Favoritos');
+                  },
                 ),
                 _DrawerItem(
                   icon: Icons.calendar_month_rounded,

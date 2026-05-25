@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../data/app_database.dart';
@@ -168,6 +169,15 @@ class _NotificacionesConfigPageState extends State<NotificacionesConfigPage> {
   }
 
   Future<void> _pickSystemSound() async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('La selección de sonidos del sistema no está disponible en la versión web.'),
+          backgroundColor: AppColors.greenDark,
+        ),
+      );
+      return;
+    }
     try {
       final currentSound = _user?.notificationSound ?? 'default';
       String? currentUri;

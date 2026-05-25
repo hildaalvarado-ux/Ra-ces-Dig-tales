@@ -1,15 +1,53 @@
 import '../data/common_widgets.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
+import '../data/db_instance.dart';
 import 'perfil.dart';
 import 'notificaciones_config.dart';
 import 'rendimiento.dart';
 import 'apariencia.dart';
 import 'ayuda.dart';
+import 'contacto.dart';
+import 'creditos.dart';
 
 class OpcionesPage extends StatelessWidget {
   final int userId;
   const OpcionesPage({super.key, required this.userId});
+
+  Future<bool> _confirmLogout(BuildContext context) async {
+    return (await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Cerrar sesión'),
+            content: const Text('¿Quieres cerrar tu sesión?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('No'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.greenDarker,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Sí'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    final ok = await _confirmLogout(context);
+    if (!ok) return;
+
+    await appDb.clearSession();
+    if (!context.mounted) return;
+
+    Navigator.pushNamedAndRemoveUntil(context, '/appgate', (_) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +59,7 @@ class OpcionesPage extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
           title: const Text(
-            'Opciones',
+            'Configuración',
             style: TextStyle(fontWeight: FontWeight.w900),
           ),
         ),
@@ -77,19 +115,6 @@ class OpcionesPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 _OptionButton(
-                  icon: Icons.speed_rounded,
-                  label: 'Rendimiento',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => RendimientoPage(userId: userId),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-                _OptionButton(
                   icon: Icons.palette_rounded,
                   label: 'Apariencia',
                   onTap: () {
@@ -97,6 +122,19 @@ class OpcionesPage extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (_) => const AparienciaPage(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                _OptionButton(
+                  icon: Icons.speed_rounded,
+                  label: 'Rendimiento',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => RendimientoPage(userId: userId),
                       ),
                     );
                   },
@@ -113,6 +151,39 @@ class OpcionesPage extends StatelessWidget {
                       ),
                     );
                   },
+                ),
+                const SizedBox(height: 12),
+                _OptionButton(
+                  icon: Icons.contact_mail_rounded,
+                  label: 'Contacto',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ContactoPage(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                _OptionButton(
+                  icon: Icons.info_outline_rounded,
+                  label: 'Créditos',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const CreditosPage(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                _OptionButton(
+                  icon: Icons.logout_rounded,
+                  label: 'Cerrar sesión',
+                  color: Colors.red.shade700,
+                  onTap: () => _logout(context),
                 ),
 
                 const SizedBox(height: 40),
@@ -141,15 +212,18 @@ class _OptionButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final Color? color;
 
   const _OptionButton({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveColor = color ?? AppColors.greenDark;
     return Material(
       color: Colors.white.withOpacity(0.8),
       borderRadius: BorderRadius.circular(18),
@@ -175,7 +249,7 @@ class _OptionButton extends StatelessWidget {
                 ),
                 child: Icon(
                   icon,
-                  color: AppColors.greenDark,
+                  color: effectiveColor,
                   size: 26,
                 ),
               ),
@@ -183,10 +257,10 @@ class _OptionButton extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.greenDarker,
+                    color: color ?? AppColors.greenDarker,
                   ),
                 ),
               ),
