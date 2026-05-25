@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/db_instance.dart'; // conexión a tu BD (Drift)
 import 'data/app_database.dart';
@@ -44,6 +45,28 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _loadUser(); // cargar el nombre y correo desde Drift
     _syncNotifications();
+    _checkFirstTutorial();
+  }
+
+  Future<void> _checkFirstTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    final shown = prefs.getBool('tutorial_shown_${widget.userId}') ?? false;
+
+    if (!shown) {
+      await prefs.setBool('tutorial_shown_${widget.userId}', true);
+      if (mounted) {
+        // Delay slightly to ensure dashboard is rendered
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => AyudaPage(userId: widget.userId),
+              ),
+            );
+          }
+        });
+      }
+    }
   }
 
   Future<void> _syncNotifications() async {
@@ -238,6 +261,14 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  void _openHelp() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AyudaPage(userId: widget.userId),
+      ),
+    );
+  }
+
   // ==========================================================
   // ✅ CERRAR SESIÓN
   // ==========================================================
@@ -399,6 +430,12 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
 
+                      IconButton(
+                        tooltip: 'Ayuda',
+                        onPressed: _openHelp,
+                        icon: const Icon(Icons.help_outline_rounded),
+                      ),
+
                       const SizedBox(width: 10),
 
                       // Logo circular en Web
@@ -420,11 +457,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       // En móvil, solo dejamos el botón ayuda (opcional)
                       IconButton(
                         tooltip: 'Ayuda',
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const AyudaPage(),
-                          ),
-                        ),
+                        onPressed: _openHelp,
                         icon: const Icon(Icons.help_outline_rounded),
                       ),
                       const SizedBox(width: 6),
