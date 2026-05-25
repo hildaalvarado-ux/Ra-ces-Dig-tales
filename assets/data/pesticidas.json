@@ -357,7 +357,7 @@
   },
   {
     "nombre": "Repelente a base planta epacina",
-    "imagen": "",
+    "imagen": "assets/pesticidas/epacina.png",
     "tipo": "Casero",
     "identificacion": "Desprende fuerte olor a azufre. Funciona contra pulgones, mosca blanca, gusanos de suelo, chinches, etc.",
     "uso": "15 ml por litro de agua. Aplique cada 8 días al atardecer.",
@@ -390,7 +390,7 @@
   },
   {
     "nombre": "Caldo Bordelés",
-    "imagen": "",
+    "imagen": "assets/pesticidas/bordelés.webp",
     "tipo": "Mineral",
     "identificacion": "Desinfectante de suelo y fungicida contra Mildiu, Antracnosis, Royas y Tizones.",
     "uso": "1 litro de caldo por 1 litro de agua. Aplique cada 7 días al amanecer o atardecer.",
@@ -421,7 +421,7 @@
   },
   {
     "nombre": "Caldo Ceniza",
-    "imagen": "",
+    "imagen": "assets/pesticidas/caldoceniza.JPG",
     "tipo": "Mineral",
     "identificacion": "Controla pulgones, mosca blanca, trips, cochinilla y hongos. Fortalece la planta con potasio.",
     "uso": "20 ml por litro de agua. Aplique cada 8 días por la mañana o atardecer.",
