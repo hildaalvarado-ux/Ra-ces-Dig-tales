@@ -6,7 +6,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:http/http.dart' as http;
 
 class FileManagementService {
   static const String rootFolder = 'RaicesDigitales';
@@ -176,31 +175,6 @@ class FileManagementService {
       debugPrint('Error sharing module data: $e');
       // Fallback a texto si algo falla
       await Share.share(text ?? 'Mira mi ${moduleFolders[module] ?? module}: $name');
-    }
-  }
-
-  /// Descarga el APK desde una URL y lo comparte.
-  Future<void> shareApkFromUrl(String url) async {
-    if (kIsWeb) return;
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final tempDir = await getTemporaryDirectory();
-        final filePath = p.join(tempDir.path, 'raices_digitales.apk');
-        final file = File(filePath);
-        await file.writeAsBytes(response.bodyBytes);
-
-        await Share.shareXFiles(
-          [XFile(file.path)],
-          text: '¡Instala la aplicación oficial de Raíces Digitales para una mejor experiencia!',
-        );
-      } else {
-        throw 'Error al descargar el archivo: ${response.statusCode}';
-      }
-    } catch (e) {
-      debugPrint('Error al compartir APK: $e');
-      rethrow;
     }
   }
 }
