@@ -10,14 +10,9 @@ import '../data/notification_service.dart';
 import '../data/common_widgets.dart';
 import '../data/crop_models.dart';
 import '../data/crop_service.dart';
-import '../data/ai_service.dart';
 import '../main.dart';
 import 'cultivo_detalle.dart';
 import 'diario.dart';
-import 'plaga_detalle.dart';
-import 'enfermedad_detalle.dart';
-import 'pesticida_detalle.dart';
-import 'fertilizante_detalle.dart';
 
 class CalendarioPage extends StatefulWidget {
   final int userId;
@@ -26,10 +21,6 @@ class CalendarioPage extends StatefulWidget {
 
   @override
   State<CalendarioPage> createState() => _CalendarioPageState();
-
-  static Widget getIncidentReportDialog({required CalendarTask task, required VoidCallback onReport}) {
-    return _IncidentReportDialog(task: task, onReport: onReport);
-  }
 }
 
 class _CalendarioPageState extends State<CalendarioPage> {
@@ -122,7 +113,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => CalendarioPage.getIncidentReportDialog(task: task, onReport: _loadTasks),
+      builder: (_) => _IncidentReportDialog(task: task, onReport: _loadTasks),
     );
   }
 
@@ -792,228 +783,63 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
 class _IncidentReportDialogState extends State<_IncidentReportDialog> {
   String _selectedIncident = 'Plagas';
   final _descCtrl = TextEditingController();
-  bool _isAnalyzing = false;
-  AIAnalysisResult? _aiResult;
-
-  Future<void> _analyzeWithAI() async {
-    if (_descCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, describe el problema antes de analizar.')),
-      );
-      return;
-    }
-
-    setState(() {
-      _isAnalyzing = true;
-      _aiResult = null;
-    });
-
-    try {
-      final result = await aiService.analyzeIncident(_descCtrl.text);
-      if (mounted) {
-        setState(() {
-          _aiResult = result;
-          _isAnalyzing = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isAnalyzing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al analizar con IA. Inténtalo de nuevo.')),
-        );
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
+    return Padding(
       padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.report_problem_outlined, color: Colors.orange, size: 28),
-                const SizedBox(width: 10),
-                const Text('Reportar incidente', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.greenDarker)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedIncident,
-              items: ['Plagas', 'Marchitez', 'Pérdida', 'Problemas de crecimiento', 'Otro']
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              onChanged: (v) => setState(() => _selectedIncident = v!),
-              decoration: InputDecoration(
-                labelText: 'Tipo de incidente',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _descCtrl,
-              maxLines: 4,
-              decoration: InputDecoration(
-                labelText: 'Descripción / Detalles',
-                hintText: 'Ej: Veo puntos blancos bajo las hojas y se están poniendo amarillas...',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _isAnalyzing ? null : _analyzeWithAI,
-                icon: _isAnalyzing
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.auto_awesome, size: 20),
-                label: Text(_isAnalyzing ? 'ANALIZANDO...' : 'ANALIZAR CON IA', style: const TextStyle(fontWeight: FontWeight.bold)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.greenAccent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-            ),
-
-            if (_aiResult != null) ...[
-              const SizedBox(height: 20),
-              _buildAIAnalysisView(),
-            ],
-
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () async {
-                  await appDb.insertNotificationLog(NotificationLogsCompanion.insert(
-                    userId: widget.task.userId,
-                    title: 'Incidente reportado: $_selectedIncident',
-                    body: 'Cultivo: ${widget.task.title}. Detalle: ${_descCtrl.text}',
-                  ));
-
-                  if (mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Incidente reportado. El plan se ajustará según sea necesario.')),
-                    );
-                    widget.onReport();
-                  }
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                child: const Text('ENVIAR REPORTE FINAL', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAIAnalysisView() {
-    final res = _aiResult!;
-    Color severityColor = Colors.green;
-    if (res.severity == 'Crítica') severityColor = Colors.red.shade900;
-    if (res.severity == 'Alta') severityColor = Colors.red;
-    if (res.severity == 'Media') severityColor = Colors.orange;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.bg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.greenAccent.withOpacity(0.3), width: 2),
-      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.auto_awesome, color: AppColors.greenAccent, size: 22),
-              const SizedBox(width: 8),
-              const Text('Análisis Inteligente', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.greenDarker)),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: severityColor, borderRadius: BorderRadius.circular(8)),
-                child: Text(res.severity, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
-              ),
-            ],
-          ),
-          const Divider(height: 20),
-          Text(res.summary, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.greenDarker)),
-
-          if (res.detectedPests.isNotEmpty || res.detectedDiseases.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            const Text('Posibles causas detectadas:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.greenDark)),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 8,
-              runSpacing: 4,
-              children: [
-                ...res.detectedPests.map((p) => ActionChip(
-                  label: Text(p.nombre, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                  avatar: const Icon(Icons.bug_report, size: 14),
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlagaDetallePage(plaga: p))),
-                )),
-                ...res.detectedDiseases.map((d) => ActionChip(
-                  label: Text(d.nombre, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                  avatar: const Icon(Icons.biotech, size: 14),
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EnfermedadDetallePage(enfermedad: d))),
-                )),
-              ],
+          const Text('Reportar incidente', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.greenDarker)),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            value: _selectedIncident,
+            items: ['Plagas', 'Marchitez', 'Pérdida', 'Problemas de crecimiento', 'Otro']
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                .toList(),
+            onChanged: (v) => setState(() => _selectedIncident = v!),
+            decoration: InputDecoration(
+              labelText: 'Tipo de incidente',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
-          ],
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _descCtrl,
+            maxLines: 3,
+            decoration: InputDecoration(
+              labelText: 'Descripción / Detalles',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () async {
+                // In a real app, this would update the plan logic.
+                // For now, we'll just log it as a new task/note and show a snackbar.
+                await appDb.insertNotificationLog(NotificationLogsCompanion.insert(
+                  userId: widget.task.userId,
+                  title: 'Incidente reportado: $_selectedIncident',
+                  body: 'Cultivo: ${widget.task.title}. Detalle: ${_descCtrl.text}',
+                ));
 
-          if (res.suggestedPesticides.isNotEmpty || res.suggestedFertilizers.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            const Text('Soluciones sugeridas de tu app:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.greenDark)),
-            const SizedBox(height: 6),
-            ...res.suggestedPesticides.map((p) => ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.sanitizer_rounded, color: AppColors.greenAccent),
-              title: Text(p.nombre, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-              subtitle: const Text('Tocar para ver cómo preparar', style: TextStyle(fontSize: 11)),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PesticidaDetallePage(pesticida: p))),
-            )),
-            ...res.suggestedFertilizers.map((f) => ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.science_rounded, color: Colors.blue),
-              title: Text(f.nombre, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-              subtitle: const Text('Tocar para ver ficha técnica', style: TextStyle(fontSize: 11)),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FertilizanteDetallePage(fertilizante: f))),
-            )),
-          ],
-
-          if (res.recommendations.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            const Text('Recomendaciones generales:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.greenDark)),
-            const SizedBox(height: 4),
-            ...res.recommendations.map((r) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Expanded(child: Text(r, style: const TextStyle(fontSize: 12, height: 1.3))),
-                ],
-              ),
-            )),
-          ],
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Incidente reportado. El plan se ajustará según sea necesario.')),
+                  );
+                  widget.onReport();
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark, foregroundColor: Colors.white),
+              child: const Text('Enviar Reporte', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
         ],
       ),
     );
