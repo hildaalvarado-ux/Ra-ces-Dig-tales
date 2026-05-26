@@ -77,7 +77,7 @@ flutter:
     - assets/plagas/referencia/
     - assets/pesticidas/
     - assets/enfermedades/
-    - assets/apk/raices_digitales.apk
+  
 
 flutter_launcher_icons:
   android: true
