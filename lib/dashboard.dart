@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'data/db_instance.dart'; // conexión a tu BD (Drift)
 import 'data/app_database.dart';
@@ -11,6 +12,7 @@ import 'data/image_utils.dart';
 import 'data/notification_service.dart';
 import 'data/crop_models.dart';
 import 'data/soil_models.dart';
+import 'data/file_management_service.dart';
 import 'main.dart'; // AppColors + AppBackground (tu tema/fondo)
 import 'datos/cultivos.dart'; // ✅ pantalla REAL de cultivos (ya creada)
 import 'datos/fertilizantes.dart';
@@ -721,6 +723,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
         // 4️⃣ Cultivos finalizados
         _buildFinalizedCropsSection(),
+        const SizedBox(height: 32),
+
+        // 5️⃣ Promo App Móvil
+        const _MobileAppPromoSection(),
       ],
     );
   }
@@ -1640,6 +1646,169 @@ class _DrawerItem extends StatelessWidget {
         ),
       ),
       onTap: onTap,
+    );
+  }
+}
+
+// ✅ Sección Promo App Móvil
+class _MobileAppPromoSection extends StatelessWidget {
+  const _MobileAppPromoSection();
+
+  static const String apkUrl = 'https://raices-digitales.netlify.app/raices_digitales.apk';
+
+  Future<void> _handleAction(BuildContext context) async {
+    try {
+      if (kIsWeb) {
+        final uri = Uri.parse(apkUrl);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          throw 'No se pudo abrir el enlace de descarga.';
+        }
+      } else {
+        // En móvil, compartimos el APK
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Preparando archivo para compartir...')),
+        );
+        await fileManagementService.shareApkFromUrl(apkUrl);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.redAccent),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.greenDark,
+            AppColors.greenDarker.withOpacity(0.9),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.greenDark.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.phone_android_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Lleva Raíces Digitales en tu móvil',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Para una experiencia más estable y completa, te recomendamos instalar nuestra aplicación oficial en Android.',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _buildInfoItem(Icons.cloud_off_rounded, 'Funciona sin conexión a internet.'),
+          _buildInfoItem(Icons.storage_rounded, 'Almacenamiento persistente y seguro.'),
+          _buildInfoItem(Icons.speed_rounded, 'Mayor estabilidad y rapidez.'),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton.icon(
+              onPressed: () => _handleAction(context),
+              icon: Icon(kIsWeb ? Icons.download_rounded : Icons.share_rounded),
+              label: Text(
+                kIsWeb ? 'DESCARGAR APK' : 'COMPARTIR APLICACIÓN',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: AppColors.greenDarker,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+            ),
+          ),
+          if (kIsWeb)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                '* En la versión web, algunos datos podrían perderse si limpias el historial o cambias de navegador.',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white70, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
