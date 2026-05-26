@@ -41,6 +41,7 @@ dependencies:
   url_launcher: ^6.3.2
   crypto: ^3.0.6
   shared_preferences: ^2.3.2
+  
 
 dev_dependencies:
   drift_dev: ^2.20.0
@@ -76,7 +77,7 @@ flutter:
     - assets/plagas/referencia/
     - assets/pesticidas/
     - assets/enfermedades/
-    - assets/iconos/
+    - assets/apk/raices_digitales.apk
 
 flutter_launcher_icons:
   android: true

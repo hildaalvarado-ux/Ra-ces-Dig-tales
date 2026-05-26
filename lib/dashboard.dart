@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'data/db_instance.dart'; // conexión a tu BD (Drift)
 import 'data/app_database.dart';
 import 'data/image_utils.dart';
@@ -68,6 +71,66 @@ class _DashboardPageState extends State<DashboardPage> {
       }
     }
   }
+static const String apkAssetPath = 'assets/apk/raices_digitales.apk';
+
+bool get _isRunningAsWeb => kIsWeb;
+
+Future<void> _downloadApk() async {
+  try {
+    final uri = Uri.parse('assets/apk/raices_digitales.apk');
+
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+  } catch (e) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('No se pudo descargar el APK: $e'),
+      ),
+    );
+  }
+}
+
+Future<void> _shareApk() async {
+  try {
+    // Leer APK desde assets
+    final byteData = await rootBundle.load(
+      'assets/apk/raices_digitales.apk',
+    );
+
+    // Carpeta temporal real del teléfono
+    final tempDir = await getTemporaryDirectory();
+
+    final file = File(
+      '${tempDir.path}/raices_digitales.apk',
+    );
+
+    // Guardar archivo temporal
+    await file.writeAsBytes(
+      byteData.buffer.asUint8List(),
+    );
+
+    // Compartir APK
+    await Share.shareXFiles(
+      [XFile(file.path)],
+      text:
+          'Instala Raíces Digitales 🌱',
+    );
+  } catch (e) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'No se pudo compartir el APK: $e',
+        ),
+      ),
+    );
+  }
+}
 
   Future<void> _syncNotifications() async {
     // Basic sync: schedule notifications for the next 7 days on every app start
@@ -403,8 +466,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
 
-                      _TopLink(text: 'Favoritos', onTap: () => _openFeature('Favoritos')),
-
+                      
                       // Calendario marcado como principal
                       _TopLink(
                         text: 'Calendario',
@@ -721,6 +783,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
         // 4️⃣ Cultivos finalizados
         _buildFinalizedCropsSection(),
+          const SizedBox(height: 24),
+
+_buildMobilePromoCard(),
       ],
     );
   }
@@ -788,6 +853,169 @@ class _DashboardPageState extends State<DashboardPage> {
       ],
     );
   }
+
+
+Widget _buildMobilePromoCard() {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(22),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [
+          AppColors.greenDark,
+          AppColors.greenDarker,
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(24),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.12),
+          blurRadius: 12,
+          offset: const Offset(0, 5),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.phone_android_rounded,
+                color: Colors.white,
+                size: 32,
+              ),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Text(
+                'Lleva Raíces Digitales en tu móvil',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 24,
+                  height: 1.1,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 22),
+
+        Text(
+          _isRunningAsWeb
+              ? 'Instala la aplicación Android para guardar tus datos de forma más estable y segura.'
+              : 'Comparte fácilmente la aplicación con otros agricultores desde tu dispositivo.',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            height: 1.5,
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        const Row(
+          children: [
+            Icon(Icons.offline_bolt_rounded, color: Colors.white),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Funciona sin conexión a internet.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        SizedBox(height: 12),
+
+        const Row(
+          children: [
+            Icon(Icons.storage_rounded, color: Colors.white),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Tus datos permanecen guardados localmente.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        SizedBox(height: 12),
+
+        const Row(
+          children: [
+            Icon(Icons.speed_rounded, color: Colors.white),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Mayor estabilidad y mejor rendimiento.',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 26),
+
+        SizedBox(
+          width: double.infinity,
+          height: 58,
+          child: ElevatedButton.icon(
+            onPressed: _isRunningAsWeb
+                ? _downloadApk
+                : _shareApk,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: AppColors.greenDarker,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+            ),
+            icon: Icon(
+              _isRunningAsWeb
+                  ? Icons.download_rounded
+                  : Icons.share_rounded,
+            ),
+            label: Text(
+              _isRunningAsWeb
+                  ? 'Descargar APK'
+                  : 'Compartir aplicación',
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
 
   // ==========================================================
   // ✅ DRAWER MÓVIL (MENÚ LATERAL)
@@ -887,14 +1115,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   label: 'Inicio',
                   onTap: () => Navigator.pop(context),
                 ),
-                _DrawerItem(
-                  icon: Icons.star_rounded,
-                  label: 'Favoritos',
-                  onTap: () {
-                    Navigator.pop(context);
-                    _openFeature('Favoritos');
-                  },
-                ),
+                
                 _DrawerItem(
                   icon: Icons.calendar_month_rounded,
                   label: 'Calendario',
