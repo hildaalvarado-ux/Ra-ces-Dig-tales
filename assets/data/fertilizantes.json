@@ -191,7 +191,7 @@
   },
   {
     "nombre": "Bambusina",
-    "imagen": "assets/fertilizantes/bambusina.png",
+    "imagen": "assets/fertilizantes/bambusina.jpg",
     "tipo": "Foliar",
     "identificacion": "Es un enraizante natural que aporta hormonas para el crecimiento y desarrollo, induciendo a la floración y fructificación.",
     "uso": "Diluya 5 ml por litro de agua o 85 ml por bomba de 17 litros. Aplique cada 8 a 15 días.",
@@ -225,7 +225,7 @@
   },
   {
     "nombre": "Melaza",
-    "imagen": "assets/fertilizantes/melaza.png",
+    "imagen": "assets/fertilizantes/melaza.jpg",
     "tipo": "Foliar",
     "identificacion": "Fuente de energía para microorganismos, activando la descomposición de materia orgánica y mejorando absorción de nutrientes.",
     "uso": "Mezcle 8 ml por litro de agua o 140 ml por bomba de 17 litros. Riegue hojas y tallos cada 8 días.",
@@ -256,7 +256,7 @@
   },
   {
     "nombre": "Té de cáscaras de huevo",
-    "imagen": "assets/fertilizantes/te_huevo.png",
+    "imagen": "assets/fertilizantes/tehuevo.jpg",
     "tipo": "Foliar",
     "identificacion": "Aporta calcio de manera natural, previniendo su deficiencia y pudrición de frutos.",
     "uso": "Diluya 100 ml de té por litro de agua o 2 litros por bomba de 17 litros. Aplique cada 8 días.",

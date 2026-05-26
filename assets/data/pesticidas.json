@@ -1,6 +1,6 @@
 [
   {
-    "imagen": "",
+    "imagen": "assets/pesticidas/jabon.png",
     "nombre": "Repelente de jabón barra",
     "tipo": "Casero",
     "identificacion": "Efectivo contra insectos de cuerpo blando. Actúa debilitando la piel protectora, provocando deshidratación.",
@@ -457,7 +457,7 @@
   },
   {
     "nombre": "Bicarbonato de sodio",
-    "imagen": "",
+    "imagen": "assets/pesticidas/bicarbonato.png",
     "tipo": "Mineral",
     "identificacion": "Función preventiva y curativa contra mildiu, antracnosis, tizón y virosis.",
     "uso": "1 cda de bicarbonato + 1 cdta de jabón en 1 litro de agua. Aplique cada 7 días al atardecer.",
@@ -488,7 +488,7 @@
   },
   {
     "nombre": "Sílico sulfocálcico",
-    "imagen": "",
+    "imagen": "assets/pesticidas/silico.jpg",
     "tipo": "Mineral",
     "identificacion": "Aumenta resistencia contra ácaros, cochinilla, pulgones y hongos.",
     "uso": "25 ml por litro de agua. Aplique cada 7 días.",
@@ -522,7 +522,7 @@
   },
   {
     "nombre": "Fungicida de leche",
-    "imagen": "",
+    "imagen": "assets/pesticidas/leche.jpg",
     "tipo": "Casero",
     "identificacion": "Fungicida natural basado en las propiedades de la leche, efectivo contra el Mildiu y la Botrytis.",
     "uso": "Disuelva 200 ml de leche en 800 ml de agua. Rocíe por ambos lados de las hojas cada 5 días, preferiblemente al amanecer.",
@@ -549,7 +549,7 @@
   },
   {
     "nombre": "Macerado de jengibre",
-    "imagen": "",
+    "imagen": "assets/pesticidas/maceradojengibre.png",
     "tipo": "Casero",
     "identificacion": "Tratamiento natural para combatir la marchitez bacteriana.",
     "uso": "Aplique al tallo de la planta cada 5 días hasta notar mejoría.",
@@ -576,7 +576,7 @@
   },
   {
     "nombre": "Microorganismos líquidos",
-    "imagen": "",
+    "imagen": "assets/pesticidas/microorganismos.jpg",
     "tipo": "Orgánico",
     "identificacion": "Cultivo de microorganismos benéficos que fortalecen la planta y previenen enfermedades del suelo.",
     "uso": "Disuelva 100 ml de microorganismos en 1 litro de agua. Aplique al tallo o follaje de forma preventiva cada 8-15 días.",
