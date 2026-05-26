@@ -1,3 +1,3 @@
 import 'app_database.dart';
 
-AppDatabase appDb = AppDatabase();
+final appDb = AppDatabase();
