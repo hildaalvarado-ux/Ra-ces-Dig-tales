@@ -71,61 +71,27 @@ class _DashboardPageState extends State<DashboardPage> {
       }
     }
   }
-static const String apkAssetPath = 'assets/apk/raices_digitales.apk';
-
-bool get _isRunningAsWeb => kIsWeb;
-
-Future<void> _downloadApk() async {
-  try {
-    final uri = Uri.parse('assets/apk/raices_digitales.apk');
-
-    await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
-  } catch (e) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('No se pudo descargar el APK: $e'),
-      ),
-    );
-  }
-}
-
 Future<void> _shareApk() async {
   try {
-    // Leer APK desde assets
-    final byteData = await rootBundle.load(
-      'assets/apk/raices_digitales.apk',
+    final Uri url = Uri.parse(
+      'https://drive.google.com/file/d/1xsZ6LI95aO1sKWf6byKF1IR895Zo5PC6/view?usp=sharing',
     );
 
-    // Carpeta temporal real del teléfono
-    final tempDir = await getTemporaryDirectory();
-
-    final file = File(
-      '${tempDir.path}/raices_digitales.apk',
-    );
-
-    // Guardar archivo temporal
-    await file.writeAsBytes(
-      byteData.buffer.asUint8List(),
-    );
-
-    // Compartir APK
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text:
-          'Instala Raíces Digitales 🌱',
-    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      throw 'No se pudo abrir el enlace';
+    }
   } catch (e) {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'No se pudo compartir el APK: $e',
+          'No se pudo abrir el enlace: $e',
         ),
       ),
     );
@@ -912,11 +878,9 @@ Widget _buildMobilePromoCard() {
 
         const SizedBox(height: 22),
 
-        Text(
-          _isRunningAsWeb
-              ? 'Instala la aplicación Android para guardar tus datos de forma más estable y segura.'
-              : 'Comparte fácilmente la aplicación con otros agricultores desde tu dispositivo.',
-          style: const TextStyle(
+        const Text(
+          'Descarga la aplicación Android para guardar tus datos de forma más estable y segura.',
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -984,9 +948,7 @@ Widget _buildMobilePromoCard() {
           width: double.infinity,
           height: 58,
           child: ElevatedButton.icon(
-            onPressed: _isRunningAsWeb
-                ? _downloadApk
-                : _shareApk,
+            onPressed: _shareApk,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: AppColors.greenDarker,
@@ -994,16 +956,12 @@ Widget _buildMobilePromoCard() {
                 borderRadius: BorderRadius.circular(18),
               ),
             ),
-            icon: Icon(
-              _isRunningAsWeb
-                  ? Icons.download_rounded
-                  : Icons.share_rounded,
+            icon: const Icon(
+              Icons.download_rounded,
             ),
-            label: Text(
-              _isRunningAsWeb
-                  ? 'Descargar APK'
-                  : 'Compartir aplicación',
-              style: const TextStyle(
+            label: const Text(
+              'Descargar APK',
+              style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 16,
               ),
@@ -1014,8 +972,6 @@ Widget _buildMobilePromoCard() {
     ),
   );
 }
-
-
 
   // ==========================================================
   // ✅ DRAWER MÓVIL (MENÚ LATERAL)
