@@ -357,7 +357,7 @@
   },
   {
     "nombre": "Repelente a base planta epacina",
-    "imagen": "assets/pesticidas/epacina.png",
+    "imagen": "assets/pesticidas/repelentepacina.png",
     "tipo": "Casero",
     "identificacion": "Desprende fuerte olor a azufre. Funciona contra pulgones, mosca blanca, gusanos de suelo, chinches, etc.",
     "uso": "15 ml por litro de agua. Aplique cada 8 días al atardecer.",
