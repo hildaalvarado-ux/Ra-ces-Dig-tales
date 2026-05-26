@@ -105,18 +105,6 @@ class _CalendarioPageState extends State<CalendarioPage> {
     await _loadTasks();
   }
 
-  void _reportIncident(CalendarTask task) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => _IncidentReportDialog(task: task, onReport: _loadTasks),
-    );
-  }
-
   void _showAddObservationDialog() {
     showModalBottomSheet(
       context: context,
@@ -231,7 +219,6 @@ class _CalendarioPageState extends State<CalendarioPage> {
                                 task: task,
                                 plan: plan,
                                 onToggle: () => _toggleTaskStatus(task),
-                                onReport: () => _reportIncident(task),
                                 onDeletePlan: () => _confirmDeletePlan(plan),
                                 isDeleting: isDeleting,
                                 isDisabled: isDisabled,
@@ -305,7 +292,6 @@ class _TaskTile extends StatelessWidget {
   final CalendarTask task;
   final CropPlan? plan;
   final VoidCallback onToggle;
-  final VoidCallback onReport;
   final VoidCallback onDeletePlan;
   final bool isDeleting;
   final bool isDisabled;
@@ -314,7 +300,6 @@ class _TaskTile extends StatelessWidget {
     required this.task,
     this.plan,
     required this.onToggle,
-    required this.onReport,
     required this.onDeletePlan,
     this.isDeleting = false,
     this.isDisabled = false,
@@ -404,11 +389,6 @@ class _TaskTile extends StatelessWidget {
                     onPressed: isDisabled ? null : onDeletePlan,
                     tooltip: 'Eliminar cultivo perdido',
                   ),
-            IconButton(
-              icon: const Icon(Icons.report_problem_outlined, color: Colors.orange),
-              onPressed: isDisabled ? null : onReport,
-              tooltip: 'Reportar incidente',
-            ),
             Checkbox(
               value: task.completed,
               onChanged: isDisabled ? null : (_) => onToggle(),
@@ -451,15 +431,6 @@ class _TaskTile extends StatelessWidget {
       default: return '';
     }
   }
-}
-
-class _IncidentReportDialog extends StatefulWidget {
-  final CalendarTask task;
-  final VoidCallback onReport;
-  const _IncidentReportDialog({required this.task, required this.onReport});
-
-  @override
-  State<_IncidentReportDialog> createState() => _IncidentReportDialogState();
 }
 
 class _LunarPhaseCard extends StatelessWidget {
@@ -780,68 +751,3 @@ class _AddObservationDialogState extends State<_AddObservationDialog> {
   }
 }
 
-class _IncidentReportDialogState extends State<_IncidentReportDialog> {
-  String _selectedIncident = 'Plagas';
-  final _descCtrl = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Reportar incidente', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.greenDarker)),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: _selectedIncident,
-            items: ['Plagas', 'Marchitez', 'Pérdida', 'Problemas de crecimiento', 'Otro']
-                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                .toList(),
-            onChanged: (v) => setState(() => _selectedIncident = v!),
-            decoration: InputDecoration(
-              labelText: 'Tipo de incidente',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _descCtrl,
-            maxLines: 3,
-            decoration: InputDecoration(
-              labelText: 'Descripción / Detalles',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () async {
-                // In a real app, this would update the plan logic.
-                // For now, we'll just log it as a new task/note and show a snackbar.
-                await appDb.insertNotificationLog(NotificationLogsCompanion.insert(
-                  userId: widget.task.userId,
-                  title: 'Incidente reportado: $_selectedIncident',
-                  body: 'Cultivo: ${widget.task.title}. Detalle: ${_descCtrl.text}',
-                ));
-
-                if (mounted) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Incidente reportado. El plan se ajustará según sea necesario.')),
-                  );
-                  widget.onReport();
-                }
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.greenDark, foregroundColor: Colors.white),
-              child: const Text('Enviar Reporte', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
