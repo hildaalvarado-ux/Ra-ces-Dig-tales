@@ -289,24 +289,36 @@ class _FAQSection extends StatelessWidget {
         const SizedBox(height: 24),
 
         _buildFAQItem(
-          question: '¿Cómo crear un cultivo?',
-          answer: 'Ve a la sección "Cultivos" desde el inicio o el tutorial. Toca el botón flotante "+" en la esquina inferior derecha. Completa el formulario con los datos de tu planta. Al guardar, aparecerá en tu lista de "Mis Cultivos".',
+          question: '¿Qué es Raíces Digitales?',
+          answer: 'Una plataforma para la gestión integral y orgánica de cultivos, diseñada para ayudarte a cultivar de forma sostenible.',
         ),
         _buildFAQItem(
-          question: '¿Cómo eliminar un cultivo?',
-          answer: 'En la lista de "Mis Cultivos", mantén presionado el cultivo que deseas borrar o usa el botón de eliminar en sus detalles. También puedes eliminar planes activos desde el Calendario.',
+          question: '¿Cómo inicio un plan de cultivo?',
+          answer: 'Selecciona un cultivo del catálogo o de tus registros personales y presiona "EMPEZAR PLAN DE CULTIVO". Podrás configurar la fecha de inicio y recordatorios.',
         ),
         _buildFAQItem(
-          question: '¿Por qué no recibo notificaciones?',
-          answer: 'Asegúrate de que las notificaciones estén activadas en Opciones > Notificaciones. Además, verifica los permisos de la app en los ajustes de tu teléfono.',
+          question: '¿Para qué sirve la Preparación de Suelo?',
+          answer: 'Es una guía paso a paso para asegurar que tu tierra esté en condiciones óptimas antes de la siembra, incluyendo limpieza, abonado y nivelación.',
         ),
         _buildFAQItem(
-          question: '¿Cómo inicio un plan de siembra?',
-          answer: 'Busca el cultivo en el catálogo o en tu lista personal. Abre los detalles y presiona "EMPEZAR PLAN DE CULTIVO". Podrás elegir la fecha de inicio y la hora de tus recordatorios.',
+          question: '¿Cómo registro el progreso de mis plantas?',
+          answer: 'Usa el botón "AGREGAR OBSERVACIÓN" en el Calendario. Podrás anotar el estado de salud, la etapa de crecimiento y si detectaste plagas o realizaste riegos.',
         ),
         _buildFAQItem(
-          question: '¿Los datos se guardan en la nube?',
-          answer: 'Actualmente, Raíces Digitales almacena tus datos de forma local en tu dispositivo para garantizar tu privacidad y funcionamiento sin internet.',
+          question: '¿Puedo compartir o respaldar mi información?',
+          answer: '¡Sí! Puedes exportar tus cultivos y registros como archivos .rdc para compartirlos con otros usuarios o importarlos en un nuevo dispositivo.',
+        ),
+        _buildFAQItem(
+          question: '¿Cómo ajusto el tamaño del texto?',
+          answer: 'Dirígete a Configuración (icono de engranaje) y usa el selector de tamaño de texto para mejorar la legibilidad según tu preferencia.',
+        ),
+        _buildFAQItem(
+          question: '¿Mis datos están seguros y privados?',
+          answer: 'Sí. Raíces Digitales almacena toda tu información localmente en tu dispositivo. No necesitas conexión a internet para la mayoría de funciones.',
+        ),
+        _buildFAQItem(
+          question: '¿Qué ventajas tiene la versión móvil?',
+          answer: 'La versión móvil permite recibir notificaciones push en tiempo real para tus tareas y descargar el instalador APK para uso offline garantizado.',
         ),
 
         const SizedBox(height: 30),
