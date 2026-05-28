@@ -74,7 +74,7 @@ class _DashboardPageState extends State<DashboardPage> {
 Future<void> _shareApk() async {
   try {
     final Uri url = Uri.parse(
-      'https://drive.google.com/file/d/1xsZ6LI95aO1sKWf6byKF1IR895Zo5PC6/view?usp=sharing',
+      'https://drive.google.com/file/d/17904SYdJJGTcJtPj4yvnQIJwBIkkayW6/view?usp=sharing',
     );
 
     if (await canLaunchUrl(url)) {
